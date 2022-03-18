@@ -1,0 +1,4 @@
+import { writable } from "svelte/store";
+
+export const projectFilterStore = writable();
+export const postFilterStore = writable();
