@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 [build]
   command = "npm run build"
   publish = "build"
@@ -8,15 +7,3 @@
  
 [functions]
   directory = "netlify/functions"
-=======
-[build]
-  command = "npm run build"
-  publish = "build"
- 
-[dev]
- command = "svelte-kit dev"
- 
-[functions]
-  directory = "netlify/functions"
->>>>>>> 45e05c1f75288ca56146c5453225eae63b01534d
-  node_bundler = "esbuild"
