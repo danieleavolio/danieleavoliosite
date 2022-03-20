@@ -13,7 +13,7 @@
 			<a on:click={changeVisibility} href="/about" class="link">Su di me</a>
 			<a on:click={changeVisibility} href="/progetti" class="link">Progetti</a>
 			<a on:click={changeVisibility} href="/posts" class="link">Posts</a>
-			<button on:click={changeVisibility} class="material-icons bottone link"> close</button>
+			<button on:click={changeVisibility} class="material-icons bottone link">close</button>
 		</div>
 	</nav>
 </div>

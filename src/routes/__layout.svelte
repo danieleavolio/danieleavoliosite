@@ -4,10 +4,11 @@
 	import Navbar from '$lib/components/Navbar.svelte';
 
 	import '../app.css';
-	import Footer from '$lib/components/Footer.svelte';
 	let isShowing = false;
 	const changeVisibility = () => {
 		isShowing = !isShowing;
+		console.log("porco");
+		
 	};
 </script>
 

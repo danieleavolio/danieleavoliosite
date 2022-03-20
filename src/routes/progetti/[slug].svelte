@@ -38,10 +38,12 @@
 	export let project;
 
 	import ProjectTag from '$lib/components/ProjectTag.svelte';
+import Seo from '$lib/components/SEO.svelte';
 </script>
 
+<Seo title={project.name} metadescription={project.description} />
 <svelte:head>
-	<title>{project.slug}</title>
+	<meta property="og:type" content="article" />
 </svelte:head>
 <div in:fly={{ y: -100, duration: 1000, delay: 500 }} class="project">
 	{#if project}
@@ -78,6 +80,7 @@
 		align-items: center;
 		min-height: 100vh;
 		gap: 1em;
+		white-space: break-spaces;
 	}
 
 	.description {
@@ -101,7 +104,5 @@
 	}
 
 	.content {
-		max-width: 50vw;
-		width: 100%;
 	}
 </style>

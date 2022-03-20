@@ -44,10 +44,12 @@
 
 	import PostTag from '$lib/components/PostTag.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import Seo from '$lib/components/SEO.svelte';
 </script>
 
+<Seo title={post.title} metadescription={post.content} />
 <svelte:head>
-	<title>{post.slug}</title>
+	<meta property="og:type" content="article">
 </svelte:head>
 <div in:fly={{ y: -100, duration: 1000, delay: 500 }} class="project">
 	{#if post}
@@ -97,7 +99,6 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		width: 100vw;
 		min-height: 100vh;
 		gap: 1em;
 		white-space: break-spaces;
@@ -131,4 +132,7 @@
 	.content {
 		color: var(--light);
 	}
+
+	
+	
 </style>

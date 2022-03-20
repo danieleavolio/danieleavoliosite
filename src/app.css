@@ -23,6 +23,10 @@ a {
     mix-blend-mode: difference;
 }
 
+code {
+    white-space: break-spaces;
+}
+
 path {
     fill: var(--light);
 }
@@ -97,6 +101,13 @@ path {
 
 .light-button:hover::before {
     transform: scaleY(100%);
+}
+
+.content img {
+    width: 90%;
+    display: flex;
+    margin: auto;
+    border-radius: 0.2em;
 }
 
 ::-webkit-scrollbar {

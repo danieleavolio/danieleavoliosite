@@ -5596,9 +5596,9 @@ var entry, js, css2;
 var init__ = __esm({
   ".svelte-kit/output/server/nodes/0.js"() {
     init_layout_svelte();
-    entry = "pages/__layout.svelte-7e65cb60.js";
-    js = ["pages/__layout.svelte-7e65cb60.js", "chunks/vendor-bc34623b.js"];
-    css2 = ["assets/pages/__layout.svelte-c2228776.css", "assets/Footer.svelte_svelte_type_style_lang-756e8dbc.css"];
+    entry = "pages/__layout.svelte-e47c9ae0.js";
+    js = ["pages/__layout.svelte-e47c9ae0.js", "chunks/vendor-bc34623b.js"];
+    css2 = ["assets/pages/__layout.svelte-6a07f3d4.css"];
   }
 });
 
@@ -21503,8 +21503,8 @@ var entry3, js3, css5;
 var init__3 = __esm({
   ".svelte-kit/output/server/nodes/2.js"() {
     init_index_svelte();
-    entry3 = "pages/index.svelte-57fc2231.js";
-    js3 = ["pages/index.svelte-57fc2231.js", "chunks/vendor-bc34623b.js", "chunks/PostsList-73fc94da.js", "chunks/filters-cc608ede.js", "chunks/singletons-d1fb5791.js", "chunks/PostTag-fd67d1e4.js", "chunks/ProjectList-d56948d6.js", "chunks/ProjectTag-8c565096.js"];
+    entry3 = "pages/index.svelte-fe817a9b.js";
+    js3 = ["pages/index.svelte-fe817a9b.js", "chunks/vendor-bc34623b.js", "chunks/PostsList-73fc94da.js", "chunks/filters-cc608ede.js", "chunks/singletons-d1fb5791.js", "chunks/PostTag-fd67d1e4.js", "chunks/ProjectList-d56948d6.js", "chunks/ProjectTag-8c565096.js"];
     css5 = ["assets/pages/index.svelte-80c65fa0.css", "assets/PostsList-a7f30869.css", "assets/PostTag-6c62c255.css", "assets/ProjectList-039c1d26.css", "assets/ProjectTag-69152cec.css"];
   }
 });
@@ -23945,7 +23945,7 @@ var init_slug_svelte2 = __esm({
 </footer>&gt;`;
     });
     css15 = {
-      code: "h1.svelte-1qd3846{font-size:clamp(1.2em, 15vw, 4em);text-align:center;color:var(--light)}.avatar.svelte-1qd3846{object-fit:cover;width:80px;height:80px;border-radius:0.3em}.project.svelte-1qd3846{background-color:var(--dark);padding:1em;display:flex;flex-direction:column;justify-content:center;align-items:center;width:100vw;min-height:100vh;gap:1em;white-space:break-spaces}.author.svelte-1qd3846{color:var(--light);display:flex;gap:0.5em;justify-content:center;align-items:center}.cover.svelte-1qd3846{max-width:100%;height:50vh;border-radius:5px;object-fit:cover}.tags.svelte-1qd3846{z-index:2;display:flex;gap:0.5em;flex-wrap:wrap;padding:0 1em;justify-content:center;align-items:center}.content.svelte-1qd3846{color:var(--light)}",
+      code: "h1.svelte-1svz8er{font-size:clamp(1.2em, 15vw, 4em);text-align:center;color:var(--light)}.avatar.svelte-1svz8er{object-fit:cover;width:80px;height:80px;border-radius:0.3em}.project.svelte-1svz8er{background-color:var(--dark);padding:1em;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:100vh;gap:1em;white-space:break-spaces}.author.svelte-1svz8er{color:var(--light);display:flex;gap:0.5em;justify-content:center;align-items:center}.cover.svelte-1svz8er{max-width:100%;height:50vh;border-radius:5px;object-fit:cover}.tags.svelte-1svz8er{z-index:2;display:flex;gap:0.5em;flex-wrap:wrap;padding:0 1em;justify-content:center;align-items:center}.content.svelte-1svz8er{color:var(--light);width:100%}",
       map: null
     };
     U5Bslugu5D2 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
@@ -23954,17 +23954,17 @@ var init_slug_svelte2 = __esm({
         $$bindings.post(post);
       $$result.css.add(css15);
       return `${$$result.head += `${$$result.title = `<title>${escape(post.slug)}</title>`, ""}`, ""}
-<div class="${"project svelte-1qd3846"}">${post ? `<h1 class="${"svelte-1qd3846"}">${escape(post.title)}</h1>
-		<div class="${"tags svelte-1qd3846"}">${each(post.tags, (tag) => {
+<div class="${"project svelte-1svz8er"}">${post ? `<h1 class="${"svelte-1svz8er"}">${escape(post.title)}</h1>
+		<div class="${"tags svelte-1svz8er"}">${each(post.tags, (tag) => {
         return `${validate_component(PostTag, "PostTag").$$render($$result, { tag }, {}, {})}`;
       })}</div>
-		<div class="${"author svelte-1qd3846"}"><img class="${"avatar svelte-1qd3846"}"${add_attribute("src", post.authors[0].picture.url, 0)} alt="${""}">
+		<div class="${"author svelte-1svz8er"}"><img class="${"avatar svelte-1svz8er"}"${add_attribute("src", post.authors[0].picture.url, 0)} alt="${""}">
 
 			<div class="${"name-date"}"><p>${escape(post.authors[0].name)}</p>
 				<p>${escape(post.date)}</p></div></div>
-		<img class="${"cover svelte-1qd3846"}"${add_attribute("src", post.coverImage.url, 0)} alt="${""}">
+		<img class="${"cover svelte-1svz8er"}"${add_attribute("src", post.coverImage.url, 0)} alt="${""}">
 
-		${post.content ? `<div class="${"content svelte-1qd3846"}"><p><!-- HTML_TAG_START -->${marked(post.content)}<!-- HTML_TAG_END --></p></div>` : ``}` : ``}
+		${post.content ? `<div class="${"content svelte-1svz8er"}"><p><!-- HTML_TAG_START -->${marked(post.content)}<!-- HTML_TAG_END --></p></div>` : ``}` : ``}
 	${validate_component(Footer, "Footer").$$render($$result, {}, {}, {})}
 </div>`;
     });
@@ -23983,9 +23983,9 @@ var entry7, js7, css16;
 var init__7 = __esm({
   ".svelte-kit/output/server/nodes/6.js"() {
     init_slug_svelte2();
-    entry7 = "pages/posts/_slug_.svelte-b20ae5d9.js";
-    js7 = ["pages/posts/_slug_.svelte-b20ae5d9.js", "chunks/vendor-bc34623b.js", "chunks/PostTag-fd67d1e4.js", "chunks/filters-cc608ede.js", "chunks/singletons-d1fb5791.js"];
-    css16 = ["assets/pages/posts/_slug_.svelte-9145b84f.css", "assets/Footer.svelte_svelte_type_style_lang-756e8dbc.css", "assets/PostTag-6c62c255.css"];
+    entry7 = "pages/posts/_slug_.svelte-aedaac92.js";
+    js7 = ["pages/posts/_slug_.svelte-aedaac92.js", "chunks/vendor-bc34623b.js", "chunks/PostTag-fd67d1e4.js", "chunks/filters-cc608ede.js", "chunks/singletons-d1fb5791.js"];
+    css16 = ["assets/pages/posts/_slug_.svelte-60dff162.css", "assets/PostTag-6c62c255.css"];
   }
 });
 
@@ -26217,7 +26217,7 @@ var manifest = {
   assets: /* @__PURE__ */ new Set(["favicon.png", "pictures/alex.jpg", "pictures/avatar.jpg", "pictures/emil.png", "pictures/icons/bootstrap-plain.svg", "pictures/icons/cplusplus-plain.svg", "pictures/icons/css3-plain.svg", "pictures/icons/firebase-plain.svg", "pictures/icons/git-plain.svg", "pictures/icons/github-original.svg", "pictures/icons/html5-plain.svg", "pictures/icons/intellij-plain.svg", "pictures/icons/java-plain.svg", "pictures/icons/javascript-plain.svg", "pictures/icons/mysql-plain.svg", "pictures/icons/nodejs-plain.svg", "pictures/icons/npm-original-wordmark.svg", "pictures/icons/perl-plain.svg", "pictures/icons/postgresql-plain.svg", "pictures/icons/python-plain.svg", "pictures/icons/svelte-plain.svg", "pictures/icons/typescript-plain.svg", "pictures/icons/vscode-plain.svg", "pictures/me.jpg"]),
   mimeTypes: { ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml" },
   _: {
-    entry: { "file": "start-242851ba.js", "js": ["start-242851ba.js", "chunks/vendor-bc34623b.js", "chunks/singletons-d1fb5791.js"], "css": [] },
+    entry: { "file": "start-162a8162.js", "js": ["start-162a8162.js", "chunks/vendor-bc34623b.js", "chunks/singletons-d1fb5791.js"], "css": [] },
     nodes: [
       () => Promise.resolve().then(() => (init__(), __exports)),
       () => Promise.resolve().then(() => (init__2(), __exports2)),
