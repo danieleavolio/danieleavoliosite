@@ -18,7 +18,7 @@
 				<div class="text">
 					<p class="name">Daniele Avolio</p>
 					<p class="descrizione">
-						Studente di Informatica preso l'Università della Calabria. Sviluppatore <span
+						Studente di Informatica presso l'Università della Calabria. Sviluppatore <span
 							class="evidenzia">FrontEnd</span
 						>
 						specializzato nell'utilizzo del framework
@@ -27,14 +27,14 @@
 				</div>
 				<div class="socials">
 					<!-- svelte-ignore a11y-invalid-attribute -->
-					<a class=" link" href="#">Linkedin</a>
+					<a class=" link" href="https://www.linkedin.com/in/danieleavolio/">Linkedin</a>
 					<!-- svelte-ignore a11y-invalid-attribute -->
-					<a class=" link" href="#">Github</a>
+					<a class=" link" href="https://github.com/danieleavolio">Github</a>
 					<!-- svelte-ignore a11y-invalid-attribute -->
-					<a class=" link" href="#">Twitter</a>
+					<a class=" link" href="https://twitter.com/avolio_daniele">Twitter</a>
 				</div>
 				<div class="buttons">
-					<a class="button-link" href="#"
+					<a class="button-link" href="https://drive.google.com/file/d/1g0BVkOf7vdwjki8_98OVv6eFKiNzaTK6/view?usp=sharing"
 						>Visualizza CV <span class="click-after"
 							><span class="material-icons cv">file_presents</span></span
 						></a
