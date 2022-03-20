@@ -90,7 +90,7 @@ import Seo from '$lib/components/SEO.svelte';
 		max-width: 100%;
 		height: 50vh;
 		border-radius: 5px;
-		object-fit: cover;
+		object-fit: contain;
 	}
 
 	.tags {
