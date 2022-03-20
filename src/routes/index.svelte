@@ -59,6 +59,7 @@
 	import PostsList from '$lib/components/PostsList.svelte';
 	import ProfileCard from '$lib/components/ProfileCard.svelte';
 	import ProjectList from '$lib/components/ProjectList.svelte';
+	import Seo from '$lib/components/SEO.svelte';
 
 	export let projects;
 	export let posts;
@@ -66,9 +67,10 @@
 	let showEverything = false;
 </script>
 
-<svelte:head>
-	<title>Daniele Avolio Developer</title>
-</svelte:head>
+<Seo
+	title={'Daniele Avolio - Web Developer'}
+	metadescription={'Sono Daniele Avolio, sviluppatore specializzato nella programmazione lato Front-End, utilizzando le più aggiornate tecnologie e creando web application performanti.'}
+/>
 
 <section class="dark index">
 	<ProfileCard />
