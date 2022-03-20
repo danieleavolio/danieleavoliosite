@@ -5550,6 +5550,13 @@ var init_index_e8b4228d = __esm({
   }
 });
 
+// .svelte-kit/output/server/chunks/hooks-1c45ba0b.js
+var hooks_1c45ba0b_exports = {};
+var init_hooks_1c45ba0b = __esm({
+  ".svelte-kit/output/server/chunks/hooks-1c45ba0b.js"() {
+  }
+});
+
 // .svelte-kit/output/server/entries/pages/__layout.svelte.js
 var layout_svelte_exports = {};
 __export(layout_svelte_exports, {
@@ -21496,8 +21503,8 @@ var entry3, js3, css5;
 var init__3 = __esm({
   ".svelte-kit/output/server/nodes/2.js"() {
     init_index_svelte();
-    entry3 = "pages/index.svelte-6374d862.js";
-    js3 = ["pages/index.svelte-6374d862.js", "chunks/vendor-bc34623b.js", "chunks/PostsList-73fc94da.js", "chunks/filters-cc608ede.js", "chunks/singletons-d1fb5791.js", "chunks/PostTag-fd67d1e4.js", "chunks/ProjectList-d56948d6.js", "chunks/ProjectTag-8c565096.js"];
+    entry3 = "pages/index.svelte-57fc2231.js";
+    js3 = ["pages/index.svelte-57fc2231.js", "chunks/vendor-bc34623b.js", "chunks/PostsList-73fc94da.js", "chunks/filters-cc608ede.js", "chunks/singletons-d1fb5791.js", "chunks/PostTag-fd67d1e4.js", "chunks/ProjectList-d56948d6.js", "chunks/ProjectTag-8c565096.js"];
     css5 = ["assets/pages/index.svelte-80c65fa0.css", "assets/PostsList-a7f30869.css", "assets/PostTag-6c62c255.css", "assets/ProjectList-039c1d26.css", "assets/ProjectTag-69152cec.css"];
   }
 });
@@ -24369,7 +24376,11 @@ async function render_endpoint(event, mod) {
     handler = mod.get;
   }
   if (!handler) {
-    return;
+    return event.request.headers.get("x-sveltekit-load") ? new Response(void 0, {
+      status: 204
+    }) : new Response("Method not allowed", {
+      status: 405
+    });
   }
   const response = await handler(event);
   const preface = `Invalid response from route ${event.url.pathname}`;
@@ -24377,7 +24388,7 @@ async function render_endpoint(event, mod) {
     return error(`${preface}: expected an object, got ${typeof response}`);
   }
   if (response.fallthrough) {
-    return;
+    throw new Error("fallthrough is no longer supported. Use matchers instead: https://kit.svelte.dev/docs/routing#advanced-routing-matching");
   }
   const { status = 200, body = {} } = response;
   const headers = response.headers instanceof Headers ? new Headers(response.headers) : to_headers(response.headers);
@@ -24983,9 +24994,8 @@ async function render_response({
   $session,
   page_config,
   status,
-  error: error2,
-  url,
-  params,
+  error: error2 = null,
+  event,
   resolve_opts,
   stuff
 }) {
@@ -25011,9 +25021,9 @@ async function render_response({
   if (resolve_opts.ssr) {
     branch.forEach(({ node, props: props2, loaded, fetched, uses_credentials }) => {
       if (node.css)
-        node.css.forEach((url2) => stylesheets.add(url2));
+        node.css.forEach((url) => stylesheets.add(url));
       if (node.js)
-        node.js.forEach((url2) => modulepreloads.add(url2));
+        node.js.forEach((url) => modulepreloads.add(url));
       if (node.styles)
         Object.entries(node.styles).forEach(([k, v]) => styles.set(k, v));
       if (fetched && page_config.hydrate)
@@ -25033,11 +25043,12 @@ async function render_response({
         updated
       },
       page: {
-        url: state.prerender ? create_prerendering_url_proxy(url) : url,
-        params,
-        status,
         error: error2,
-        stuff
+        params: event.params,
+        routeId: event.routeId,
+        status,
+        stuff,
+        url: state.prerender ? create_prerendering_url_proxy(event.url) : event.url
       },
       components: branch.map(({ node }) => node.module.default)
     };
@@ -25094,7 +25105,8 @@ async function render_response({
 				nodes: [
 					${(branch || []).map(({ node }) => `import(${s2(options2.prefix + node.entry)})`).join(",\n						")}
 				],
-				params: ${devalue(params)}
+				params: ${devalue(event.params)},
+				routeId: ${s2(event.routeId)}
 			}` : "null"}
 		});
 	`;
@@ -25151,7 +25163,7 @@ ${rendered.css.code}`;
       }
       body += `
 		<script ${attributes.join(" ")}>${init_app}<\/script>`;
-      body += serialized_data.map(({ url: url2, body: body2, response }) => render_json_payload_script({ type: "data", url: url2, body: typeof body2 === "string" ? hash(body2) : void 0 }, response)).join("\n	");
+      body += serialized_data.map(({ url, body: body2, response }) => render_json_payload_script({ type: "data", url, body: typeof body2 === "string" ? hash(body2) : void 0 }, response)).join("\n	");
       if (shadow_props) {
         body += render_json_payload_script({ type: "props" }, shadow_props);
       }
@@ -25175,7 +25187,7 @@ ${rendered.css.code}`;
       head = http_equiv.join("\n") + head;
     }
   }
-  const segments = url.pathname.slice(options2.paths.base.length).split("/").slice(2);
+  const segments = event.url.pathname.slice(options2.paths.base.length).split("/").slice(2);
   const assets2 = options2.paths.assets || (segments.length > 0 ? segments.map(() => "..").join("/") : ".");
   const html = await resolve_opts.transformPage({
     html: options2.template({ head, body, assets: assets2, nonce: csp.nonce })
@@ -25308,8 +25320,6 @@ async function load_node({
   options: options2,
   state,
   route,
-  url,
-  params,
   node,
   $session,
   stuff,
@@ -25324,8 +25334,6 @@ async function load_node({
   let set_cookie_headers = [];
   let loaded;
   const shadow = is_leaf ? await load_shadow_data(route, event, options2, !!state.prerender) : {};
-  if (shadow.fallthrough)
-    return;
   if (shadow.cookies) {
     set_cookie_headers.push(...shadow.cookies);
   }
@@ -25341,9 +25349,10 @@ async function load_node({
     };
   } else if (module2.load) {
     const load_input = {
-      url: state.prerender ? create_prerendering_url_proxy(url) : url,
-      params,
+      url: state.prerender ? create_prerendering_url_proxy(event.url) : event.url,
+      params: event.params,
       props: shadow.body || {},
+      routeId: event.routeId,
       get session() {
         uses_credentials = true;
         return $session;
@@ -25383,12 +25392,12 @@ async function load_node({
         if (is_asset || is_asset_html) {
           const file = is_asset ? filename : filename_html;
           if (options2.read) {
-            const type = is_asset ? options2.manifest._.mime[filename.slice(filename.lastIndexOf("."))] : "text/html";
+            const type = is_asset ? options2.manifest.mimeTypes[filename.slice(filename.lastIndexOf("."))] : "text/html";
             response = new Response(options2.read(file), {
               headers: type ? { "content-type": type } : {}
             });
           } else {
-            response = await fetch(`${url.origin}/${file}`, opts);
+            response = await fetch(`${event.url.origin}/${file}`, opts);
           }
         } else if (is_root_relative(resolved)) {
           if (opts.credentials !== "omit") {
@@ -25406,8 +25415,9 @@ async function load_node({
             throw new Error("Request body must be a string");
           }
           response = await respond(new Request(new URL(requested, event.url).href, opts), options2, {
-            fetched: requested,
-            initiator: route
+            getClientAddress: state.getClientAddress,
+            initiator: route,
+            prerender: state.prerender
           });
           if (state.prerender) {
             dependency = { response, body: null };
@@ -25498,15 +25508,15 @@ async function load_node({
     if (!loaded) {
       throw new Error(`load function must return a value${options2.dev ? ` (${node.entry})` : ""}`);
     }
+    if (loaded.fallthrough) {
+      throw new Error("fallthrough is no longer supported. Use matchers instead: https://kit.svelte.dev/docs/routing#advanced-routing-matching");
+    }
   } else if (shadow.body) {
     loaded = {
       props: shadow.body
     };
   } else {
     loaded = {};
-  }
-  if (loaded.fallthrough && !is_error) {
-    return;
   }
   if (shadow.body && state.prerender) {
     const pathname = `${event.url.pathname.replace(/\/$/, "")}/__data.json`;
@@ -25550,8 +25560,9 @@ async function load_shadow_data(route, event, options2, prerender) {
     };
     if (!is_get) {
       const result = await handler(event);
-      if (result.fallthrough)
-        return result;
+      if (result.fallthrough) {
+        throw new Error("fallthrough is no longer supported. Use matchers instead: https://kit.svelte.dev/docs/routing#advanced-routing-matching");
+      }
       const { status, headers, body } = validate_shadow_output(result);
       data.status = status;
       add_cookies(data.cookies, headers);
@@ -25564,8 +25575,9 @@ async function load_shadow_data(route, event, options2, prerender) {
     const get = method === "head" && mod.head || mod.get;
     if (get) {
       const result = await get(event);
-      if (result.fallthrough)
-        return result;
+      if (result.fallthrough) {
+        throw new Error("fallthrough is no longer supported. Use matchers instead: https://kit.svelte.dev/docs/routing#advanced-routing-matching");
+      }
       const { status, headers, body } = validate_shadow_output(result);
       add_cookies(data.cookies, headers);
       data.status = status;
@@ -25626,14 +25638,11 @@ async function respond_with_error({
   try {
     const default_layout = await options2.manifest._.nodes[0]();
     const default_error = await options2.manifest._.nodes[1]();
-    const params = {};
     const layout_loaded = await load_node({
       event,
       options: options2,
       state,
       route: null,
-      url: event.url,
-      params,
       node: default_layout,
       $session,
       stuff: {},
@@ -25645,8 +25654,6 @@ async function respond_with_error({
       options: options2,
       state,
       route: null,
-      url: event.url,
-      params,
       node: default_error,
       $session,
       stuff: layout_loaded ? layout_loaded.stuff : {},
@@ -25667,8 +25674,7 @@ async function respond_with_error({
       status,
       error: error2,
       branch: [layout_loaded, error_loaded],
-      url: event.url,
-      params,
+      event,
       resolve_opts
     });
   } catch (err) {
@@ -25690,7 +25696,8 @@ async function respond$1(opts) {
         router: true
       },
       status: 200,
-      url: event.url,
+      error: null,
+      event,
       stuff: {}
     }));
   }
@@ -25711,14 +25718,17 @@ async function respond$1(opts) {
   }
   const leaf = nodes[nodes.length - 1].module;
   let page_config = get_page_config(leaf, options2);
-  if (!leaf.prerender && state.prerender && !state.prerender.all) {
-    return new Response(void 0, {
-      status: 204
-    });
+  if (state.prerender) {
+    const should_prerender = leaf.prerender ?? state.prerender.default;
+    if (!should_prerender) {
+      return new Response(void 0, {
+        status: 204
+      });
+    }
   }
   let branch = [];
   let status = 200;
-  let error2;
+  let error2 = null;
   let set_cookie_headers = [];
   let stuff = {};
   ssr:
@@ -25729,14 +25739,11 @@ async function respond$1(opts) {
         if (node) {
           try {
             loaded = await load_node(__spreadProps(__spreadValues({}, opts), {
-              url: event.url,
               node,
               stuff,
               is_error: false,
               is_leaf: i2 === nodes.length - 1
             }));
-            if (!loaded)
-              return;
             set_cookie_headers = set_cookie_headers.concat(loaded.set_cookie_headers);
             if (loaded.loaded.redirect) {
               return with_cookies(new Response(void 0, {
@@ -25769,7 +25776,6 @@ async function respond$1(opts) {
                 }
                 try {
                   const error_loaded = await load_node(__spreadProps(__spreadValues({}, opts), {
-                    url: event.url,
                     node: error_node,
                     stuff: node_loaded.stuff,
                     is_error: true,
@@ -25810,7 +25816,7 @@ async function respond$1(opts) {
   try {
     return with_cookies(await render_response(__spreadProps(__spreadValues({}, opts), {
       stuff,
-      url: event.url,
+      event,
       page_config,
       status,
       error: error2,
@@ -25858,23 +25864,14 @@ async function render_page(event, route, options2, state, resolve_opts) {
     }
   }
   const $session = await options2.hooks.getSession(event);
-  const response = await respond$1({
+  return respond$1({
     event,
     options: options2,
     state,
     $session,
     resolve_opts,
-    route,
-    params: event.params
+    route
   });
-  if (response) {
-    return response;
-  }
-  if (state.fetched) {
-    return new Response(`Bad request in load function: failed to fetch ${state.fetched}`, {
-      status: 500
-    });
-  }
 }
 function negotiate(accept, types2) {
   const parts = accept.split(",").map((str, i2) => {
@@ -25908,13 +25905,30 @@ function negotiate(accept, types2) {
   }
   return accepted;
 }
+function exec(match, names, types2, matchers) {
+  const params = {};
+  for (let i2 = 0; i2 < names.length; i2 += 1) {
+    const name = names[i2];
+    const type = types2[i2];
+    const value = match[i2 + 1] || "";
+    if (type) {
+      const matcher = matchers[type];
+      if (!matcher)
+        throw new Error(`Missing "${type}" param matcher`);
+      if (!matcher(value))
+        return;
+    }
+    params[name] = value;
+  }
+  return params;
+}
 var DATA_SUFFIX = "/__data.json";
 var default_transform = ({ html }) => html;
-async function respond(request, options2, state = {}) {
-  var _a4;
-  const url = new URL(request.url);
+async function respond(request, options2, state) {
+  var _a4, _b, _c;
+  let url = new URL(request.url);
   const normalized = normalize_path(url.pathname, options2.trailing_slash);
-  if (normalized !== url.pathname) {
+  if (normalized !== url.pathname && !((_a4 = state.prerender) == null ? void 0 : _a4.fallback)) {
     return new Response(void 0, {
       status: 301,
       headers: {
@@ -25923,7 +25937,7 @@ async function respond(request, options2, state = {}) {
     });
   }
   const { parameter, allowed } = options2.method_override;
-  const method_override = (_a4 = url.searchParams.get(parameter)) == null ? void 0 : _a4.toUpperCase();
+  const method_override = (_b = url.searchParams.get(parameter)) == null ? void 0 : _b.toUpperCase();
   if (method_override) {
     if (request.method === "POST") {
       if (allowed.includes(method_override)) {
@@ -25945,12 +25959,51 @@ async function respond(request, options2, state = {}) {
       throw new Error(`${parameter}=${method_override} is only allowed with POST requests`);
     }
   }
+  let decoded = decodeURI(url.pathname);
+  let route = null;
+  let params = {};
+  if (options2.paths.base && !((_c = state.prerender) == null ? void 0 : _c.fallback)) {
+    if (!decoded.startsWith(options2.paths.base)) {
+      return new Response(void 0, { status: 404 });
+    }
+    decoded = decoded.slice(options2.paths.base.length) || "/";
+  }
+  const is_data_request = decoded.endsWith(DATA_SUFFIX);
+  if (is_data_request) {
+    decoded = decoded.slice(0, -DATA_SUFFIX.length) || "/";
+    const normalized2 = normalize_path(url.pathname.slice(0, -DATA_SUFFIX.length), options2.trailing_slash);
+    url = new URL(url.origin + normalized2 + url.search);
+  }
+  if (!state.prerender || !state.prerender.fallback) {
+    const matchers = await options2.manifest._.matchers();
+    for (const candidate of options2.manifest._.routes) {
+      const match = candidate.pattern.exec(decoded);
+      if (!match)
+        continue;
+      const matched = exec(match, candidate.names, candidate.types, matchers);
+      if (matched) {
+        route = candidate;
+        params = decode_params(matched);
+        break;
+      }
+    }
+  }
   const event = {
-    request,
-    url,
-    params: {},
+    get clientAddress() {
+      if (!state.getClientAddress) {
+        throw new Error(`${"@sveltejs/adapter-vercel"} does not specify getClientAddress. Please raise an issue`);
+      }
+      Object.defineProperty(event, "clientAddress", {
+        value: state.getClientAddress()
+      });
+      return event.clientAddress;
+    },
     locals: {},
-    platform: state.platform
+    params,
+    platform: state.platform,
+    request,
+    routeId: route && route.id,
+    url
   };
   const removed = (property, replacement, suffix = "") => ({
     get: () => {
@@ -25988,60 +26041,35 @@ async function respond(request, options2, state = {}) {
         }
         if (state.prerender && state.prerender.fallback) {
           return await render_response({
-            url: event2.url,
-            params: event2.params,
+            event: event2,
             options: options2,
             state,
             $session: await options2.hooks.getSession(event2),
             page_config: { router: true, hydrate: true },
             stuff: {},
             status: 200,
+            error: null,
             branch: [],
             resolve_opts: __spreadProps(__spreadValues({}, resolve_opts), {
               ssr: false
             })
           });
         }
-        let decoded = decodeURI(event2.url.pathname);
-        if (options2.paths.base) {
-          if (!decoded.startsWith(options2.paths.base)) {
-            return new Response(void 0, { status: 404 });
-          }
-          decoded = decoded.slice(options2.paths.base.length) || "/";
-        }
-        const is_data_request = decoded.endsWith(DATA_SUFFIX);
-        if (is_data_request) {
-          decoded = decoded.slice(0, -DATA_SUFFIX.length) || "/";
-          const normalized2 = normalize_path(url.pathname.slice(0, -DATA_SUFFIX.length), options2.trailing_slash);
-          event2.url = new URL(event2.url.origin + normalized2 + event2.url.search);
-        }
-        for (const route of options2.manifest._.routes) {
-          const match = route.pattern.exec(decoded);
-          if (!match)
-            continue;
-          event2.params = route.params ? decode_params(route.params(match)) : {};
+        if (route) {
           let response2;
           if (is_data_request && route.type === "page" && route.shadow) {
             response2 = await render_endpoint(event2, await route.shadow());
-            if (request.headers.get("x-sveltekit-load") === "true") {
-              if (response2) {
-                if (response2.status >= 300 && response2.status < 400) {
-                  const location = response2.headers.get("location");
-                  if (location) {
-                    const headers = new Headers(response2.headers);
-                    headers.set("x-sveltekit-location", location);
-                    response2 = new Response(void 0, {
-                      status: 204,
-                      headers
-                    });
-                  }
+            if (request.headers.has("x-sveltekit-load")) {
+              if (response2.status >= 300 && response2.status < 400) {
+                const location = response2.headers.get("location");
+                if (location) {
+                  const headers = new Headers(response2.headers);
+                  headers.set("x-sveltekit-location", location);
+                  response2 = new Response(void 0, {
+                    status: 204,
+                    headers
+                  });
                 }
-              } else {
-                response2 = new Response("{}", {
-                  headers: {
-                    "content-type": "application/json"
-                  }
-                });
               }
             }
           } else {
@@ -26088,6 +26116,9 @@ async function respond(request, options2, state = {}) {
             resolve_opts
           });
         }
+        if (state.prerender) {
+          return new Response("not found", { status: 404 });
+        }
         return await fetch(request);
       },
       get request() {
@@ -26126,21 +26157,11 @@ function set_paths(paths) {
   base = paths.base;
   assets = paths.assets || base;
 }
-var user_hooks = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null
-}, Symbol.toStringTag, { value: "Module" }));
 var template = ({ head, body, assets: assets2, nonce }) => '<!DOCTYPE html>\n<html lang="it">\n\n<head>\n    <meta charset="utf-8" />\n    <meta name="description" content="" />\n    <link rel="icon" href="' + assets2 + '/favicon.png" />\n    <meta name="viewport" content="width=device-width, initial-scale=1" /> ' + head + "\n</head>\n\n<body>\n    <div>" + body + "</div>\n</body>\n\n</html>";
 var read = null;
 set_paths({ "base": "", "assets": "" });
-var get_hooks = (hooks) => ({
-  getSession: hooks.getSession || (() => ({})),
-  handle: hooks.handle || (({ event, resolve: resolve2 }) => resolve2(event)),
-  handleError: hooks.handleError || (({ error: error2 }) => console.error(error2.stack)),
-  externalFetch: hooks.externalFetch || fetch
-});
 var Server = class {
   constructor(manifest2) {
-    const hooks = get_hooks(user_hooks);
     this.options = {
       amp: false,
       csp: { "mode": "auto", "directives": { "upgrade-insecure-requests": false, "block-all-mixed-content": false } },
@@ -26148,7 +26169,7 @@ var Server = class {
       floc: false,
       get_stack: (error2) => String(error2),
       handle_error: (error2, event) => {
-        hooks.handleError({
+        this.options.hooks.handleError({
           error: error2,
           event,
           get request() {
@@ -26157,7 +26178,7 @@ var Server = class {
         });
         error2.stack = this.options.get_stack(error2);
       },
-      hooks,
+      hooks: null,
       hydrate: true,
       manifest: manifest2,
       method_override: { "parameter": "_method", "allowed": [] },
@@ -26173,9 +26194,18 @@ var Server = class {
       trailing_slash: "never"
     };
   }
-  respond(request, options2 = {}) {
+  async respond(request, options2 = {}) {
     if (!(request instanceof Request)) {
-      throw new Error("The first argument to app.render must be a Request object. See https://github.com/sveltejs/kit/pull/3384 for details");
+      throw new Error("The first argument to server.respond must be a Request object. See https://github.com/sveltejs/kit/pull/3384 for details");
+    }
+    if (!this.options.hooks) {
+      const module2 = await Promise.resolve().then(() => (init_hooks_1c45ba0b(), hooks_1c45ba0b_exports));
+      this.options.hooks = {
+        getSession: module2.getSession || (() => ({})),
+        handle: module2.handle || (({ event, resolve: resolve2 }) => resolve2(event)),
+        handleError: module2.handleError || (({ error: error2 }) => console.error(error2.stack)),
+        externalFetch: module2.externalFetch || fetch
+      };
     }
     return respond(request, this.options, options2);
   }
@@ -26185,9 +26215,9 @@ var Server = class {
 var manifest = {
   appDir: "_app",
   assets: /* @__PURE__ */ new Set(["favicon.png", "pictures/alex.jpg", "pictures/avatar.jpg", "pictures/emil.png", "pictures/icons/bootstrap-plain.svg", "pictures/icons/cplusplus-plain.svg", "pictures/icons/css3-plain.svg", "pictures/icons/firebase-plain.svg", "pictures/icons/git-plain.svg", "pictures/icons/github-original.svg", "pictures/icons/html5-plain.svg", "pictures/icons/intellij-plain.svg", "pictures/icons/java-plain.svg", "pictures/icons/javascript-plain.svg", "pictures/icons/mysql-plain.svg", "pictures/icons/nodejs-plain.svg", "pictures/icons/npm-original-wordmark.svg", "pictures/icons/perl-plain.svg", "pictures/icons/postgresql-plain.svg", "pictures/icons/python-plain.svg", "pictures/icons/svelte-plain.svg", "pictures/icons/typescript-plain.svg", "pictures/icons/vscode-plain.svg", "pictures/me.jpg"]),
+  mimeTypes: { ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml" },
   _: {
-    mime: { ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml" },
-    entry: { "file": "start-e714c652.js", "js": ["start-e714c652.js", "chunks/vendor-bc34623b.js", "chunks/singletons-d1fb5791.js"], "css": [] },
+    entry: { "file": "start-242851ba.js", "js": ["start-242851ba.js", "chunks/vendor-bc34623b.js", "chunks/singletons-d1fb5791.js"], "css": [] },
     nodes: [
       () => Promise.resolve().then(() => (init__(), __exports)),
       () => Promise.resolve().then(() => (init__2(), __exports2)),
@@ -26201,8 +26231,10 @@ var manifest = {
     routes: [
       {
         type: "page",
+        id: "",
         pattern: /^\/$/,
-        params: null,
+        names: [],
+        types: [],
         path: "/",
         shadow: null,
         a: [0, 2],
@@ -26210,8 +26242,10 @@ var manifest = {
       },
       {
         type: "page",
+        id: "progetti/[slug]",
         pattern: /^\/progetti\/([^/]+?)\/?$/,
-        params: (m2) => ({ slug: m2[1] }),
+        names: ["slug"],
+        types: [null],
         path: null,
         shadow: null,
         a: [0, 3],
@@ -26219,8 +26253,10 @@ var manifest = {
       },
       {
         type: "page",
+        id: "progetti",
         pattern: /^\/progetti\/?$/,
-        params: null,
+        names: [],
+        types: [],
         path: "/progetti",
         shadow: null,
         a: [0, 4],
@@ -26228,8 +26264,10 @@ var manifest = {
       },
       {
         type: "page",
+        id: "about",
         pattern: /^\/about\/?$/,
-        params: null,
+        names: [],
+        types: [],
         path: "/about",
         shadow: null,
         a: [0, 5],
@@ -26237,8 +26275,10 @@ var manifest = {
       },
       {
         type: "page",
+        id: "posts/[slug]",
         pattern: /^\/posts\/([^/]+?)\/?$/,
-        params: (m2) => ({ slug: m2[1] }),
+        names: ["slug"],
+        types: [null],
         path: null,
         shadow: null,
         a: [0, 6],
@@ -26246,14 +26286,19 @@ var manifest = {
       },
       {
         type: "page",
+        id: "posts",
         pattern: /^\/posts\/?$/,
-        params: null,
+        names: [],
+        types: [],
         path: "/posts",
         shadow: null,
         a: [0, 7],
         b: [1]
       }
-    ]
+    ],
+    matchers: async () => {
+      return {};
+    }
   }
 };
 
