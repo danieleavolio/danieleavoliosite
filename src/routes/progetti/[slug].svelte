@@ -103,6 +103,5 @@ import Seo from '$lib/components/SEO.svelte';
 		align-items: center;
 	}
 
-	.content {
-	}
+	
 </style>
