@@ -26,7 +26,7 @@
 					Informatica, sviluppando come Tesi un sito per collegare gli studenti di tutto l'Ateneo.
 					E' possibile visionare la pagina del progetto.
 				</p>
-				<a href="/progetti" class="dark-button project-link">Progetto</a>
+				<a href="/progetti/link4students" class="dark-button project-link">Progetto</a>
 			</div>
 		</div>
 	</div>

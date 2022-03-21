@@ -83,7 +83,7 @@
 
 <style>
 	h1 {
-		font-size: clamp(1.2em, 15vw, 4em);
+		font-size: clamp(1.2em, 10vw, 4em);
 		text-align: center;
 		color: var(--light);
 	}

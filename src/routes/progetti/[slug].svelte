@@ -9,9 +9,11 @@
 		});
 
 		const query = gql`
-		query project {
+		query MyProject {
 			project(where: {slug: "${slug}"}) {
-				content
+				content{
+          			html
+        		}
 				description
 				slug
 				tags
@@ -19,26 +21,25 @@
 				image{
 					url
 				}
+				createdAt
 			}
 		}
-
 		`;
 
-		const { project } = await graphcms.request(query);
+		const project  = await graphcms.request(query);
 
 		return {
-			props: { project }
+			props: { project: project.data }
 		};
 	}
 </script>
 
 <script>
 	import { fly } from 'svelte/transition';
-	import { marked } from 'marked';
-	export let project;
-
 	import ProjectTag from '$lib/components/ProjectTag.svelte';
-import Seo from '$lib/components/SEO.svelte';
+	import Seo from '$lib/components/SEO.svelte';
+
+	export let project;
 </script>
 
 <Seo title={project.name} metadescription={project.description} />
@@ -55,18 +56,22 @@ import Seo from '$lib/components/SEO.svelte';
 				<ProjectTag {tag} />
 			{/each}
 		</div>
+		<div class="date">
+			<p>Pubblicato il {new Date(project.createdAt).toLocaleDateString(	)}</p>
+		</div>
 
 		{#if project.content}
 			<div class="content">
-				<p>{@html marked(project.content)}</p>
+				<p>{@html project.content.html}</p>
 			</div>
 		{/if}
+		
 	{/if}
 </div>
 
 <style>
 	h1 {
-		font-size: clamp(1.2em, 15vw, 4em);
+		font-size: clamp(1.2em, 10vw, 4em);
 		text-align: center;
 		color: var(--dark);
 	}
@@ -85,6 +90,7 @@ import Seo from '$lib/components/SEO.svelte';
 
 	.description {
 		text-align: center;
+		width: 50%;
 	}
 	.cover {
 		max-width: 100%;
@@ -103,5 +109,7 @@ import Seo from '$lib/components/SEO.svelte';
 		align-items: center;
 	}
 
-	
+	.content {
+		width: 70%;
+	}
 </style>
