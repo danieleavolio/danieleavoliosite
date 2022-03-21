@@ -17,7 +17,10 @@
 							url
 						}
 					}
-					content
+					content{
+						html
+					}
+					introduction
 					coverImage {
 						url
 					}
@@ -39,7 +42,6 @@
 
 <script>
 	import { fly } from 'svelte/transition';
-	import { marked } from 'marked';
 	export let post;
 
 	import PostTag from '$lib/components/PostTag.svelte';
@@ -47,13 +49,14 @@
 	import Seo from '$lib/components/SEO.svelte';
 </script>
 
-<Seo title={post.title} metadescription={post.content} />
+<Seo title={post.title} metadescription={post.introduction} />
 <svelte:head>
-	<meta property="og:type" content="article">
+	<meta property="og:type" content="article" />
 </svelte:head>
 <div in:fly={{ y: -100, duration: 1000, delay: 500 }} class="project">
 	{#if post}
 		<h1>{post.title}</h1>
+		<h3>{post.introduction}</h3>
 		<div class="tags">
 			{#each post.tags as tag}
 				<PostTag {tag} />
@@ -71,7 +74,7 @@
 
 		{#if post.content}
 			<div class="content">
-				<p>{@html marked(post.content)}</p>
+				<p>{@html post.content.html}</p>
 			</div>
 		{/if}
 	{/if}
@@ -83,6 +86,13 @@
 		font-size: clamp(1.2em, 15vw, 4em);
 		text-align: center;
 		color: var(--light);
+	}
+	h3 {
+		font-size: clamp(1em, 2vw, 1.5em);
+		text-align: center;
+		color: var(--light);
+		font-style: italic;
+		font-weight: 500;
 	}
 
 	.avatar {
@@ -112,6 +122,14 @@
 		align-items: center;
 	}
 
+	.name-date {
+		color: var(--light);
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+
 	.cover {
 		max-width: 100%;
 		height: 50vh;
@@ -131,8 +149,6 @@
 
 	.content {
 		color: var(--light);
+		width: 70%;
 	}
-
-	
-	
 </style>

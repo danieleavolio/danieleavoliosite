@@ -109,6 +109,8 @@ path {
     display: flex;
     margin: auto;
     border-radius: 0.2em;
+    object-fit: contain;
+    height: fit-content;
 }
 
 ::-webkit-scrollbar {

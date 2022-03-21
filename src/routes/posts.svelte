@@ -11,17 +11,10 @@
 			query Posts {
 				posts(orderBy: publishedAt_DESC) {
 					tags
-					content
 					date
 					id
 					slug
 					title
-					authors {
-						name
-						picture {
-							url
-						}
-					}
 					coverImage {
 						url
 					}
