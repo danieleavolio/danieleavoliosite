@@ -18,7 +18,6 @@
         font-size: 3em;
     }
 	.about {
-		width: 100vw;
 		min-height: 100vh;
 		background-color: var(--light);
 		display: flex;

@@ -19,10 +19,10 @@
 		margin: 1em;
 	}
 	.lista-progetti {
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
-		place-items: center;
-		gap: 5em 1em;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 3em 1em;
 		flex-wrap: wrap;
 		margin: 1em;
 	}
