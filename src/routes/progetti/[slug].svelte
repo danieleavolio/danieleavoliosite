@@ -26,10 +26,10 @@
 		}
 		`;
 
-		const project  = await graphcms.request(query);
+		const {project}  = await graphcms.request(query);
 
 		return {
-			props: { project: project.data }
+			props: { project }
 		};
 	}
 </script>
