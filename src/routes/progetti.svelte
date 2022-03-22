@@ -37,6 +37,7 @@
 	import { afterNavigate } from '$app/navigation';
 	import { projectFilterStore } from '$lib/stores/filters';
 import RemoveFilter from '$lib/components/RemoveFilter.svelte';
+import Seo from '$lib/components/SEO.svelte';
 	export let projects;
 	let progettiFiltrati = [];
 
@@ -64,9 +65,9 @@ import RemoveFilter from '$lib/components/RemoveFilter.svelte';
 
 	$: progettiFiltrati = filtaProgetti(tagScelto);
 </script>
-<svelte:head>
-	<title>Progetti</title>
-</svelte:head>
+
+
+<Seo title={"Progetti del sito"} metadescription={"Tutti i progetti realizzati tramite i linguaggi di programmazione presenti nella lista tag come Java, Javascript, React, Svelte, ecc."}></Seo>
 
 <div class="container">
 	<h1 in:fly={{ y: -100, duration: 500 }}>Progetti</h1>

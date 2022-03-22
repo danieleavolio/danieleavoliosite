@@ -20,6 +20,7 @@
 				name
 				image{
 					url
+					fileName
 				}
 				createdAt
 			}
@@ -50,7 +51,7 @@
 	{#if project}
 		<h1>{project.name}</h1>
 		<p class="description">{project.description}</p>
-		<img class="cover" src={project.image[0].url} alt="" />
+		<img class="cover" src={project.image[0].url} alt="{project.image[0].fileName}" />
 		<div class="tags">
 			{#each project.tags as tag}
 				<ProjectTag {tag} />
@@ -90,7 +91,7 @@
 
 	.description {
 		text-align: center;
-		width: 50%;
+		width: 90%;
 	}
 	.cover {
 		max-width: 100%;
@@ -110,6 +111,6 @@
 	}
 
 	.content {
-		width: 70%;
+		width: 90%;
 	}
 </style>

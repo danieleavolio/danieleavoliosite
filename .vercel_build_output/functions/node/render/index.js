@@ -93,7 +93,7 @@ async function toFormData(Body2, ct) {
   if (!m2) {
     throw new TypeError("no or bad content-type header, no multipart boundary");
   }
-  const parser2 = new MultipartParser(m2[1] || m2[2]);
+  const parser = new MultipartParser(m2[1] || m2[2]);
   let headerField;
   let headerValue;
   let entryValue;
@@ -117,9 +117,9 @@ async function toFormData(Body2, ct) {
   };
   const decoder = new TextDecoder("utf-8");
   decoder.decode();
-  parser2.onPartBegin = function() {
-    parser2.onPartData = onPartData;
-    parser2.onPartEnd = appendEntryToFormData;
+  parser.onPartBegin = function() {
+    parser.onPartData = onPartData;
+    parser.onPartEnd = appendEntryToFormData;
     headerField = "";
     headerValue = "";
     entryValue = "";
@@ -128,13 +128,13 @@ async function toFormData(Body2, ct) {
     filename = null;
     entryChunks.length = 0;
   };
-  parser2.onHeaderField = function(ui8a) {
+  parser.onHeaderField = function(ui8a) {
     headerField += decoder.decode(ui8a, { stream: true });
   };
-  parser2.onHeaderValue = function(ui8a) {
+  parser.onHeaderValue = function(ui8a) {
     headerValue += decoder.decode(ui8a, { stream: true });
   };
-  parser2.onHeaderEnd = function() {
+  parser.onHeaderEnd = function() {
     headerValue += decoder.decode();
     headerField = headerField.toLowerCase();
     if (headerField === "content-disposition") {
@@ -144,8 +144,8 @@ async function toFormData(Body2, ct) {
       }
       filename = _fileName(headerValue);
       if (filename) {
-        parser2.onPartData = appendToFile;
-        parser2.onPartEnd = appendFileToFormData;
+        parser.onPartData = appendToFile;
+        parser.onPartEnd = appendFileToFormData;
       }
     } else if (headerField === "content-type") {
       contentType = headerValue;
@@ -154,9 +154,9 @@ async function toFormData(Body2, ct) {
     headerField = "";
   };
   for await (const chunk of Body2) {
-    parser2.write(chunk);
+    parser.write(chunk);
   }
-  parser2.end();
+  parser.end();
   return formData;
 }
 var import_node_worker_threads, s, S, f, F, LF, CR, SPACE, HYPHEN, COLON, A, Z, lower, noop, MultipartParser;
@@ -695,7 +695,7 @@ function parseReferrerPolicyFromHeader(headers) {
 async function fetch2(url, options_) {
   return new Promise((resolve2, reject) => {
     const request = new Request2(url, options_);
-    const { parsedURL, options: options2 } = getNodeRequestOptions(request);
+    const { parsedURL, options } = getNodeRequestOptions(request);
     if (!supportedSchemas.has(parsedURL.protocol)) {
       throw new TypeError(`node-fetch cannot load ${url}. URL scheme "${parsedURL.protocol.replace(/:$/, "")}" is not supported.`);
     }
@@ -727,7 +727,7 @@ async function fetch2(url, options_) {
       abort();
       finalize();
     };
-    const request_ = send(parsedURL, options2);
+    const request_ = send(parsedURL, options);
     if (signal) {
       signal.addEventListener("abort", abortAndFinalize);
     }
@@ -3839,9 +3839,9 @@ var init_install_fetch = __esm({
           }
           return type;
         }
-        function convertReaderOptions(options2, context) {
-          assertDictionary(options2, context);
-          const mode = options2 === null || options2 === void 0 ? void 0 : options2.mode;
+        function convertReaderOptions(options, context) {
+          assertDictionary(options, context);
+          const mode = options === null || options === void 0 ? void 0 : options.mode;
           return {
             mode: mode === void 0 ? void 0 : convertReadableStreamReaderMode(mode, `${context} has member 'mode' that`)
           };
@@ -3853,17 +3853,17 @@ var init_install_fetch = __esm({
           }
           return mode;
         }
-        function convertIteratorOptions(options2, context) {
-          assertDictionary(options2, context);
-          const preventCancel = options2 === null || options2 === void 0 ? void 0 : options2.preventCancel;
+        function convertIteratorOptions(options, context) {
+          assertDictionary(options, context);
+          const preventCancel = options === null || options === void 0 ? void 0 : options.preventCancel;
           return { preventCancel: Boolean(preventCancel) };
         }
-        function convertPipeOptions(options2, context) {
-          assertDictionary(options2, context);
-          const preventAbort = options2 === null || options2 === void 0 ? void 0 : options2.preventAbort;
-          const preventCancel = options2 === null || options2 === void 0 ? void 0 : options2.preventCancel;
-          const preventClose = options2 === null || options2 === void 0 ? void 0 : options2.preventClose;
-          const signal = options2 === null || options2 === void 0 ? void 0 : options2.signal;
+        function convertPipeOptions(options, context) {
+          assertDictionary(options, context);
+          const preventAbort = options === null || options === void 0 ? void 0 : options.preventAbort;
+          const preventCancel = options === null || options === void 0 ? void 0 : options.preventCancel;
+          const preventClose = options === null || options === void 0 ? void 0 : options.preventClose;
+          const signal = options === null || options === void 0 ? void 0 : options.signal;
           if (signal !== void 0) {
             assertAbortSignal(signal, `${context} has member 'signal' that`);
           }
@@ -3930,8 +3930,8 @@ var init_install_fetch = __esm({
             if (!IsReadableStream(this)) {
               throw streamBrandCheckException$1("getReader");
             }
-            const options2 = convertReaderOptions(rawOptions, "First parameter");
-            if (options2.mode === void 0) {
+            const options = convertReaderOptions(rawOptions, "First parameter");
+            if (options.mode === void 0) {
               return AcquireReadableStreamDefaultReader(this);
             }
             return AcquireReadableStreamBYOBReader(this);
@@ -3942,14 +3942,14 @@ var init_install_fetch = __esm({
             }
             assertRequiredArgument(rawTransform, 1, "pipeThrough");
             const transform = convertReadableWritablePair(rawTransform, "First parameter");
-            const options2 = convertPipeOptions(rawOptions, "Second parameter");
+            const options = convertPipeOptions(rawOptions, "Second parameter");
             if (IsReadableStreamLocked(this)) {
               throw new TypeError("ReadableStream.prototype.pipeThrough cannot be used on a locked ReadableStream");
             }
             if (IsWritableStreamLocked(transform.writable)) {
               throw new TypeError("ReadableStream.prototype.pipeThrough cannot be used on a locked WritableStream");
             }
-            const promise = ReadableStreamPipeTo(this, transform.writable, options2.preventClose, options2.preventAbort, options2.preventCancel, options2.signal);
+            const promise = ReadableStreamPipeTo(this, transform.writable, options.preventClose, options.preventAbort, options.preventCancel, options.signal);
             setPromiseIsHandledToTrue(promise);
             return transform.readable;
           }
@@ -3963,9 +3963,9 @@ var init_install_fetch = __esm({
             if (!IsWritableStream(destination)) {
               return promiseRejectedWith(new TypeError(`ReadableStream.prototype.pipeTo's first argument must be a WritableStream`));
             }
-            let options2;
+            let options;
             try {
-              options2 = convertPipeOptions(rawOptions, "Second parameter");
+              options = convertPipeOptions(rawOptions, "Second parameter");
             } catch (e2) {
               return promiseRejectedWith(e2);
             }
@@ -3975,7 +3975,7 @@ var init_install_fetch = __esm({
             if (IsWritableStreamLocked(destination)) {
               return promiseRejectedWith(new TypeError("ReadableStream.prototype.pipeTo cannot be used on a locked WritableStream"));
             }
-            return ReadableStreamPipeTo(this, destination, options2.preventClose, options2.preventAbort, options2.preventCancel, options2.signal);
+            return ReadableStreamPipeTo(this, destination, options.preventClose, options.preventAbort, options.preventCancel, options.signal);
           }
           tee() {
             if (!IsReadableStream(this)) {
@@ -3988,8 +3988,8 @@ var init_install_fetch = __esm({
             if (!IsReadableStream(this)) {
               throw streamBrandCheckException$1("values");
             }
-            const options2 = convertIteratorOptions(rawOptions, "First parameter");
-            return AcquireReadableStreamAsyncIterator(this, options2.preventCancel);
+            const options = convertIteratorOptions(rawOptions, "First parameter");
+            return AcquireReadableStreamAsyncIterator(this, options.preventCancel);
           }
         }
         Object.defineProperties(ReadableStream2.prototype, {
@@ -4121,10 +4121,10 @@ var init_install_fetch = __esm({
           configurable: true
         });
         class ByteLengthQueuingStrategy {
-          constructor(options2) {
-            assertRequiredArgument(options2, 1, "ByteLengthQueuingStrategy");
-            options2 = convertQueuingStrategyInit(options2, "First parameter");
-            this._byteLengthQueuingStrategyHighWaterMark = options2.highWaterMark;
+          constructor(options) {
+            assertRequiredArgument(options, 1, "ByteLengthQueuingStrategy");
+            options = convertQueuingStrategyInit(options, "First parameter");
+            this._byteLengthQueuingStrategyHighWaterMark = options.highWaterMark;
           }
           get highWaterMark() {
             if (!IsByteLengthQueuingStrategy(this)) {
@@ -4169,10 +4169,10 @@ var init_install_fetch = __esm({
           configurable: true
         });
         class CountQueuingStrategy {
-          constructor(options2) {
-            assertRequiredArgument(options2, 1, "CountQueuingStrategy");
-            options2 = convertQueuingStrategyInit(options2, "First parameter");
-            this._countQueuingStrategyHighWaterMark = options2.highWaterMark;
+          constructor(options) {
+            assertRequiredArgument(options, 1, "CountQueuingStrategy");
+            options = convertQueuingStrategyInit(options, "First parameter");
+            this._countQueuingStrategyHighWaterMark = options.highWaterMark;
           }
           get highWaterMark() {
             if (!IsCountQueuingStrategy(this)) {
@@ -4562,7 +4562,7 @@ var init_install_fetch = __esm({
     }
     POOL_SIZE = 65536;
     _Blob = (_a = class {
-      constructor(blobParts = [], options2 = {}) {
+      constructor(blobParts = [], options = {}) {
         __privateAdd(this, _parts, []);
         __privateAdd(this, _type, "");
         __privateAdd(this, _size, 0);
@@ -4572,11 +4572,11 @@ var init_install_fetch = __esm({
         if (typeof blobParts[Symbol.iterator] !== "function") {
           throw new TypeError("Failed to construct 'Blob': The object must have a callable @@iterator property.");
         }
-        if (typeof options2 !== "object" && typeof options2 !== "function") {
+        if (typeof options !== "object" && typeof options !== "function") {
           throw new TypeError("Failed to construct 'Blob': parameter 2 cannot convert to dictionary.");
         }
-        if (options2 === null)
-          options2 = {};
+        if (options === null)
+          options = {};
         const encoder2 = new TextEncoder();
         for (const element of blobParts) {
           let part;
@@ -4592,7 +4592,7 @@ var init_install_fetch = __esm({
           __privateSet(this, _size, __privateGet(this, _size) + (ArrayBuffer.isView(part) ? part.byteLength : part.size));
           __privateGet(this, _parts).push(part);
         }
-        const type = options2.type === void 0 ? "" : String(options2.type);
+        const type = options.type === void 0 ? "" : String(options.type);
         __privateSet(this, _type, /^[\x20-\x7E]*$/.test(type) ? type : "");
       }
       get size() {
@@ -4682,16 +4682,16 @@ var init_install_fetch = __esm({
     Blob2 = _Blob;
     Blob$1 = Blob2;
     _File = (_a2 = class extends Blob$1 {
-      constructor(fileBits, fileName, options2 = {}) {
+      constructor(fileBits, fileName, options = {}) {
         if (arguments.length < 2) {
           throw new TypeError(`Failed to construct 'File': 2 arguments required, but only ${arguments.length} present.`);
         }
-        super(fileBits, options2);
+        super(fileBits, options);
         __privateAdd(this, _lastModified, 0);
         __privateAdd(this, _name, "");
-        if (options2 === null)
-          options2 = {};
-        const lastModified = options2.lastModified === void 0 ? Date.now() : Number(options2.lastModified);
+        if (options === null)
+          options = {};
+        const lastModified = options.lastModified === void 0 ? Date.now() : Number(options.lastModified);
         if (!Number.isNaN(lastModified)) {
           __privateSet(this, _lastModified, lastModified);
         }
@@ -5131,10 +5131,10 @@ var init_install_fetch = __esm({
     };
     INTERNALS$1 = Symbol("Response internals");
     Response2 = class extends Body {
-      constructor(body = null, options2 = {}) {
-        super(body, options2);
-        const status = options2.status != null ? options2.status : 200;
-        const headers = new Headers2(options2.headers);
+      constructor(body = null, options = {}) {
+        super(body, options);
+        const status = options.status != null ? options.status : 200;
+        const headers = new Headers2(options.headers);
         if (body !== null && !headers.has("Content-Type")) {
           const contentType = extractContentType(body, this);
           if (contentType) {
@@ -5143,12 +5143,12 @@ var init_install_fetch = __esm({
         }
         this[INTERNALS$1] = {
           type: "default",
-          url: options2.url,
+          url: options.url,
           status,
-          statusText: options2.statusText || "",
+          statusText: options.statusText || "",
           headers,
-          counter: options2.counter,
-          highWaterMark: options2.highWaterMark
+          counter: options.counter,
+          highWaterMark: options.highWaterMark
         };
       }
       get type() {
@@ -5396,7 +5396,7 @@ var init_install_fetch = __esm({
         headers.set("Connection", "close");
       }
       const search = getSearch(parsedURL);
-      const options2 = {
+      const options = {
         path: parsedURL.pathname + search,
         method: request.method,
         headers: headers[Symbol.for("nodejs.util.inspect.custom")](),
@@ -5405,7 +5405,7 @@ var init_install_fetch = __esm({
       };
       return {
         parsedURL,
-        options: options2
+        options
       };
     };
     AbortError = class extends FetchBaseError {
@@ -5417,7 +5417,7 @@ var init_install_fetch = __esm({
   }
 });
 
-// .svelte-kit/output/server/chunks/index-e8b4228d.js
+// .svelte-kit/output/server/chunks/index-42de8966.js
 function noop2() {
 }
 function run(fn) {
@@ -5438,6 +5438,9 @@ function subscribe(store, ...callbacks) {
   }
   const unsub = store.subscribe(...callbacks);
   return unsub.unsubscribe ? () => unsub.unsubscribe() : unsub;
+}
+function null_to_empty(value) {
+  return value == null ? "" : value;
 }
 function set_current_component(component) {
   current_component = component;
@@ -5493,7 +5496,7 @@ function create_ssr_component(fn) {
       return {
         html,
         css: {
-          code: Array.from(result.css).map((css19) => css19.code).join("\n"),
+          code: Array.from(result.css).map((css20) => css20.code).join("\n"),
           map: null
         },
         head: result.title + result.head
@@ -5508,8 +5511,8 @@ function add_attribute(name, value, boolean) {
   return ` ${name}${value === true && boolean_attributes.has(name) ? "" : `=${typeof value === "string" ? JSON.stringify(escape(value)) : `"${value}"`}`}`;
 }
 var current_component, boolean_attributes, escaped, missing_component, on_destroy;
-var init_index_e8b4228d = __esm({
-  ".svelte-kit/output/server/chunks/index-e8b4228d.js"() {
+var init_index_42de8966 = __esm({
+  ".svelte-kit/output/server/chunks/index-42de8966.js"() {
     Promise.resolve();
     boolean_attributes = /* @__PURE__ */ new Set([
       "allowfullscreen",
@@ -5565,21 +5568,15 @@ __export(layout_svelte_exports, {
 var css, _layout;
 var init_layout_svelte = __esm({
   ".svelte-kit/output/server/entries/pages/__layout.svelte.js"() {
-    init_index_e8b4228d();
+    init_index_42de8966();
     css = {
       code: ".bottone.svelte-1xarsrp{max-width:50px;height:50px;display:flex;justify-content:center;align-items:center;border:none;outline:none;background-color:transparent;color:white;mix-blend-mode:difference;border-radius:100%;font-size:2em;cursor:pointer;position:fixed;top:0;left:0;z-index:100}",
       map: null
     };
     _layout = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       $$result.css.add(css);
-      let $$settled;
-      let $$rendered;
-      do {
-        $$settled = true;
-        $$rendered = `${`<button class="${"bottone material-icons svelte-1xarsrp"}">menu</button>
+      return `${`<button class="${"bottone material-icons svelte-1xarsrp"}">menu</button>
 	${slots.default ? slots.default({}) : ``}`}`;
-      } while (!$$settled);
-      return $$rendered;
     });
   }
 });
@@ -5596,9 +5593,29 @@ var entry, js, css2;
 var init__ = __esm({
   ".svelte-kit/output/server/nodes/0.js"() {
     init_layout_svelte();
-    entry = "pages/__layout.svelte-e47c9ae0.js";
-    js = ["pages/__layout.svelte-e47c9ae0.js", "chunks/vendor-bc34623b.js"];
-    css2 = ["assets/pages/__layout.svelte-6a07f3d4.css"];
+    entry = "pages/__layout.svelte-1422d602.js";
+    js = ["pages/__layout.svelte-1422d602.js", "chunks/vendor-b221bc45.js"];
+    css2 = ["assets/pages/__layout.svelte-719dba1e.css"];
+  }
+});
+
+// .svelte-kit/output/server/chunks/SEO-84e6e563.js
+var SEO;
+var init_SEO_84e6e563 = __esm({
+  ".svelte-kit/output/server/chunks/SEO-84e6e563.js"() {
+    init_index_42de8966();
+    SEO = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      let { siteTitle = "Daniele Avolio" } = $$props;
+      let { metadescription } = $$props;
+      let { title } = $$props;
+      if ($$props.siteTitle === void 0 && $$bindings.siteTitle && siteTitle !== void 0)
+        $$bindings.siteTitle(siteTitle);
+      if ($$props.metadescription === void 0 && $$bindings.metadescription && metadescription !== void 0)
+        $$bindings.metadescription(metadescription);
+      if ($$props.title === void 0 && $$bindings.title && title !== void 0)
+        $$bindings.title(title);
+      return `${$$result.head += `${$$result.title = `<title>${escape(siteTitle)} - ${escape(title)}</title>`, ""}<meta name="${"description"}"${add_attribute("content", metadescription, 0)} data-svelte="svelte-vtmdj4"><meta name="${"robots"}" content="${"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"}" data-svelte="svelte-vtmdj4"><html${add_attribute("lang", "it", 0)} data-svelte="svelte-vtmdj4"></html>`, ""}`;
+    });
   }
 });
 
@@ -5611,19 +5628,32 @@ __export(error_svelte_exports, {
 function load({ error: error2, status }) {
   return { props: { error: error2, status } };
 }
-var _error;
+var css3, _error;
 var init_error_svelte = __esm({
   ".svelte-kit/output/server/entries/pages/__error.svelte.js"() {
-    init_index_e8b4228d();
+    init_index_42de8966();
+    init_SEO_84e6e563();
+    css3 = {
+      code: ".error-page.svelte-1a98s54{height:100vh;display:grid;place-items:center}.error.svelte-1a98s54{background-color:var(--dark);width:fit-content;color:var(--light);padding:1em;text-align:center}",
+      map: null
+    };
     _error = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       let { error: error2, status } = $$props;
       if ($$props.error === void 0 && $$bindings.error && error2 !== void 0)
         $$bindings.error(error2);
       if ($$props.status === void 0 && $$bindings.status && status !== void 0)
         $$bindings.status(status);
-      return `${$$result.head += `${$$result.title = `<title>${escape(status)}</title>`, ""}`, ""}
+      $$result.css.add(css3);
+      return `${$$result.head += `${$$result.title = `<title>Ops.. Errore ${escape(status)}</title>`, ""}`, ""}
 
-<h1>${escape(status)}: ${escape(error2.message)}</h1>`;
+${validate_component(SEO, "Seo").$$render($$result, {
+        title: "Ops.. Errore",
+        metadescription: "Qualcosa \xE8 andato storto.."
+      }, {}, {})}
+<div class="${"error-page svelte-1a98s54"}"><div class="${"error svelte-1a98s54"}"><h1>Qualcosa \xE8 andato storto..</h1>
+		<h2>Errore ${escape(status)}: ${escape(error2.message)}</h2>
+		<a href="${"/"}">Torna alla home</a></div>
+</div>`;
     });
   }
 });
@@ -5631,18 +5661,18 @@ var init_error_svelte = __esm({
 // .svelte-kit/output/server/nodes/1.js
 var __exports2 = {};
 __export(__exports2, {
-  css: () => css3,
+  css: () => css4,
   entry: () => entry2,
   js: () => js2,
   module: () => error_svelte_exports
 });
-var entry2, js2, css3;
+var entry2, js2, css4;
 var init__2 = __esm({
   ".svelte-kit/output/server/nodes/1.js"() {
     init_error_svelte();
-    entry2 = "pages/__error.svelte-a55c9081.js";
-    js2 = ["pages/__error.svelte-a55c9081.js", "chunks/vendor-bc34623b.js"];
-    css3 = [];
+    entry2 = "pages/__error.svelte-76b8164e.js";
+    js2 = ["pages/__error.svelte-76b8164e.js", "chunks/vendor-b221bc45.js", "chunks/SEO-64b2f8e7.js"];
+    css4 = ["assets/pages/__error.svelte-1dec4e55.css"];
   }
 });
 
@@ -6313,8 +6343,8 @@ var require_url_state_machine = __commonJS({
       if (!isSpecialArg) {
         return parseOpaqueHost(input);
       }
-      const domain2 = utf8PercentDecode(input);
-      const asciiDomain = tr46.toASCII(domain2, false, tr46.PROCESSING_OPTIONS.NONTRANSITIONAL, false);
+      const domain = utf8PercentDecode(input);
+      const asciiDomain = tr46.toASCII(domain, false, tr46.PROCESSING_OPTIONS.NONTRANSITIONAL, false);
       if (asciiDomain === null) {
         return failure;
       }
@@ -7025,11 +7055,11 @@ var require_url_state_machine = __commonJS({
           return "null";
       }
     };
-    module2.exports.basicURLParse = function(input, options2) {
-      if (options2 === void 0) {
-        options2 = {};
+    module2.exports.basicURLParse = function(input, options) {
+      if (options === void 0) {
+        options = {};
       }
-      const usm = new URLStateMachine(input, options2.baseURL, options2.encodingOverride, options2.url, options2.stateOverride);
+      const usm = new URLStateMachine(input, options.baseURL, options.encodingOverride, options.url, options.stateOverride);
       if (usm.failure) {
         return "failure";
       }
@@ -7054,11 +7084,11 @@ var require_url_state_machine = __commonJS({
     module2.exports.serializeInteger = function(integer) {
       return String(integer);
     };
-    module2.exports.parseURL = function(input, options2) {
-      if (options2 === void 0) {
-        options2 = {};
+    module2.exports.parseURL = function(input, options) {
+      if (options === void 0) {
+        options = {};
       }
-      return module2.exports.basicURLParse(input, { baseURL: options2.baseURL, encodingOverride: options2.encodingOverride });
+      return module2.exports.basicURLParse(input, { baseURL: options.baseURL, encodingOverride: options.encodingOverride });
     };
   }
 });
@@ -7440,7 +7470,7 @@ var require_lib2 = __commonJS({
       constructor() {
         this[TYPE] = "";
         const blobParts = arguments[0];
-        const options2 = arguments[1];
+        const options = arguments[1];
         const buffers = [];
         let size = 0;
         if (blobParts) {
@@ -7465,7 +7495,7 @@ var require_lib2 = __commonJS({
           }
         }
         this[BUFFER] = Buffer.concat(buffers);
-        let type = options2 && options2.type !== void 0 && String(options2.type).toLowerCase();
+        let type = options && options.type !== void 0 && String(options.type).toLowerCase();
         if (type && !/[^\u0020-\u007E]/.test(type)) {
           this[TYPE] = type;
         }
@@ -8307,8 +8337,8 @@ var require_lib2 = __commonJS({
       Body2.Promise = fetch3.Promise;
       return new fetch3.Promise(function(resolve2, reject) {
         const request = new Request3(url, opts);
-        const options2 = getNodeRequestOptions2(request);
-        const send = (options2.protocol === "https:" ? https2 : http2).request;
+        const options = getNodeRequestOptions2(request);
+        const send = (options.protocol === "https:" ? https2 : http2).request;
         const signal = request.signal;
         let response = null;
         const abort = function abort2() {
@@ -8329,7 +8359,7 @@ var require_lib2 = __commonJS({
           abort();
           finalize();
         };
-        const req = send(options2);
+        const req = send(options);
         let reqTimeout;
         if (signal) {
           signal.addEventListener("abort", abortAndFinalize);
@@ -8496,11 +8526,11 @@ var require_node_ponyfill = __commonJS({
   "node_modules/cross-fetch/dist/node-ponyfill.js"(exports, module2) {
     var nodeFetch = require_lib2();
     var realFetch = nodeFetch.default || nodeFetch;
-    var fetch3 = function(url, options2) {
+    var fetch3 = function(url, options) {
       if (/^\/\//.test(url)) {
         url = "https:" + url;
       }
-      return realFetch.call(this, url, options2);
+      return realFetch.call(this, url, options);
     };
     fetch3.ponyfill = true;
     module2.exports = exports = fetch3;
@@ -9120,7 +9150,7 @@ var require_blockString = __commonJS({
       }
       return true;
     }
-    function printBlockString(value, options2) {
+    function printBlockString(value, options) {
       const escapedValue = value.replace(/"""/g, '\\"""');
       const lines = escapedValue.split(/\r\n|[\n\r]/g);
       const isSingleLine = lines.length === 1;
@@ -9129,7 +9159,7 @@ var require_blockString = __commonJS({
       const hasTrailingQuote = value.endsWith('"') && !hasTrailingTripleQuotes;
       const hasTrailingSlash = value.endsWith("\\");
       const forceTrailingNewline = hasTrailingQuote || hasTrailingSlash;
-      const printAsMultipleLines = !(options2 !== null && options2 !== void 0 && options2.minimize) && (!isSingleLine || value.length > 70 || forceTrailingNewline || forceLeadingNewLine || hasTrailingTripleQuotes);
+      const printAsMultipleLines = !(options !== null && options !== void 0 && options.minimize) && (!isSingleLine || value.length > 70 || forceTrailingNewline || forceLeadingNewLine || hasTrailingTripleQuotes);
       let result = "";
       const skipLeadingNewLine = isSingleLine && (0, _characterClasses.isWhiteSpace)(value.charCodeAt(0));
       if (printAsMultipleLines && !skipLeadingNewLine || forceLeadingNewLine) {
@@ -9195,7 +9225,7 @@ var require_lexer = __commonJS({
     var _blockString = require_blockString();
     var _characterClasses = require_characterClasses();
     var _tokenKind = require_tokenKind();
-    var Lexer2 = class {
+    var Lexer = class {
       constructor(source) {
         const startOfFileToken = new _ast.Token(_tokenKind.TokenKind.SOF, 0, 0, 0, 0);
         this.source = source;
@@ -9229,7 +9259,7 @@ var require_lexer = __commonJS({
         return token;
       }
     };
-    exports.Lexer = Lexer2;
+    exports.Lexer = Lexer;
     function isPunctuatorTokenKind(kind) {
       return kind === _tokenKind.TokenKind.BANG || kind === _tokenKind.TokenKind.DOLLAR || kind === _tokenKind.TokenKind.AMP || kind === _tokenKind.TokenKind.PAREN_L || kind === _tokenKind.TokenKind.PAREN_R || kind === _tokenKind.TokenKind.SPREAD || kind === _tokenKind.TokenKind.COLON || kind === _tokenKind.TokenKind.EQUALS || kind === _tokenKind.TokenKind.AT || kind === _tokenKind.TokenKind.BRACKET_L || kind === _tokenKind.TokenKind.BRACKET_R || kind === _tokenKind.TokenKind.BRACE_L || kind === _tokenKind.TokenKind.PIPE || kind === _tokenKind.TokenKind.BRACE_R;
     }
@@ -9245,8 +9275,8 @@ var require_lexer = __commonJS({
     function isTrailingSurrogate(code) {
       return code >= 56320 && code <= 57343;
     }
-    function printCodePointAt(lexer2, location) {
-      const code = lexer2.source.body.codePointAt(location);
+    function printCodePointAt(lexer, location) {
+      const code = lexer.source.body.codePointAt(location);
       if (code === void 0) {
         return _tokenKind.TokenKind.EOF;
       } else if (code >= 32 && code <= 126) {
@@ -9255,13 +9285,13 @@ var require_lexer = __commonJS({
       }
       return "U+" + code.toString(16).toUpperCase().padStart(4, "0");
     }
-    function createToken(lexer2, kind, start, end, value) {
-      const line = lexer2.line;
-      const col = 1 + start - lexer2.lineStart;
+    function createToken(lexer, kind, start, end, value) {
+      const line = lexer.line;
+      const col = 1 + start - lexer.lineStart;
       return new _ast.Token(kind, start, end, line, col, value);
     }
-    function readNextToken(lexer2, start) {
-      const body = lexer2.source.body;
+    function readNextToken(lexer, start) {
+      const body = lexer.source.body;
       const bodyLength = body.length;
       let position = start;
       while (position < bodyLength) {
@@ -9275,8 +9305,8 @@ var require_lexer = __commonJS({
             continue;
           case 10:
             ++position;
-            ++lexer2.line;
-            lexer2.lineStart = position;
+            ++lexer.line;
+            lexer.lineStart = position;
             continue;
           case 13:
             if (body.charCodeAt(position + 1) === 10) {
@@ -9284,60 +9314,60 @@ var require_lexer = __commonJS({
             } else {
               ++position;
             }
-            ++lexer2.line;
-            lexer2.lineStart = position;
+            ++lexer.line;
+            lexer.lineStart = position;
             continue;
           case 35:
-            return readComment(lexer2, position);
+            return readComment(lexer, position);
           case 33:
-            return createToken(lexer2, _tokenKind.TokenKind.BANG, position, position + 1);
+            return createToken(lexer, _tokenKind.TokenKind.BANG, position, position + 1);
           case 36:
-            return createToken(lexer2, _tokenKind.TokenKind.DOLLAR, position, position + 1);
+            return createToken(lexer, _tokenKind.TokenKind.DOLLAR, position, position + 1);
           case 38:
-            return createToken(lexer2, _tokenKind.TokenKind.AMP, position, position + 1);
+            return createToken(lexer, _tokenKind.TokenKind.AMP, position, position + 1);
           case 40:
-            return createToken(lexer2, _tokenKind.TokenKind.PAREN_L, position, position + 1);
+            return createToken(lexer, _tokenKind.TokenKind.PAREN_L, position, position + 1);
           case 41:
-            return createToken(lexer2, _tokenKind.TokenKind.PAREN_R, position, position + 1);
+            return createToken(lexer, _tokenKind.TokenKind.PAREN_R, position, position + 1);
           case 46:
             if (body.charCodeAt(position + 1) === 46 && body.charCodeAt(position + 2) === 46) {
-              return createToken(lexer2, _tokenKind.TokenKind.SPREAD, position, position + 3);
+              return createToken(lexer, _tokenKind.TokenKind.SPREAD, position, position + 3);
             }
             break;
           case 58:
-            return createToken(lexer2, _tokenKind.TokenKind.COLON, position, position + 1);
+            return createToken(lexer, _tokenKind.TokenKind.COLON, position, position + 1);
           case 61:
-            return createToken(lexer2, _tokenKind.TokenKind.EQUALS, position, position + 1);
+            return createToken(lexer, _tokenKind.TokenKind.EQUALS, position, position + 1);
           case 64:
-            return createToken(lexer2, _tokenKind.TokenKind.AT, position, position + 1);
+            return createToken(lexer, _tokenKind.TokenKind.AT, position, position + 1);
           case 91:
-            return createToken(lexer2, _tokenKind.TokenKind.BRACKET_L, position, position + 1);
+            return createToken(lexer, _tokenKind.TokenKind.BRACKET_L, position, position + 1);
           case 93:
-            return createToken(lexer2, _tokenKind.TokenKind.BRACKET_R, position, position + 1);
+            return createToken(lexer, _tokenKind.TokenKind.BRACKET_R, position, position + 1);
           case 123:
-            return createToken(lexer2, _tokenKind.TokenKind.BRACE_L, position, position + 1);
+            return createToken(lexer, _tokenKind.TokenKind.BRACE_L, position, position + 1);
           case 124:
-            return createToken(lexer2, _tokenKind.TokenKind.PIPE, position, position + 1);
+            return createToken(lexer, _tokenKind.TokenKind.PIPE, position, position + 1);
           case 125:
-            return createToken(lexer2, _tokenKind.TokenKind.BRACE_R, position, position + 1);
+            return createToken(lexer, _tokenKind.TokenKind.BRACE_R, position, position + 1);
           case 34:
             if (body.charCodeAt(position + 1) === 34 && body.charCodeAt(position + 2) === 34) {
-              return readBlockString(lexer2, position);
+              return readBlockString(lexer, position);
             }
-            return readString(lexer2, position);
+            return readString(lexer, position);
         }
         if ((0, _characterClasses.isDigit)(code) || code === 45) {
-          return readNumber(lexer2, position, code);
+          return readNumber(lexer, position, code);
         }
         if ((0, _characterClasses.isNameStart)(code)) {
-          return readName(lexer2, position);
+          return readName(lexer, position);
         }
-        throw (0, _syntaxError.syntaxError)(lexer2.source, position, code === 39 ? `Unexpected single quote character ('), did you mean to use a double quote (")?` : isUnicodeScalarValue(code) || isSupplementaryCodePoint(body, position) ? `Unexpected character: ${printCodePointAt(lexer2, position)}.` : `Invalid character: ${printCodePointAt(lexer2, position)}.`);
+        throw (0, _syntaxError.syntaxError)(lexer.source, position, code === 39 ? `Unexpected single quote character ('), did you mean to use a double quote (")?` : isUnicodeScalarValue(code) || isSupplementaryCodePoint(body, position) ? `Unexpected character: ${printCodePointAt(lexer, position)}.` : `Invalid character: ${printCodePointAt(lexer, position)}.`);
       }
-      return createToken(lexer2, _tokenKind.TokenKind.EOF, bodyLength, bodyLength);
+      return createToken(lexer, _tokenKind.TokenKind.EOF, bodyLength, bodyLength);
     }
-    function readComment(lexer2, start) {
-      const body = lexer2.source.body;
+    function readComment(lexer, start) {
+      const body = lexer.source.body;
       const bodyLength = body.length;
       let position = start + 1;
       while (position < bodyLength) {
@@ -9353,10 +9383,10 @@ var require_lexer = __commonJS({
           break;
         }
       }
-      return createToken(lexer2, _tokenKind.TokenKind.COMMENT, start, position, body.slice(start + 1, position));
+      return createToken(lexer, _tokenKind.TokenKind.COMMENT, start, position, body.slice(start + 1, position));
     }
-    function readNumber(lexer2, start, firstCode) {
-      const body = lexer2.source.body;
+    function readNumber(lexer, start, firstCode) {
+      const body = lexer.source.body;
       let position = start;
       let code = firstCode;
       let isFloat = false;
@@ -9366,16 +9396,16 @@ var require_lexer = __commonJS({
       if (code === 48) {
         code = body.charCodeAt(++position);
         if ((0, _characterClasses.isDigit)(code)) {
-          throw (0, _syntaxError.syntaxError)(lexer2.source, position, `Invalid number, unexpected digit after 0: ${printCodePointAt(lexer2, position)}.`);
+          throw (0, _syntaxError.syntaxError)(lexer.source, position, `Invalid number, unexpected digit after 0: ${printCodePointAt(lexer, position)}.`);
         }
       } else {
-        position = readDigits(lexer2, position, code);
+        position = readDigits(lexer, position, code);
         code = body.charCodeAt(position);
       }
       if (code === 46) {
         isFloat = true;
         code = body.charCodeAt(++position);
-        position = readDigits(lexer2, position, code);
+        position = readDigits(lexer, position, code);
         code = body.charCodeAt(position);
       }
       if (code === 69 || code === 101) {
@@ -9384,27 +9414,27 @@ var require_lexer = __commonJS({
         if (code === 43 || code === 45) {
           code = body.charCodeAt(++position);
         }
-        position = readDigits(lexer2, position, code);
+        position = readDigits(lexer, position, code);
         code = body.charCodeAt(position);
       }
       if (code === 46 || (0, _characterClasses.isNameStart)(code)) {
-        throw (0, _syntaxError.syntaxError)(lexer2.source, position, `Invalid number, expected digit but got: ${printCodePointAt(lexer2, position)}.`);
+        throw (0, _syntaxError.syntaxError)(lexer.source, position, `Invalid number, expected digit but got: ${printCodePointAt(lexer, position)}.`);
       }
-      return createToken(lexer2, isFloat ? _tokenKind.TokenKind.FLOAT : _tokenKind.TokenKind.INT, start, position, body.slice(start, position));
+      return createToken(lexer, isFloat ? _tokenKind.TokenKind.FLOAT : _tokenKind.TokenKind.INT, start, position, body.slice(start, position));
     }
-    function readDigits(lexer2, start, firstCode) {
+    function readDigits(lexer, start, firstCode) {
       if (!(0, _characterClasses.isDigit)(firstCode)) {
-        throw (0, _syntaxError.syntaxError)(lexer2.source, start, `Invalid number, expected digit but got: ${printCodePointAt(lexer2, start)}.`);
+        throw (0, _syntaxError.syntaxError)(lexer.source, start, `Invalid number, expected digit but got: ${printCodePointAt(lexer, start)}.`);
       }
-      const body = lexer2.source.body;
+      const body = lexer.source.body;
       let position = start + 1;
       while ((0, _characterClasses.isDigit)(body.charCodeAt(position))) {
         ++position;
       }
       return position;
     }
-    function readString(lexer2, start) {
-      const body = lexer2.source.body;
+    function readString(lexer, start) {
+      const body = lexer.source.body;
       const bodyLength = body.length;
       let position = start + 1;
       let chunkStart = position;
@@ -9413,13 +9443,13 @@ var require_lexer = __commonJS({
         const code = body.charCodeAt(position);
         if (code === 34) {
           value += body.slice(chunkStart, position);
-          return createToken(lexer2, _tokenKind.TokenKind.STRING, start, position + 1, value);
+          return createToken(lexer, _tokenKind.TokenKind.STRING, start, position + 1, value);
         }
         if (code === 92) {
           value += body.slice(chunkStart, position);
-          const escape3 = body.charCodeAt(position + 1) === 117 ? body.charCodeAt(position + 2) === 123 ? readEscapedUnicodeVariableWidth(lexer2, position) : readEscapedUnicodeFixedWidth(lexer2, position) : readEscapedCharacter(lexer2, position);
-          value += escape3.value;
-          position += escape3.size;
+          const escape2 = body.charCodeAt(position + 1) === 117 ? body.charCodeAt(position + 2) === 123 ? readEscapedUnicodeVariableWidth(lexer, position) : readEscapedUnicodeFixedWidth(lexer, position) : readEscapedCharacter(lexer, position);
+          value += escape2.value;
+          position += escape2.size;
           chunkStart = position;
           continue;
         }
@@ -9431,13 +9461,13 @@ var require_lexer = __commonJS({
         } else if (isSupplementaryCodePoint(body, position)) {
           position += 2;
         } else {
-          throw (0, _syntaxError.syntaxError)(lexer2.source, position, `Invalid character within String: ${printCodePointAt(lexer2, position)}.`);
+          throw (0, _syntaxError.syntaxError)(lexer.source, position, `Invalid character within String: ${printCodePointAt(lexer, position)}.`);
         }
       }
-      throw (0, _syntaxError.syntaxError)(lexer2.source, position, "Unterminated string.");
+      throw (0, _syntaxError.syntaxError)(lexer.source, position, "Unterminated string.");
     }
-    function readEscapedUnicodeVariableWidth(lexer2, position) {
-      const body = lexer2.source.body;
+    function readEscapedUnicodeVariableWidth(lexer, position) {
+      const body = lexer.source.body;
       let point = 0;
       let size = 3;
       while (size < 12) {
@@ -9456,10 +9486,10 @@ var require_lexer = __commonJS({
           break;
         }
       }
-      throw (0, _syntaxError.syntaxError)(lexer2.source, position, `Invalid Unicode escape sequence: "${body.slice(position, position + size)}".`);
+      throw (0, _syntaxError.syntaxError)(lexer.source, position, `Invalid Unicode escape sequence: "${body.slice(position, position + size)}".`);
     }
-    function readEscapedUnicodeFixedWidth(lexer2, position) {
-      const body = lexer2.source.body;
+    function readEscapedUnicodeFixedWidth(lexer, position) {
+      const body = lexer.source.body;
       const code = read16BitHexCode(body, position + 2);
       if (isUnicodeScalarValue(code)) {
         return {
@@ -9478,7 +9508,7 @@ var require_lexer = __commonJS({
           }
         }
       }
-      throw (0, _syntaxError.syntaxError)(lexer2.source, position, `Invalid Unicode escape sequence: "${body.slice(position, position + 6)}".`);
+      throw (0, _syntaxError.syntaxError)(lexer.source, position, `Invalid Unicode escape sequence: "${body.slice(position, position + 6)}".`);
     }
     function read16BitHexCode(body, position) {
       return readHexDigit(body.charCodeAt(position)) << 12 | readHexDigit(body.charCodeAt(position + 1)) << 8 | readHexDigit(body.charCodeAt(position + 2)) << 4 | readHexDigit(body.charCodeAt(position + 3));
@@ -9486,8 +9516,8 @@ var require_lexer = __commonJS({
     function readHexDigit(code) {
       return code >= 48 && code <= 57 ? code - 48 : code >= 65 && code <= 70 ? code - 55 : code >= 97 && code <= 102 ? code - 87 : -1;
     }
-    function readEscapedCharacter(lexer2, position) {
-      const body = lexer2.source.body;
+    function readEscapedCharacter(lexer, position) {
+      const body = lexer.source.body;
       const code = body.charCodeAt(position + 1);
       switch (code) {
         case 34:
@@ -9531,12 +9561,12 @@ var require_lexer = __commonJS({
             size: 2
           };
       }
-      throw (0, _syntaxError.syntaxError)(lexer2.source, position, `Invalid character escape sequence: "${body.slice(position, position + 2)}".`);
+      throw (0, _syntaxError.syntaxError)(lexer.source, position, `Invalid character escape sequence: "${body.slice(position, position + 2)}".`);
     }
-    function readBlockString(lexer2, start) {
-      const body = lexer2.source.body;
+    function readBlockString(lexer, start) {
+      const body = lexer.source.body;
       const bodyLength = body.length;
-      let lineStart = lexer2.lineStart;
+      let lineStart = lexer.lineStart;
       let position = start + 3;
       let chunkStart = position;
       let currentLine = "";
@@ -9546,9 +9576,9 @@ var require_lexer = __commonJS({
         if (code === 34 && body.charCodeAt(position + 1) === 34 && body.charCodeAt(position + 2) === 34) {
           currentLine += body.slice(chunkStart, position);
           blockLines.push(currentLine);
-          const token = createToken(lexer2, _tokenKind.TokenKind.BLOCK_STRING, start, position + 3, (0, _blockString.dedentBlockStringLines)(blockLines).join("\n"));
-          lexer2.line += blockLines.length - 1;
-          lexer2.lineStart = lineStart;
+          const token = createToken(lexer, _tokenKind.TokenKind.BLOCK_STRING, start, position + 3, (0, _blockString.dedentBlockStringLines)(blockLines).join("\n"));
+          lexer.line += blockLines.length - 1;
+          lexer.lineStart = lineStart;
           return token;
         }
         if (code === 92 && body.charCodeAt(position + 1) === 34 && body.charCodeAt(position + 2) === 34 && body.charCodeAt(position + 3) === 34) {
@@ -9575,13 +9605,13 @@ var require_lexer = __commonJS({
         } else if (isSupplementaryCodePoint(body, position)) {
           position += 2;
         } else {
-          throw (0, _syntaxError.syntaxError)(lexer2.source, position, `Invalid character within String: ${printCodePointAt(lexer2, position)}.`);
+          throw (0, _syntaxError.syntaxError)(lexer.source, position, `Invalid character within String: ${printCodePointAt(lexer, position)}.`);
         }
       }
-      throw (0, _syntaxError.syntaxError)(lexer2.source, position, "Unterminated string.");
+      throw (0, _syntaxError.syntaxError)(lexer.source, position, "Unterminated string.");
     }
-    function readName(lexer2, start) {
-      const body = lexer2.source.body;
+    function readName(lexer, start) {
+      const body = lexer.source.body;
       const bodyLength = body.length;
       let position = start + 1;
       while (position < bodyLength) {
@@ -9592,7 +9622,7 @@ var require_lexer = __commonJS({
           break;
         }
       }
-      return createToken(lexer2, _tokenKind.TokenKind.NAME, start, position, body.slice(start, position));
+      return createToken(lexer, _tokenKind.TokenKind.NAME, start, position, body.slice(start, position));
     }
   }
 });
@@ -9799,36 +9829,36 @@ var require_parser = __commonJS({
     var _lexer = require_lexer();
     var _source = require_source();
     var _tokenKind = require_tokenKind();
-    function parse(source, options2) {
-      const parser2 = new Parser2(source, options2);
-      return parser2.parseDocument();
+    function parse(source, options) {
+      const parser = new Parser(source, options);
+      return parser.parseDocument();
     }
-    function parseValue(source, options2) {
-      const parser2 = new Parser2(source, options2);
-      parser2.expectToken(_tokenKind.TokenKind.SOF);
-      const value = parser2.parseValueLiteral(false);
-      parser2.expectToken(_tokenKind.TokenKind.EOF);
+    function parseValue(source, options) {
+      const parser = new Parser(source, options);
+      parser.expectToken(_tokenKind.TokenKind.SOF);
+      const value = parser.parseValueLiteral(false);
+      parser.expectToken(_tokenKind.TokenKind.EOF);
       return value;
     }
-    function parseConstValue(source, options2) {
-      const parser2 = new Parser2(source, options2);
-      parser2.expectToken(_tokenKind.TokenKind.SOF);
-      const value = parser2.parseConstValueLiteral();
-      parser2.expectToken(_tokenKind.TokenKind.EOF);
+    function parseConstValue(source, options) {
+      const parser = new Parser(source, options);
+      parser.expectToken(_tokenKind.TokenKind.SOF);
+      const value = parser.parseConstValueLiteral();
+      parser.expectToken(_tokenKind.TokenKind.EOF);
       return value;
     }
-    function parseType(source, options2) {
-      const parser2 = new Parser2(source, options2);
-      parser2.expectToken(_tokenKind.TokenKind.SOF);
-      const type = parser2.parseTypeReference();
-      parser2.expectToken(_tokenKind.TokenKind.EOF);
+    function parseType(source, options) {
+      const parser = new Parser(source, options);
+      parser.expectToken(_tokenKind.TokenKind.SOF);
+      const type = parser.parseTypeReference();
+      parser.expectToken(_tokenKind.TokenKind.EOF);
       return type;
     }
-    var Parser2 = class {
-      constructor(source, options2) {
+    var Parser = class {
+      constructor(source, options) {
         const sourceObj = (0, _source.isSource)(source) ? source : new _source.Source(source);
         this._lexer = new _lexer.Lexer(sourceObj);
-        this._options = options2;
+        this._options = options;
       }
       parseName() {
         const token = this.expectToken(_tokenKind.TokenKind.NAME);
@@ -10625,7 +10655,7 @@ var require_parser = __commonJS({
         return nodes;
       }
     };
-    exports.Parser = Parser2;
+    exports.Parser = Parser;
     function getTokenDesc(token) {
       const value = token.value;
       return getTokenKindDesc(token.kind) + (value != null ? ` "${value}"` : "");
@@ -11061,7 +11091,7 @@ var require_printer = __commonJS({
         leave: ({ variable, type, defaultValue, directives }) => variable + ": " + type + wrap(" = ", defaultValue) + wrap(" ", join(directives, " "))
       },
       SelectionSet: {
-        leave: ({ selections }) => block2(selections)
+        leave: ({ selections }) => block(selections)
       },
       Field: {
         leave({ alias, name, arguments: args, directives, selectionSet }) {
@@ -11130,7 +11160,7 @@ var require_printer = __commonJS({
         leave: ({ type }) => type + "!"
       },
       SchemaDefinition: {
-        leave: ({ description, directives, operationTypes }) => wrap("", description, "\n") + join(["schema", join(directives, " "), block2(operationTypes)], " ")
+        leave: ({ description, directives, operationTypes }) => wrap("", description, "\n") + join(["schema", join(directives, " "), block(operationTypes)], " ")
       },
       OperationTypeDefinition: {
         leave: ({ operation, type }) => operation + ": " + type
@@ -11144,7 +11174,7 @@ var require_printer = __commonJS({
           name,
           wrap("implements ", join(interfaces, " & ")),
           join(directives, " "),
-          block2(fields)
+          block(fields)
         ], " ")
       },
       FieldDefinition: {
@@ -11159,26 +11189,26 @@ var require_printer = __commonJS({
           name,
           wrap("implements ", join(interfaces, " & ")),
           join(directives, " "),
-          block2(fields)
+          block(fields)
         ], " ")
       },
       UnionTypeDefinition: {
         leave: ({ description, name, directives, types: types2 }) => wrap("", description, "\n") + join(["union", name, join(directives, " "), wrap("= ", join(types2, " | "))], " ")
       },
       EnumTypeDefinition: {
-        leave: ({ description, name, directives, values }) => wrap("", description, "\n") + join(["enum", name, join(directives, " "), block2(values)], " ")
+        leave: ({ description, name, directives, values }) => wrap("", description, "\n") + join(["enum", name, join(directives, " "), block(values)], " ")
       },
       EnumValueDefinition: {
         leave: ({ description, name, directives }) => wrap("", description, "\n") + join([name, join(directives, " ")], " ")
       },
       InputObjectTypeDefinition: {
-        leave: ({ description, name, directives, fields }) => wrap("", description, "\n") + join(["input", name, join(directives, " "), block2(fields)], " ")
+        leave: ({ description, name, directives, fields }) => wrap("", description, "\n") + join(["input", name, join(directives, " "), block(fields)], " ")
       },
       DirectiveDefinition: {
         leave: ({ description, name, arguments: args, repeatable, locations }) => wrap("", description, "\n") + "directive @" + name + (hasMultilineItems(args) ? wrap("(\n", indent(join(args, "\n")), "\n)") : wrap("(", join(args, ", "), ")")) + (repeatable ? " repeatable" : "") + " on " + join(locations, " | ")
       },
       SchemaExtension: {
-        leave: ({ directives, operationTypes }) => join(["extend schema", join(directives, " "), block2(operationTypes)], " ")
+        leave: ({ directives, operationTypes }) => join(["extend schema", join(directives, " "), block(operationTypes)], " ")
       },
       ScalarTypeExtension: {
         leave: ({ name, directives }) => join(["extend scalar", name, join(directives, " ")], " ")
@@ -11189,7 +11219,7 @@ var require_printer = __commonJS({
           name,
           wrap("implements ", join(interfaces, " & ")),
           join(directives, " "),
-          block2(fields)
+          block(fields)
         ], " ")
       },
       InterfaceTypeExtension: {
@@ -11198,7 +11228,7 @@ var require_printer = __commonJS({
           name,
           wrap("implements ", join(interfaces, " & ")),
           join(directives, " "),
-          block2(fields)
+          block(fields)
         ], " ")
       },
       UnionTypeExtension: {
@@ -11210,17 +11240,17 @@ var require_printer = __commonJS({
         ], " ")
       },
       EnumTypeExtension: {
-        leave: ({ name, directives, values }) => join(["extend enum", name, join(directives, " "), block2(values)], " ")
+        leave: ({ name, directives, values }) => join(["extend enum", name, join(directives, " "), block(values)], " ")
       },
       InputObjectTypeExtension: {
-        leave: ({ name, directives, fields }) => join(["extend input", name, join(directives, " "), block2(fields)], " ")
+        leave: ({ name, directives, fields }) => join(["extend input", name, join(directives, " "), block(fields)], " ")
       }
     };
     function join(maybeArray, separator = "") {
       var _maybeArray$filter$jo;
       return (_maybeArray$filter$jo = maybeArray === null || maybeArray === void 0 ? void 0 : maybeArray.filter((x2) => x2).join(separator)) !== null && _maybeArray$filter$jo !== void 0 ? _maybeArray$filter$jo : "";
     }
-    function block2(array) {
+    function block(array) {
       return wrap("{\n", indent(join(array, "\n")), "\n}");
     }
     function wrap(start, maybeString, end = "") {
@@ -11341,11 +11371,11 @@ var require_delayed_stream = __commonJS({
       this._bufferedEvents = [];
     }
     util.inherits(DelayedStream, Stream2);
-    DelayedStream.create = function(source, options2) {
+    DelayedStream.create = function(source, options) {
       var delayedStream = new this();
-      options2 = options2 || {};
-      for (var option in options2) {
-        delayedStream[option] = options2[option];
+      options = options || {};
+      for (var option in options) {
+        delayedStream[option] = options[option];
       }
       delayedStream.source = source;
       var realEmit = source.emit;
@@ -11436,11 +11466,11 @@ var require_combined_stream = __commonJS({
       this._pendingNext = false;
     }
     util.inherits(CombinedStream, Stream2);
-    CombinedStream.create = function(options2) {
+    CombinedStream.create = function(options) {
       var combinedStream = new this();
-      options2 = options2 || {};
-      for (var option in options2) {
-        combinedStream[option] = options2[option];
+      options = options || {};
+      for (var option in options) {
+        combinedStream[option] = options[option];
       }
       return combinedStream;
     };
@@ -11466,8 +11496,8 @@ var require_combined_stream = __commonJS({
       this._streams.push(stream);
       return this;
     };
-    CombinedStream.prototype.pipe = function(dest, options2) {
-      Stream2.prototype.pipe.call(this, dest, options2);
+    CombinedStream.prototype.pipe = function(dest, options) {
+      Stream2.prototype.pipe.call(this, dest, options);
       this.resume();
       return dest;
     };
@@ -20446,25 +20476,25 @@ var require_form_data = __commonJS({
     var populate = require_populate();
     module2.exports = FormData3;
     util.inherits(FormData3, CombinedStream);
-    function FormData3(options2) {
+    function FormData3(options) {
       if (!(this instanceof FormData3)) {
-        return new FormData3(options2);
+        return new FormData3(options);
       }
       this._overheadLength = 0;
       this._valueLength = 0;
       this._valuesToMeasure = [];
       CombinedStream.call(this);
-      options2 = options2 || {};
-      for (var option in options2) {
-        this[option] = options2[option];
+      options = options || {};
+      for (var option in options) {
+        this[option] = options[option];
       }
     }
     FormData3.LINE_BREAK = "\r\n";
     FormData3.DEFAULT_CONTENT_TYPE = "application/octet-stream";
-    FormData3.prototype.append = function(field, value, options2) {
-      options2 = options2 || {};
-      if (typeof options2 == "string") {
-        options2 = { filename: options2 };
+    FormData3.prototype.append = function(field, value, options) {
+      options = options || {};
+      if (typeof options == "string") {
+        options = { filename: options };
       }
       var append = CombinedStream.prototype.append.bind(this);
       if (typeof value == "number") {
@@ -20474,17 +20504,17 @@ var require_form_data = __commonJS({
         this._error(new Error("Arrays are not supported."));
         return;
       }
-      var header = this._multiPartHeader(field, value, options2);
+      var header = this._multiPartHeader(field, value, options);
       var footer = this._multiPartFooter();
       append(header);
       append(value);
       append(footer);
-      this._trackLength(header, value, options2);
+      this._trackLength(header, value, options);
     };
-    FormData3.prototype._trackLength = function(header, value, options2) {
+    FormData3.prototype._trackLength = function(header, value, options) {
       var valueLength = 0;
-      if (options2.knownLength != null) {
-        valueLength += +options2.knownLength;
+      if (options.knownLength != null) {
+        valueLength += +options.knownLength;
       } else if (Buffer.isBuffer(value)) {
         valueLength = value.length;
       } else if (typeof value === "string") {
@@ -20495,7 +20525,7 @@ var require_form_data = __commonJS({
       if (!value || !value.path && !(value.readable && value.hasOwnProperty("httpVersion"))) {
         return;
       }
-      if (!options2.knownLength) {
+      if (!options.knownLength) {
         this._valuesToMeasure.push(value);
       }
     };
@@ -20526,19 +20556,19 @@ var require_form_data = __commonJS({
         callback("Unknown stream");
       }
     };
-    FormData3.prototype._multiPartHeader = function(field, value, options2) {
-      if (typeof options2.header == "string") {
-        return options2.header;
+    FormData3.prototype._multiPartHeader = function(field, value, options) {
+      if (typeof options.header == "string") {
+        return options.header;
       }
-      var contentDisposition = this._getContentDisposition(value, options2);
-      var contentType = this._getContentType(value, options2);
+      var contentDisposition = this._getContentDisposition(value, options);
+      var contentType = this._getContentType(value, options);
       var contents = "";
       var headers = {
         "Content-Disposition": ["form-data", 'name="' + field + '"'].concat(contentDisposition || []),
         "Content-Type": [].concat(contentType || [])
       };
-      if (typeof options2.header == "object") {
-        populate(headers, options2.header);
+      if (typeof options.header == "object") {
+        populate(headers, options.header);
       }
       var header;
       for (var prop in headers) {
@@ -20557,12 +20587,12 @@ var require_form_data = __commonJS({
       }
       return "--" + this.getBoundary() + FormData3.LINE_BREAK + contents + FormData3.LINE_BREAK;
     };
-    FormData3.prototype._getContentDisposition = function(value, options2) {
+    FormData3.prototype._getContentDisposition = function(value, options) {
       var filename, contentDisposition;
-      if (typeof options2.filepath === "string") {
-        filename = path.normalize(options2.filepath).replace(/\\/g, "/");
-      } else if (options2.filename || value.name || value.path) {
-        filename = path.basename(options2.filename || value.name || value.path);
+      if (typeof options.filepath === "string") {
+        filename = path.normalize(options.filepath).replace(/\\/g, "/");
+      } else if (options.filename || value.name || value.path) {
+        filename = path.basename(options.filename || value.name || value.path);
       } else if (value.readable && value.hasOwnProperty("httpVersion")) {
         filename = path.basename(value.client._httpMessage.path || "");
       }
@@ -20571,8 +20601,8 @@ var require_form_data = __commonJS({
       }
       return contentDisposition;
     };
-    FormData3.prototype._getContentType = function(value, options2) {
-      var contentType = options2.contentType;
+    FormData3.prototype._getContentType = function(value, options) {
+      var contentType = options.contentType;
       if (!contentType && value.name) {
         contentType = mime.lookup(value.name);
       }
@@ -20582,8 +20612,8 @@ var require_form_data = __commonJS({
       if (!contentType && value.readable && value.hasOwnProperty("httpVersion")) {
         contentType = value.headers["content-type"];
       }
-      if (!contentType && (options2.filepath || options2.filename)) {
-        contentType = mime.lookup(options2.filepath || options2.filename);
+      if (!contentType && (options.filepath || options.filename)) {
+        contentType = mime.lookup(options.filepath || options.filename);
       }
       if (!contentType && typeof value == "object") {
         contentType = FormData3.DEFAULT_CONTENT_TYPE;
@@ -20686,26 +20716,26 @@ var require_form_data = __commonJS({
       });
     };
     FormData3.prototype.submit = function(params, cb) {
-      var request, options2, defaults2 = { method: "post" };
+      var request, options, defaults = { method: "post" };
       if (typeof params == "string") {
         params = parseUrl(params);
-        options2 = populate({
+        options = populate({
           port: params.port,
           path: params.pathname,
           host: params.hostname,
           protocol: params.protocol
-        }, defaults2);
+        }, defaults);
       } else {
-        options2 = populate(params, defaults2);
-        if (!options2.port) {
-          options2.port = options2.protocol == "https:" ? 443 : 80;
+        options = populate(params, defaults);
+        if (!options.port) {
+          options.port = options.protocol == "https:" ? 443 : 80;
         }
       }
-      options2.headers = this.getHeaders(params.headers);
-      if (options2.protocol == "https:") {
-        request = https2.request(options2);
+      options.headers = this.getHeaders(params.headers);
+      if (options.protocol == "https:") {
+        request = https2.request(options);
       } else {
-        request = http2.request(options2);
+        request = http2.request(options);
       }
       this.getLength(function(err, length) {
         if (err) {
@@ -21161,9 +21191,9 @@ var require_dist = __commonJS({
       });
     };
     var GraphQLClient6 = function() {
-      function GraphQLClient7(url, options2) {
+      function GraphQLClient7(url, options) {
         this.url = url;
-        this.options = options2 || {};
+        this.options = options || {};
       }
       GraphQLClient7.prototype.rawRequest = function(queryOrOptions, variables, requestHeaders) {
         return __awaiter(this, void 0, void 0, function() {
@@ -21407,2168 +21437,7 @@ var require_dist = __commonJS({
   }
 });
 
-// .svelte-kit/output/server/entries/pages/index.svelte.js
-var index_svelte_exports = {};
-__export(index_svelte_exports, {
-  default: () => Routes,
-  load: () => load2
-});
-async function load2() {
-  const graphcms = new import_graphql_request.GraphQLClient("https://api-eu-central-1.graphcms.com/v2/cl0se3jqv0c2e01w2c4b7ejbv/master", { headers: {} });
-  const query = import_graphql_request.gql`
-			query ProjectsIndex {
-				projects(orderBy: createdAt_DESC, first: 3) {
-					slug
-					description
-					id
-					tags
-					name
-					image {
-						url
-					}
-				}
-			}
-		`;
-  const queryPost = import_graphql_request.gql`
-			query PostsQuery {
-				posts(orderBy: publishedAt_DESC, first: 3) {
-					tags
-					content
-					date
-					id
-					slug
-					title
-					authors {
-						name
-						picture {
-							url
-						}
-					}
-					coverImage {
-						url
-					}
-				}
-			}
-		`;
-  const { projects } = await graphcms.request(query);
-  const { posts } = await graphcms.request(queryPost);
-  return { props: { projects, posts } };
-}
-var import_graphql_request, css$1, ProfileCard, css4, Routes;
-var init_index_svelte = __esm({
-  ".svelte-kit/output/server/entries/pages/index.svelte.js"() {
-    init_index_e8b4228d();
-    import_graphql_request = __toESM(require_dist(), 1);
-    css$1 = {
-      code: ".evidenzia.svelte-1dxjylz.svelte-1dxjylz{background-color:var(--dark);color:var(--light);padding:0.2em}.to-click.svelte-1dxjylz.svelte-1dxjylz{border:none;outline:solid #fff 1px;background-color:transparent;color:var(--light);mix-blend-mode:difference;padding:0.2em;font-size:2em;cursor:pointer;transition:all 0.2s ease-in;position:relative;overflow:hidden;z-index:1}a.svelte-1dxjylz.svelte-1dxjylz{mix-blend-mode:normal;color:var(--dark);text-decoration:none}.to-click.svelte-1dxjylz.svelte-1dxjylz:hover{transform:scale(1.1);color:var(--dark)}.to-click.svelte-1dxjylz.svelte-1dxjylz:hover::after{transform:scaleY(100%)}.to-click.svelte-1dxjylz.svelte-1dxjylz::after{content:'';position:absolute;background-color:var(--light);width:100%;height:100%;top:0;left:0;transition:all 0.3s ease;transform:scaleY(0%);transform-origin:bottom;z-index:-1}.card-bg.svelte-1dxjylz.svelte-1dxjylz{background-color:var(--light);position:absolute;width:100%;height:100%;top:0;left:0;z-index:auto;transform:scaleY(-100%);transform-origin:bottom;animation:svelte-1dxjylz-bg-build 0.5s linear forwards;box-shadow:0 5px 10px rgba(0, 0, 0, 0.3)}.profile-card.svelte-1dxjylz.svelte-1dxjylz{width:fit-content;text-align:center;height:fit-content;padding:1em;border-radius:0.1em;width:80%;position:relative;overflow:hidden}.card.svelte-1dxjylz.svelte-1dxjylz{display:grid;grid-template-columns:1fr 1fr;place-items:center;position:relative;margin:1em}.text.svelte-1dxjylz.svelte-1dxjylz{color:var(--dark);font-weight:600}.descrizione.svelte-1dxjylz.svelte-1dxjylz{color:var(--dark);mix-blend-mode:darken}.socials.svelte-1dxjylz.svelte-1dxjylz{display:flex;flex-direction:row;flex-wrap:wrap;gap:0.5em;justify-content:center;align-content:center;margin:0.5em}.link.svelte-1dxjylz.svelte-1dxjylz{font-size:clamp(1em, 1.2em, 1.1em);position:relative;overflow:hidden}.link.svelte-1dxjylz.svelte-1dxjylz::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;transform-origin:left;transform:scaleX(-100%);background-color:var(--dark);transition:all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)}.link.svelte-1dxjylz.svelte-1dxjylz:hover::after{transform:scaleX(100%)}.info.svelte-1dxjylz.svelte-1dxjylz{text-align:center;display:flex;flex-direction:column;flex-wrap:wrap;justify-content:center;align-items:center;padding:1em 0.3em}.buttons.svelte-1dxjylz.svelte-1dxjylz{display:flex;gap:1em;justify-content:center;align-items:center}.button-link.svelte-1dxjylz.svelte-1dxjylz{text-decoration:none;width:100%;height:100%;color:var(--dark);background-color:var(--light);padding:0.2em 0.5em;font-size:clamp(1em, 1.1em, 1.2em);outline:black solid 1px;position:relative;overflow:hidden;display:flex;width:fit-content;justify-content:center;align-items:center;transition:all 0.2s ease}.about.svelte-1dxjylz.svelte-1dxjylz:hover{background-color:var(--dark);color:var(--light)}.click-after.svelte-1dxjylz.svelte-1dxjylz{overflow:hidden;height:100%;width:100%;position:absolute;left:0;top:0;text-align:center;display:flex}.button-link.svelte-1dxjylz:hover .click-after.svelte-1dxjylz::after{transform:translateX(0)}.button-link.svelte-1dxjylz:hover .cv.svelte-1dxjylz{transform:translateX(0);transition-delay:200ms}.click-after.svelte-1dxjylz.svelte-1dxjylz::after{content:'';background-color:rgb(0, 0, 0);width:100%;height:100%;position:absolute;text-align:center;top:0;left:0;transform:translateX(100%);transition:all 0.3s ease}.cv.svelte-1dxjylz.svelte-1dxjylz{width:100%;transform:translateX(100%);transition:all 0.2s ease;z-index:1;font-size:2em;color:var(--light);position:absolute;left:10%;display:flex;justify-content:center;align-items:center;height:100%}.name.svelte-1dxjylz.svelte-1dxjylz{font-size:clamp(1.7em, 4vw, 4em);color:var(--dark);font-weight:600;position:relative;overflow:hidden;mix-blend-mode:difference;z-index:1}.name.svelte-1dxjylz.svelte-1dxjylz::before{width:100%;height:100%;content:'';background-color:var(--light);animation:svelte-1dxjylz-coloring 1s cubic-bezier(0.455, 0.03, 0.515, 0.955) backwards;position:absolute;top:0;left:0;z-index:-1;transform-origin:left}@keyframes svelte-1dxjylz-coloring{0%{transform:scaleX(0%)}100%{transform:scaleX(100%)}}@keyframes svelte-1dxjylz-bg-build{0%{transform:scaleY(0%)}100%{transform:scaleY(100%)}}@media(max-width:660px){.card.svelte-1dxjylz.svelte-1dxjylz{display:grid;grid-template-columns:1fr}.info.svelte-1dxjylz.svelte-1dxjylz{padding:0.5em;margin:0}}",
-      map: null
-    };
-    ProfileCard = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      $$result.css.add(css$1);
-      return `<div class="${escape("") + " profile-card svelte-1dxjylz"}">${`<button class="${"to-click svelte-1dxjylz"}">&lt; Hi /&gt; </button>`}
-</div>`;
-    });
-    css4 = {
-      code: "h1.svelte-cnxopc{font-size:clamp(2.5em, 8vw, 5em);text-align:center}section.svelte-cnxopc{max-width:100vw;min-height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:1em}.index.svelte-cnxopc{display:grid;place-items:center;grid-template-rows:1fr}.expand.svelte-cnxopc{color:var(--light);font-size:2.5em;animation:svelte-cnxopc-down-indicator 1s ease-in-out alternate infinite;text-decoration:none}.light.svelte-cnxopc{background-color:var(--light)}.dark.svelte-cnxopc{background-color:var(--dark)}.dark-text.svelte-cnxopc{color:var(--dark)}.light-text.svelte-cnxopc{color:var(--light)}@keyframes svelte-cnxopc-down-indicator{0%{transform:translateY(-20%)}100%{transform:translateY(0%)}}",
-      map: null
-    };
-    Routes = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let { projects } = $$props;
-      let { posts } = $$props;
-      if ($$props.projects === void 0 && $$bindings.projects && projects !== void 0)
-        $$bindings.projects(projects);
-      if ($$props.posts === void 0 && $$bindings.posts && posts !== void 0)
-        $$bindings.posts(posts);
-      $$result.css.add(css4);
-      return `${$$result.head += `${$$result.title = `<title>Daniele Avolio Developer</title>`, ""}`, ""}
-
-<section class="${"dark index svelte-cnxopc"}">${validate_component(ProfileCard, "ProfileCard").$$render($$result, {}, {}, {})}
-	<a href="${"#posts"}" class="${"material-icons expand svelte-cnxopc"}">expand_more
-	</a></section>
-
-${``}`;
-    });
-  }
-});
-
-// .svelte-kit/output/server/nodes/2.js
-var __exports3 = {};
-__export(__exports3, {
-  css: () => css5,
-  entry: () => entry3,
-  js: () => js3,
-  module: () => index_svelte_exports
-});
-var entry3, js3, css5;
-var init__3 = __esm({
-  ".svelte-kit/output/server/nodes/2.js"() {
-    init_index_svelte();
-    entry3 = "pages/index.svelte-fe817a9b.js";
-    js3 = ["pages/index.svelte-fe817a9b.js", "chunks/vendor-bc34623b.js", "chunks/PostsList-73fc94da.js", "chunks/filters-cc608ede.js", "chunks/singletons-d1fb5791.js", "chunks/PostTag-fd67d1e4.js", "chunks/ProjectList-d56948d6.js", "chunks/ProjectTag-8c565096.js"];
-    css5 = ["assets/pages/index.svelte-80c65fa0.css", "assets/PostsList-a7f30869.css", "assets/PostTag-6c62c255.css", "assets/ProjectList-039c1d26.css", "assets/ProjectTag-69152cec.css"];
-  }
-});
-
-// node_modules/marked/lib/marked.esm.js
-function getDefaults() {
-  return {
-    baseUrl: null,
-    breaks: false,
-    extensions: null,
-    gfm: true,
-    headerIds: true,
-    headerPrefix: "",
-    highlight: null,
-    langPrefix: "language-",
-    mangle: true,
-    pedantic: false,
-    renderer: null,
-    sanitize: false,
-    sanitizer: null,
-    silent: false,
-    smartLists: false,
-    smartypants: false,
-    tokenizer: null,
-    walkTokens: null,
-    xhtml: false
-  };
-}
-function changeDefaults(newDefaults) {
-  defaults = newDefaults;
-}
-function escape2(html, encode2) {
-  if (encode2) {
-    if (escapeTest.test(html)) {
-      return html.replace(escapeReplace, getEscapeReplacement);
-    }
-  } else {
-    if (escapeTestNoEncode.test(html)) {
-      return html.replace(escapeReplaceNoEncode, getEscapeReplacement);
-    }
-  }
-  return html;
-}
-function unescape2(html) {
-  return html.replace(unescapeTest, (_, n) => {
-    n = n.toLowerCase();
-    if (n === "colon")
-      return ":";
-    if (n.charAt(0) === "#") {
-      return n.charAt(1) === "x" ? String.fromCharCode(parseInt(n.substring(2), 16)) : String.fromCharCode(+n.substring(1));
-    }
-    return "";
-  });
-}
-function edit(regex, opt) {
-  regex = regex.source || regex;
-  opt = opt || "";
-  const obj = {
-    replace: (name, val) => {
-      val = val.source || val;
-      val = val.replace(caret, "$1");
-      regex = regex.replace(name, val);
-      return obj;
-    },
-    getRegex: () => {
-      return new RegExp(regex, opt);
-    }
-  };
-  return obj;
-}
-function cleanUrl(sanitize, base2, href) {
-  if (sanitize) {
-    let prot;
-    try {
-      prot = decodeURIComponent(unescape2(href)).replace(nonWordAndColonTest, "").toLowerCase();
-    } catch (e2) {
-      return null;
-    }
-    if (prot.indexOf("javascript:") === 0 || prot.indexOf("vbscript:") === 0 || prot.indexOf("data:") === 0) {
-      return null;
-    }
-  }
-  if (base2 && !originIndependentUrl.test(href)) {
-    href = resolveUrl(base2, href);
-  }
-  try {
-    href = encodeURI(href).replace(/%25/g, "%");
-  } catch (e2) {
-    return null;
-  }
-  return href;
-}
-function resolveUrl(base2, href) {
-  if (!baseUrls[" " + base2]) {
-    if (justDomain.test(base2)) {
-      baseUrls[" " + base2] = base2 + "/";
-    } else {
-      baseUrls[" " + base2] = rtrim(base2, "/", true);
-    }
-  }
-  base2 = baseUrls[" " + base2];
-  const relativeBase = base2.indexOf(":") === -1;
-  if (href.substring(0, 2) === "//") {
-    if (relativeBase) {
-      return href;
-    }
-    return base2.replace(protocol, "$1") + href;
-  } else if (href.charAt(0) === "/") {
-    if (relativeBase) {
-      return href;
-    }
-    return base2.replace(domain, "$1") + href;
-  } else {
-    return base2 + href;
-  }
-}
-function merge(obj) {
-  let i2 = 1, target, key2;
-  for (; i2 < arguments.length; i2++) {
-    target = arguments[i2];
-    for (key2 in target) {
-      if (Object.prototype.hasOwnProperty.call(target, key2)) {
-        obj[key2] = target[key2];
-      }
-    }
-  }
-  return obj;
-}
-function splitCells(tableRow, count) {
-  const row = tableRow.replace(/\|/g, (match, offset, str) => {
-    let escaped3 = false, curr = offset;
-    while (--curr >= 0 && str[curr] === "\\")
-      escaped3 = !escaped3;
-    if (escaped3) {
-      return "|";
-    } else {
-      return " |";
-    }
-  }), cells = row.split(/ \|/);
-  let i2 = 0;
-  if (!cells[0].trim()) {
-    cells.shift();
-  }
-  if (cells.length > 0 && !cells[cells.length - 1].trim()) {
-    cells.pop();
-  }
-  if (cells.length > count) {
-    cells.splice(count);
-  } else {
-    while (cells.length < count)
-      cells.push("");
-  }
-  for (; i2 < cells.length; i2++) {
-    cells[i2] = cells[i2].trim().replace(/\\\|/g, "|");
-  }
-  return cells;
-}
-function rtrim(str, c, invert) {
-  const l = str.length;
-  if (l === 0) {
-    return "";
-  }
-  let suffLen = 0;
-  while (suffLen < l) {
-    const currChar = str.charAt(l - suffLen - 1);
-    if (currChar === c && !invert) {
-      suffLen++;
-    } else if (currChar !== c && invert) {
-      suffLen++;
-    } else {
-      break;
-    }
-  }
-  return str.substr(0, l - suffLen);
-}
-function findClosingBracket(str, b) {
-  if (str.indexOf(b[1]) === -1) {
-    return -1;
-  }
-  const l = str.length;
-  let level = 0, i2 = 0;
-  for (; i2 < l; i2++) {
-    if (str[i2] === "\\") {
-      i2++;
-    } else if (str[i2] === b[0]) {
-      level++;
-    } else if (str[i2] === b[1]) {
-      level--;
-      if (level < 0) {
-        return i2;
-      }
-    }
-  }
-  return -1;
-}
-function checkSanitizeDeprecation(opt) {
-  if (opt && opt.sanitize && !opt.silent) {
-    console.warn("marked(): sanitize and sanitizer parameters are deprecated since version 0.7.0, should not be used and will be removed in the future. Read more here: https://marked.js.org/#/USING_ADVANCED.md#options");
-  }
-}
-function repeatString(pattern, count) {
-  if (count < 1) {
-    return "";
-  }
-  let result = "";
-  while (count > 1) {
-    if (count & 1) {
-      result += pattern;
-    }
-    count >>= 1;
-    pattern += pattern;
-  }
-  return result + pattern;
-}
-function outputLink(cap, link, raw, lexer2) {
-  const href = link.href;
-  const title = link.title ? escape2(link.title) : null;
-  const text = cap[1].replace(/\\([\[\]])/g, "$1");
-  if (cap[0].charAt(0) !== "!") {
-    lexer2.state.inLink = true;
-    const token = {
-      type: "link",
-      raw,
-      href,
-      title,
-      text,
-      tokens: lexer2.inlineTokens(text, [])
-    };
-    lexer2.state.inLink = false;
-    return token;
-  } else {
-    return {
-      type: "image",
-      raw,
-      href,
-      title,
-      text: escape2(text)
-    };
-  }
-}
-function indentCodeCompensation(raw, text) {
-  const matchIndentToCode = raw.match(/^(\s+)(?:```)/);
-  if (matchIndentToCode === null) {
-    return text;
-  }
-  const indentToCode = matchIndentToCode[1];
-  return text.split("\n").map((node) => {
-    const matchIndentInNode = node.match(/^\s+/);
-    if (matchIndentInNode === null) {
-      return node;
-    }
-    const [indentInNode] = matchIndentInNode;
-    if (indentInNode.length >= indentToCode.length) {
-      return node.slice(indentToCode.length);
-    }
-    return node;
-  }).join("\n");
-}
-function smartypants(text) {
-  return text.replace(/---/g, "\u2014").replace(/--/g, "\u2013").replace(/(^|[-\u2014/(\[{"\s])'/g, "$1\u2018").replace(/'/g, "\u2019").replace(/(^|[-\u2014/(\[{\u2018\s])"/g, "$1\u201C").replace(/"/g, "\u201D").replace(/\.{3}/g, "\u2026");
-}
-function mangle(text) {
-  let out = "", i2, ch;
-  const l = text.length;
-  for (i2 = 0; i2 < l; i2++) {
-    ch = text.charCodeAt(i2);
-    if (Math.random() > 0.5) {
-      ch = "x" + ch.toString(16);
-    }
-    out += "&#" + ch + ";";
-  }
-  return out;
-}
-function marked(src, opt, callback) {
-  if (typeof src === "undefined" || src === null) {
-    throw new Error("marked(): input parameter is undefined or null");
-  }
-  if (typeof src !== "string") {
-    throw new Error("marked(): input parameter is of type " + Object.prototype.toString.call(src) + ", string expected");
-  }
-  if (typeof opt === "function") {
-    callback = opt;
-    opt = null;
-  }
-  opt = merge({}, marked.defaults, opt || {});
-  checkSanitizeDeprecation(opt);
-  if (callback) {
-    const highlight = opt.highlight;
-    let tokens;
-    try {
-      tokens = Lexer.lex(src, opt);
-    } catch (e2) {
-      return callback(e2);
-    }
-    const done = function(err) {
-      let out;
-      if (!err) {
-        try {
-          if (opt.walkTokens) {
-            marked.walkTokens(tokens, opt.walkTokens);
-          }
-          out = Parser.parse(tokens, opt);
-        } catch (e2) {
-          err = e2;
-        }
-      }
-      opt.highlight = highlight;
-      return err ? callback(err) : callback(null, out);
-    };
-    if (!highlight || highlight.length < 3) {
-      return done();
-    }
-    delete opt.highlight;
-    if (!tokens.length)
-      return done();
-    let pending = 0;
-    marked.walkTokens(tokens, function(token) {
-      if (token.type === "code") {
-        pending++;
-        setTimeout(() => {
-          highlight(token.text, token.lang, function(err, code) {
-            if (err) {
-              return done(err);
-            }
-            if (code != null && code !== token.text) {
-              token.text = code;
-              token.escaped = true;
-            }
-            pending--;
-            if (pending === 0) {
-              done();
-            }
-          });
-        }, 0);
-      }
-    });
-    if (pending === 0) {
-      done();
-    }
-    return;
-  }
-  try {
-    const tokens = Lexer.lex(src, opt);
-    if (opt.walkTokens) {
-      marked.walkTokens(tokens, opt.walkTokens);
-    }
-    return Parser.parse(tokens, opt);
-  } catch (e2) {
-    e2.message += "\nPlease report this to https://github.com/markedjs/marked.";
-    if (opt.silent) {
-      return "<p>An error occurred:</p><pre>" + escape2(e2.message + "", true) + "</pre>";
-    }
-    throw e2;
-  }
-}
-var defaults, escapeTest, escapeReplace, escapeTestNoEncode, escapeReplaceNoEncode, escapeReplacements, getEscapeReplacement, unescapeTest, caret, nonWordAndColonTest, originIndependentUrl, baseUrls, justDomain, protocol, domain, noopTest, Tokenizer, block, inline, Lexer, Renderer, TextRenderer, Slugger, Parser, options, setOptions, use, walkTokens, parseInline, parser, lexer;
-var init_marked_esm = __esm({
-  "node_modules/marked/lib/marked.esm.js"() {
-    defaults = getDefaults();
-    escapeTest = /[&<>"']/;
-    escapeReplace = /[&<>"']/g;
-    escapeTestNoEncode = /[<>"']|&(?!#?\w+;)/;
-    escapeReplaceNoEncode = /[<>"']|&(?!#?\w+;)/g;
-    escapeReplacements = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    };
-    getEscapeReplacement = (ch) => escapeReplacements[ch];
-    unescapeTest = /&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/ig;
-    caret = /(^|[^\[])\^/g;
-    nonWordAndColonTest = /[^\w:]/g;
-    originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
-    baseUrls = {};
-    justDomain = /^[^:]+:\/*[^/]*$/;
-    protocol = /^([^:]+:)[\s\S]*$/;
-    domain = /^([^:]+:\/*[^/]*)[\s\S]*$/;
-    noopTest = { exec: function noopTest2() {
-    } };
-    Tokenizer = class {
-      constructor(options2) {
-        this.options = options2 || defaults;
-      }
-      space(src) {
-        const cap = this.rules.block.newline.exec(src);
-        if (cap && cap[0].length > 0) {
-          return {
-            type: "space",
-            raw: cap[0]
-          };
-        }
-      }
-      code(src) {
-        const cap = this.rules.block.code.exec(src);
-        if (cap) {
-          const text = cap[0].replace(/^ {1,4}/gm, "");
-          return {
-            type: "code",
-            raw: cap[0],
-            codeBlockStyle: "indented",
-            text: !this.options.pedantic ? rtrim(text, "\n") : text
-          };
-        }
-      }
-      fences(src) {
-        const cap = this.rules.block.fences.exec(src);
-        if (cap) {
-          const raw = cap[0];
-          const text = indentCodeCompensation(raw, cap[3] || "");
-          return {
-            type: "code",
-            raw,
-            lang: cap[2] ? cap[2].trim() : cap[2],
-            text
-          };
-        }
-      }
-      heading(src) {
-        const cap = this.rules.block.heading.exec(src);
-        if (cap) {
-          let text = cap[2].trim();
-          if (/#$/.test(text)) {
-            const trimmed = rtrim(text, "#");
-            if (this.options.pedantic) {
-              text = trimmed.trim();
-            } else if (!trimmed || / $/.test(trimmed)) {
-              text = trimmed.trim();
-            }
-          }
-          const token = {
-            type: "heading",
-            raw: cap[0],
-            depth: cap[1].length,
-            text,
-            tokens: []
-          };
-          this.lexer.inline(token.text, token.tokens);
-          return token;
-        }
-      }
-      hr(src) {
-        const cap = this.rules.block.hr.exec(src);
-        if (cap) {
-          return {
-            type: "hr",
-            raw: cap[0]
-          };
-        }
-      }
-      blockquote(src) {
-        const cap = this.rules.block.blockquote.exec(src);
-        if (cap) {
-          const text = cap[0].replace(/^ *> ?/gm, "");
-          return {
-            type: "blockquote",
-            raw: cap[0],
-            tokens: this.lexer.blockTokens(text, []),
-            text
-          };
-        }
-      }
-      list(src) {
-        let cap = this.rules.block.list.exec(src);
-        if (cap) {
-          let raw, istask, ischecked, indent, i2, blankLine, endsWithBlankLine, line, nextLine, rawLine, itemContents, endEarly;
-          let bull = cap[1].trim();
-          const isordered = bull.length > 1;
-          const list = {
-            type: "list",
-            raw: "",
-            ordered: isordered,
-            start: isordered ? +bull.slice(0, -1) : "",
-            loose: false,
-            items: []
-          };
-          bull = isordered ? `\\d{1,9}\\${bull.slice(-1)}` : `\\${bull}`;
-          if (this.options.pedantic) {
-            bull = isordered ? bull : "[*+-]";
-          }
-          const itemRegex = new RegExp(`^( {0,3}${bull})((?: [^\\n]*)?(?:\\n|$))`);
-          while (src) {
-            endEarly = false;
-            if (!(cap = itemRegex.exec(src))) {
-              break;
-            }
-            if (this.rules.block.hr.test(src)) {
-              break;
-            }
-            raw = cap[0];
-            src = src.substring(raw.length);
-            line = cap[2].split("\n", 1)[0];
-            nextLine = src.split("\n", 1)[0];
-            if (this.options.pedantic) {
-              indent = 2;
-              itemContents = line.trimLeft();
-            } else {
-              indent = cap[2].search(/[^ ]/);
-              indent = indent > 4 ? 1 : indent;
-              itemContents = line.slice(indent);
-              indent += cap[1].length;
-            }
-            blankLine = false;
-            if (!line && /^ *$/.test(nextLine)) {
-              raw += nextLine + "\n";
-              src = src.substring(nextLine.length + 1);
-              endEarly = true;
-            }
-            if (!endEarly) {
-              const nextBulletRegex = new RegExp(`^ {0,${Math.min(3, indent - 1)}}(?:[*+-]|\\d{1,9}[.)])`);
-              while (src) {
-                rawLine = src.split("\n", 1)[0];
-                line = rawLine;
-                if (this.options.pedantic) {
-                  line = line.replace(/^ {1,4}(?=( {4})*[^ ])/g, "  ");
-                }
-                if (nextBulletRegex.test(line)) {
-                  break;
-                }
-                if (line.search(/[^ ]/) >= indent || !line.trim()) {
-                  itemContents += "\n" + line.slice(indent);
-                } else if (!blankLine) {
-                  itemContents += "\n" + line;
-                } else {
-                  break;
-                }
-                if (!blankLine && !line.trim()) {
-                  blankLine = true;
-                }
-                raw += rawLine + "\n";
-                src = src.substring(rawLine.length + 1);
-              }
-            }
-            if (!list.loose) {
-              if (endsWithBlankLine) {
-                list.loose = true;
-              } else if (/\n *\n *$/.test(raw)) {
-                endsWithBlankLine = true;
-              }
-            }
-            if (this.options.gfm) {
-              istask = /^\[[ xX]\] /.exec(itemContents);
-              if (istask) {
-                ischecked = istask[0] !== "[ ] ";
-                itemContents = itemContents.replace(/^\[[ xX]\] +/, "");
-              }
-            }
-            list.items.push({
-              type: "list_item",
-              raw,
-              task: !!istask,
-              checked: ischecked,
-              loose: false,
-              text: itemContents
-            });
-            list.raw += raw;
-          }
-          list.items[list.items.length - 1].raw = raw.trimRight();
-          list.items[list.items.length - 1].text = itemContents.trimRight();
-          list.raw = list.raw.trimRight();
-          const l = list.items.length;
-          for (i2 = 0; i2 < l; i2++) {
-            this.lexer.state.top = false;
-            list.items[i2].tokens = this.lexer.blockTokens(list.items[i2].text, []);
-            const spacers = list.items[i2].tokens.filter((t2) => t2.type === "space");
-            const hasMultipleLineBreaks = spacers.every((t2) => {
-              const chars2 = t2.raw.split("");
-              let lineBreaks = 0;
-              for (const char of chars2) {
-                if (char === "\n") {
-                  lineBreaks += 1;
-                }
-                if (lineBreaks > 1) {
-                  return true;
-                }
-              }
-              return false;
-            });
-            if (!list.loose && spacers.length && hasMultipleLineBreaks) {
-              list.loose = true;
-              list.items[i2].loose = true;
-            }
-          }
-          return list;
-        }
-      }
-      html(src) {
-        const cap = this.rules.block.html.exec(src);
-        if (cap) {
-          const token = {
-            type: "html",
-            raw: cap[0],
-            pre: !this.options.sanitizer && (cap[1] === "pre" || cap[1] === "script" || cap[1] === "style"),
-            text: cap[0]
-          };
-          if (this.options.sanitize) {
-            token.type = "paragraph";
-            token.text = this.options.sanitizer ? this.options.sanitizer(cap[0]) : escape2(cap[0]);
-            token.tokens = [];
-            this.lexer.inline(token.text, token.tokens);
-          }
-          return token;
-        }
-      }
-      def(src) {
-        const cap = this.rules.block.def.exec(src);
-        if (cap) {
-          if (cap[3])
-            cap[3] = cap[3].substring(1, cap[3].length - 1);
-          const tag = cap[1].toLowerCase().replace(/\s+/g, " ");
-          return {
-            type: "def",
-            tag,
-            raw: cap[0],
-            href: cap[2],
-            title: cap[3]
-          };
-        }
-      }
-      table(src) {
-        const cap = this.rules.block.table.exec(src);
-        if (cap) {
-          const item = {
-            type: "table",
-            header: splitCells(cap[1]).map((c) => {
-              return { text: c };
-            }),
-            align: cap[2].replace(/^ *|\| *$/g, "").split(/ *\| */),
-            rows: cap[3] && cap[3].trim() ? cap[3].replace(/\n[ \t]*$/, "").split("\n") : []
-          };
-          if (item.header.length === item.align.length) {
-            item.raw = cap[0];
-            let l = item.align.length;
-            let i2, j, k, row;
-            for (i2 = 0; i2 < l; i2++) {
-              if (/^ *-+: *$/.test(item.align[i2])) {
-                item.align[i2] = "right";
-              } else if (/^ *:-+: *$/.test(item.align[i2])) {
-                item.align[i2] = "center";
-              } else if (/^ *:-+ *$/.test(item.align[i2])) {
-                item.align[i2] = "left";
-              } else {
-                item.align[i2] = null;
-              }
-            }
-            l = item.rows.length;
-            for (i2 = 0; i2 < l; i2++) {
-              item.rows[i2] = splitCells(item.rows[i2], item.header.length).map((c) => {
-                return { text: c };
-              });
-            }
-            l = item.header.length;
-            for (j = 0; j < l; j++) {
-              item.header[j].tokens = [];
-              this.lexer.inlineTokens(item.header[j].text, item.header[j].tokens);
-            }
-            l = item.rows.length;
-            for (j = 0; j < l; j++) {
-              row = item.rows[j];
-              for (k = 0; k < row.length; k++) {
-                row[k].tokens = [];
-                this.lexer.inlineTokens(row[k].text, row[k].tokens);
-              }
-            }
-            return item;
-          }
-        }
-      }
-      lheading(src) {
-        const cap = this.rules.block.lheading.exec(src);
-        if (cap) {
-          const token = {
-            type: "heading",
-            raw: cap[0],
-            depth: cap[2].charAt(0) === "=" ? 1 : 2,
-            text: cap[1],
-            tokens: []
-          };
-          this.lexer.inline(token.text, token.tokens);
-          return token;
-        }
-      }
-      paragraph(src) {
-        const cap = this.rules.block.paragraph.exec(src);
-        if (cap) {
-          const token = {
-            type: "paragraph",
-            raw: cap[0],
-            text: cap[1].charAt(cap[1].length - 1) === "\n" ? cap[1].slice(0, -1) : cap[1],
-            tokens: []
-          };
-          this.lexer.inline(token.text, token.tokens);
-          return token;
-        }
-      }
-      text(src) {
-        const cap = this.rules.block.text.exec(src);
-        if (cap) {
-          const token = {
-            type: "text",
-            raw: cap[0],
-            text: cap[0],
-            tokens: []
-          };
-          this.lexer.inline(token.text, token.tokens);
-          return token;
-        }
-      }
-      escape(src) {
-        const cap = this.rules.inline.escape.exec(src);
-        if (cap) {
-          return {
-            type: "escape",
-            raw: cap[0],
-            text: escape2(cap[1])
-          };
-        }
-      }
-      tag(src) {
-        const cap = this.rules.inline.tag.exec(src);
-        if (cap) {
-          if (!this.lexer.state.inLink && /^<a /i.test(cap[0])) {
-            this.lexer.state.inLink = true;
-          } else if (this.lexer.state.inLink && /^<\/a>/i.test(cap[0])) {
-            this.lexer.state.inLink = false;
-          }
-          if (!this.lexer.state.inRawBlock && /^<(pre|code|kbd|script)(\s|>)/i.test(cap[0])) {
-            this.lexer.state.inRawBlock = true;
-          } else if (this.lexer.state.inRawBlock && /^<\/(pre|code|kbd|script)(\s|>)/i.test(cap[0])) {
-            this.lexer.state.inRawBlock = false;
-          }
-          return {
-            type: this.options.sanitize ? "text" : "html",
-            raw: cap[0],
-            inLink: this.lexer.state.inLink,
-            inRawBlock: this.lexer.state.inRawBlock,
-            text: this.options.sanitize ? this.options.sanitizer ? this.options.sanitizer(cap[0]) : escape2(cap[0]) : cap[0]
-          };
-        }
-      }
-      link(src) {
-        const cap = this.rules.inline.link.exec(src);
-        if (cap) {
-          const trimmedUrl = cap[2].trim();
-          if (!this.options.pedantic && /^</.test(trimmedUrl)) {
-            if (!/>$/.test(trimmedUrl)) {
-              return;
-            }
-            const rtrimSlash = rtrim(trimmedUrl.slice(0, -1), "\\");
-            if ((trimmedUrl.length - rtrimSlash.length) % 2 === 0) {
-              return;
-            }
-          } else {
-            const lastParenIndex = findClosingBracket(cap[2], "()");
-            if (lastParenIndex > -1) {
-              const start = cap[0].indexOf("!") === 0 ? 5 : 4;
-              const linkLen = start + cap[1].length + lastParenIndex;
-              cap[2] = cap[2].substring(0, lastParenIndex);
-              cap[0] = cap[0].substring(0, linkLen).trim();
-              cap[3] = "";
-            }
-          }
-          let href = cap[2];
-          let title = "";
-          if (this.options.pedantic) {
-            const link = /^([^'"]*[^\s])\s+(['"])(.*)\2/.exec(href);
-            if (link) {
-              href = link[1];
-              title = link[3];
-            }
-          } else {
-            title = cap[3] ? cap[3].slice(1, -1) : "";
-          }
-          href = href.trim();
-          if (/^</.test(href)) {
-            if (this.options.pedantic && !/>$/.test(trimmedUrl)) {
-              href = href.slice(1);
-            } else {
-              href = href.slice(1, -1);
-            }
-          }
-          return outputLink(cap, {
-            href: href ? href.replace(this.rules.inline._escapes, "$1") : href,
-            title: title ? title.replace(this.rules.inline._escapes, "$1") : title
-          }, cap[0], this.lexer);
-        }
-      }
-      reflink(src, links) {
-        let cap;
-        if ((cap = this.rules.inline.reflink.exec(src)) || (cap = this.rules.inline.nolink.exec(src))) {
-          let link = (cap[2] || cap[1]).replace(/\s+/g, " ");
-          link = links[link.toLowerCase()];
-          if (!link || !link.href) {
-            const text = cap[0].charAt(0);
-            return {
-              type: "text",
-              raw: text,
-              text
-            };
-          }
-          return outputLink(cap, link, cap[0], this.lexer);
-        }
-      }
-      emStrong(src, maskedSrc, prevChar = "") {
-        let match = this.rules.inline.emStrong.lDelim.exec(src);
-        if (!match)
-          return;
-        if (match[3] && prevChar.match(/[\p{L}\p{N}]/u))
-          return;
-        const nextChar = match[1] || match[2] || "";
-        if (!nextChar || nextChar && (prevChar === "" || this.rules.inline.punctuation.exec(prevChar))) {
-          const lLength = match[0].length - 1;
-          let rDelim, rLength, delimTotal = lLength, midDelimTotal = 0;
-          const endReg = match[0][0] === "*" ? this.rules.inline.emStrong.rDelimAst : this.rules.inline.emStrong.rDelimUnd;
-          endReg.lastIndex = 0;
-          maskedSrc = maskedSrc.slice(-1 * src.length + lLength);
-          while ((match = endReg.exec(maskedSrc)) != null) {
-            rDelim = match[1] || match[2] || match[3] || match[4] || match[5] || match[6];
-            if (!rDelim)
-              continue;
-            rLength = rDelim.length;
-            if (match[3] || match[4]) {
-              delimTotal += rLength;
-              continue;
-            } else if (match[5] || match[6]) {
-              if (lLength % 3 && !((lLength + rLength) % 3)) {
-                midDelimTotal += rLength;
-                continue;
-              }
-            }
-            delimTotal -= rLength;
-            if (delimTotal > 0)
-              continue;
-            rLength = Math.min(rLength, rLength + delimTotal + midDelimTotal);
-            if (Math.min(lLength, rLength) % 2) {
-              const text2 = src.slice(1, lLength + match.index + rLength);
-              return {
-                type: "em",
-                raw: src.slice(0, lLength + match.index + rLength + 1),
-                text: text2,
-                tokens: this.lexer.inlineTokens(text2, [])
-              };
-            }
-            const text = src.slice(2, lLength + match.index + rLength - 1);
-            return {
-              type: "strong",
-              raw: src.slice(0, lLength + match.index + rLength + 1),
-              text,
-              tokens: this.lexer.inlineTokens(text, [])
-            };
-          }
-        }
-      }
-      codespan(src) {
-        const cap = this.rules.inline.code.exec(src);
-        if (cap) {
-          let text = cap[2].replace(/\n/g, " ");
-          const hasNonSpaceChars = /[^ ]/.test(text);
-          const hasSpaceCharsOnBothEnds = /^ /.test(text) && / $/.test(text);
-          if (hasNonSpaceChars && hasSpaceCharsOnBothEnds) {
-            text = text.substring(1, text.length - 1);
-          }
-          text = escape2(text, true);
-          return {
-            type: "codespan",
-            raw: cap[0],
-            text
-          };
-        }
-      }
-      br(src) {
-        const cap = this.rules.inline.br.exec(src);
-        if (cap) {
-          return {
-            type: "br",
-            raw: cap[0]
-          };
-        }
-      }
-      del(src) {
-        const cap = this.rules.inline.del.exec(src);
-        if (cap) {
-          return {
-            type: "del",
-            raw: cap[0],
-            text: cap[2],
-            tokens: this.lexer.inlineTokens(cap[2], [])
-          };
-        }
-      }
-      autolink(src, mangle2) {
-        const cap = this.rules.inline.autolink.exec(src);
-        if (cap) {
-          let text, href;
-          if (cap[2] === "@") {
-            text = escape2(this.options.mangle ? mangle2(cap[1]) : cap[1]);
-            href = "mailto:" + text;
-          } else {
-            text = escape2(cap[1]);
-            href = text;
-          }
-          return {
-            type: "link",
-            raw: cap[0],
-            text,
-            href,
-            tokens: [
-              {
-                type: "text",
-                raw: text,
-                text
-              }
-            ]
-          };
-        }
-      }
-      url(src, mangle2) {
-        let cap;
-        if (cap = this.rules.inline.url.exec(src)) {
-          let text, href;
-          if (cap[2] === "@") {
-            text = escape2(this.options.mangle ? mangle2(cap[0]) : cap[0]);
-            href = "mailto:" + text;
-          } else {
-            let prevCapZero;
-            do {
-              prevCapZero = cap[0];
-              cap[0] = this.rules.inline._backpedal.exec(cap[0])[0];
-            } while (prevCapZero !== cap[0]);
-            text = escape2(cap[0]);
-            if (cap[1] === "www.") {
-              href = "http://" + text;
-            } else {
-              href = text;
-            }
-          }
-          return {
-            type: "link",
-            raw: cap[0],
-            text,
-            href,
-            tokens: [
-              {
-                type: "text",
-                raw: text,
-                text
-              }
-            ]
-          };
-        }
-      }
-      inlineText(src, smartypants2) {
-        const cap = this.rules.inline.text.exec(src);
-        if (cap) {
-          let text;
-          if (this.lexer.state.inRawBlock) {
-            text = this.options.sanitize ? this.options.sanitizer ? this.options.sanitizer(cap[0]) : escape2(cap[0]) : cap[0];
-          } else {
-            text = escape2(this.options.smartypants ? smartypants2(cap[0]) : cap[0]);
-          }
-          return {
-            type: "text",
-            raw: cap[0],
-            text
-          };
-        }
-      }
-    };
-    block = {
-      newline: /^(?: *(?:\n|$))+/,
-      code: /^( {4}[^\n]+(?:\n(?: *(?:\n|$))*)?)+/,
-      fences: /^ {0,3}(`{3,}(?=[^`\n]*\n)|~{3,})([^\n]*)\n(?:|([\s\S]*?)\n)(?: {0,3}\1[~`]* *(?=\n|$)|$)/,
-      hr: /^ {0,3}((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$)/,
-      heading: /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/,
-      blockquote: /^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/,
-      list: /^( {0,3}bull)( [^\n]+?)?(?:\n|$)/,
-      html: "^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>\\n*|$)|<![A-Z][\\s\\S]*?(?:>\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n *)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n *)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n *)+\\n|$))",
-      def: /^ {0,3}\[(label)\]: *(?:\n *)?<?([^\s>]+)>?(?:(?: +(?:\n *)?| *\n *)(title))? *(?:\n+|$)/,
-      table: noopTest,
-      lheading: /^([^\n]+)\n {0,3}(=+|-+) *(?:\n+|$)/,
-      _paragraph: /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/,
-      text: /^[^\n]+/
-    };
-    block._label = /(?!\s*\])(?:\\.|[^\[\]\\])+/;
-    block._title = /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/;
-    block.def = edit(block.def).replace("label", block._label).replace("title", block._title).getRegex();
-    block.bullet = /(?:[*+-]|\d{1,9}[.)])/;
-    block.listItemStart = edit(/^( *)(bull) */).replace("bull", block.bullet).getRegex();
-    block.list = edit(block.list).replace(/bull/g, block.bullet).replace("hr", "\\n+(?=\\1?(?:(?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$))").replace("def", "\\n+(?=" + block.def.source + ")").getRegex();
-    block._tag = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|section|source|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul";
-    block._comment = /<!--(?!-?>)[\s\S]*?(?:-->|$)/;
-    block.html = edit(block.html, "i").replace("comment", block._comment).replace("tag", block._tag).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex();
-    block.paragraph = edit(block._paragraph).replace("hr", block.hr).replace("heading", " {0,3}#{1,6} ").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", block._tag).getRegex();
-    block.blockquote = edit(block.blockquote).replace("paragraph", block.paragraph).getRegex();
-    block.normal = merge({}, block);
-    block.gfm = merge({}, block.normal, {
-      table: "^ *([^\\n ].*\\|.*)\\n {0,3}(?:\\| *)?(:?-+:? *(?:\\| *:?-+:? *)*)(?:\\| *)?(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)"
-    });
-    block.gfm.table = edit(block.gfm.table).replace("hr", block.hr).replace("heading", " {0,3}#{1,6} ").replace("blockquote", " {0,3}>").replace("code", " {4}[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", block._tag).getRegex();
-    block.gfm.paragraph = edit(block._paragraph).replace("hr", block.hr).replace("heading", " {0,3}#{1,6} ").replace("|lheading", "").replace("table", block.gfm.table).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", block._tag).getRegex();
-    block.pedantic = merge({}, block.normal, {
-      html: edit(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", block._comment).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(),
-      def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/,
-      heading: /^(#{1,6})(.*)(?:\n+|$)/,
-      fences: noopTest,
-      paragraph: edit(block.normal._paragraph).replace("hr", block.hr).replace("heading", " *#{1,6} *[^\n]").replace("lheading", block.lheading).replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").getRegex()
-    });
-    inline = {
-      escape: /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/,
-      autolink: /^<(scheme:[^\s\x00-\x1f<>]*|email)>/,
-      url: noopTest,
-      tag: "^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>",
-      link: /^!?\[(label)\]\(\s*(href)(?:\s+(title))?\s*\)/,
-      reflink: /^!?\[(label)\]\[(ref)\]/,
-      nolink: /^!?\[(ref)\](?:\[\])?/,
-      reflinkSearch: "reflink|nolink(?!\\()",
-      emStrong: {
-        lDelim: /^(?:\*+(?:([punct_])|[^\s*]))|^_+(?:([punct*])|([^\s_]))/,
-        rDelimAst: /^[^_*]*?\_\_[^_*]*?\*[^_*]*?(?=\_\_)|[punct_](\*+)(?=[\s]|$)|[^punct*_\s](\*+)(?=[punct_\s]|$)|[punct_\s](\*+)(?=[^punct*_\s])|[\s](\*+)(?=[punct_])|[punct_](\*+)(?=[punct_])|[^punct*_\s](\*+)(?=[^punct*_\s])/,
-        rDelimUnd: /^[^_*]*?\*\*[^_*]*?\_[^_*]*?(?=\*\*)|[punct*](\_+)(?=[\s]|$)|[^punct*_\s](\_+)(?=[punct*\s]|$)|[punct*\s](\_+)(?=[^punct*_\s])|[\s](\_+)(?=[punct*])|[punct*](\_+)(?=[punct*])/
-      },
-      code: /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/,
-      br: /^( {2,}|\\)\n(?!\s*$)/,
-      del: noopTest,
-      text: /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/,
-      punctuation: /^([\spunctuation])/
-    };
-    inline._punctuation = "!\"#$%&'()+\\-.,/:;<=>?@\\[\\]`^{|}~";
-    inline.punctuation = edit(inline.punctuation).replace(/punctuation/g, inline._punctuation).getRegex();
-    inline.blockSkip = /\[[^\]]*?\]\([^\)]*?\)|`[^`]*?`|<[^>]*?>/g;
-    inline.escapedEmSt = /\\\*|\\_/g;
-    inline._comment = edit(block._comment).replace("(?:-->|$)", "-->").getRegex();
-    inline.emStrong.lDelim = edit(inline.emStrong.lDelim).replace(/punct/g, inline._punctuation).getRegex();
-    inline.emStrong.rDelimAst = edit(inline.emStrong.rDelimAst, "g").replace(/punct/g, inline._punctuation).getRegex();
-    inline.emStrong.rDelimUnd = edit(inline.emStrong.rDelimUnd, "g").replace(/punct/g, inline._punctuation).getRegex();
-    inline._escapes = /\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/g;
-    inline._scheme = /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/;
-    inline._email = /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/;
-    inline.autolink = edit(inline.autolink).replace("scheme", inline._scheme).replace("email", inline._email).getRegex();
-    inline._attribute = /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/;
-    inline.tag = edit(inline.tag).replace("comment", inline._comment).replace("attribute", inline._attribute).getRegex();
-    inline._label = /(?:\[(?:\\.|[^\[\]\\])*\]|\\.|`[^`]*`|[^\[\]\\`])*?/;
-    inline._href = /<(?:\\.|[^\n<>\\])+>|[^\s\x00-\x1f]*/;
-    inline._title = /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/;
-    inline.link = edit(inline.link).replace("label", inline._label).replace("href", inline._href).replace("title", inline._title).getRegex();
-    inline.reflink = edit(inline.reflink).replace("label", inline._label).replace("ref", block._label).getRegex();
-    inline.nolink = edit(inline.nolink).replace("ref", block._label).getRegex();
-    inline.reflinkSearch = edit(inline.reflinkSearch, "g").replace("reflink", inline.reflink).replace("nolink", inline.nolink).getRegex();
-    inline.normal = merge({}, inline);
-    inline.pedantic = merge({}, inline.normal, {
-      strong: {
-        start: /^__|\*\*/,
-        middle: /^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,
-        endAst: /\*\*(?!\*)/g,
-        endUnd: /__(?!_)/g
-      },
-      em: {
-        start: /^_|\*/,
-        middle: /^()\*(?=\S)([\s\S]*?\S)\*(?!\*)|^_(?=\S)([\s\S]*?\S)_(?!_)/,
-        endAst: /\*(?!\*)/g,
-        endUnd: /_(?!_)/g
-      },
-      link: edit(/^!?\[(label)\]\((.*?)\)/).replace("label", inline._label).getRegex(),
-      reflink: edit(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", inline._label).getRegex()
-    });
-    inline.gfm = merge({}, inline.normal, {
-      escape: edit(inline.escape).replace("])", "~|])").getRegex(),
-      _extended_email: /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/,
-      url: /^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/,
-      _backpedal: /(?:[^?!.,:;*_~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_~)]+(?!$))+/,
-      del: /^(~~?)(?=[^\s~])([\s\S]*?[^\s~])\1(?=[^~]|$)/,
-      text: /^([`~]+|[^`~])(?:(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|https?:\/\/|ftp:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/
-    });
-    inline.gfm.url = edit(inline.gfm.url, "i").replace("email", inline.gfm._extended_email).getRegex();
-    inline.breaks = merge({}, inline.gfm, {
-      br: edit(inline.br).replace("{2,}", "*").getRegex(),
-      text: edit(inline.gfm.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex()
-    });
-    Lexer = class {
-      constructor(options2) {
-        this.tokens = [];
-        this.tokens.links = /* @__PURE__ */ Object.create(null);
-        this.options = options2 || defaults;
-        this.options.tokenizer = this.options.tokenizer || new Tokenizer();
-        this.tokenizer = this.options.tokenizer;
-        this.tokenizer.options = this.options;
-        this.tokenizer.lexer = this;
-        this.inlineQueue = [];
-        this.state = {
-          inLink: false,
-          inRawBlock: false,
-          top: true
-        };
-        const rules = {
-          block: block.normal,
-          inline: inline.normal
-        };
-        if (this.options.pedantic) {
-          rules.block = block.pedantic;
-          rules.inline = inline.pedantic;
-        } else if (this.options.gfm) {
-          rules.block = block.gfm;
-          if (this.options.breaks) {
-            rules.inline = inline.breaks;
-          } else {
-            rules.inline = inline.gfm;
-          }
-        }
-        this.tokenizer.rules = rules;
-      }
-      static get rules() {
-        return {
-          block,
-          inline
-        };
-      }
-      static lex(src, options2) {
-        const lexer2 = new Lexer(options2);
-        return lexer2.lex(src);
-      }
-      static lexInline(src, options2) {
-        const lexer2 = new Lexer(options2);
-        return lexer2.inlineTokens(src);
-      }
-      lex(src) {
-        src = src.replace(/\r\n|\r/g, "\n").replace(/\t/g, "    ");
-        this.blockTokens(src, this.tokens);
-        let next;
-        while (next = this.inlineQueue.shift()) {
-          this.inlineTokens(next.src, next.tokens);
-        }
-        return this.tokens;
-      }
-      blockTokens(src, tokens = []) {
-        if (this.options.pedantic) {
-          src = src.replace(/^ +$/gm, "");
-        }
-        let token, lastToken, cutSrc, lastParagraphClipped;
-        while (src) {
-          if (this.options.extensions && this.options.extensions.block && this.options.extensions.block.some((extTokenizer) => {
-            if (token = extTokenizer.call({ lexer: this }, src, tokens)) {
-              src = src.substring(token.raw.length);
-              tokens.push(token);
-              return true;
-            }
-            return false;
-          })) {
-            continue;
-          }
-          if (token = this.tokenizer.space(src)) {
-            src = src.substring(token.raw.length);
-            if (token.raw.length === 1 && tokens.length > 0) {
-              tokens[tokens.length - 1].raw += "\n";
-            } else {
-              tokens.push(token);
-            }
-            continue;
-          }
-          if (token = this.tokenizer.code(src)) {
-            src = src.substring(token.raw.length);
-            lastToken = tokens[tokens.length - 1];
-            if (lastToken && (lastToken.type === "paragraph" || lastToken.type === "text")) {
-              lastToken.raw += "\n" + token.raw;
-              lastToken.text += "\n" + token.text;
-              this.inlineQueue[this.inlineQueue.length - 1].src = lastToken.text;
-            } else {
-              tokens.push(token);
-            }
-            continue;
-          }
-          if (token = this.tokenizer.fences(src)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          if (token = this.tokenizer.heading(src)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          if (token = this.tokenizer.hr(src)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          if (token = this.tokenizer.blockquote(src)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          if (token = this.tokenizer.list(src)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          if (token = this.tokenizer.html(src)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          if (token = this.tokenizer.def(src)) {
-            src = src.substring(token.raw.length);
-            lastToken = tokens[tokens.length - 1];
-            if (lastToken && (lastToken.type === "paragraph" || lastToken.type === "text")) {
-              lastToken.raw += "\n" + token.raw;
-              lastToken.text += "\n" + token.raw;
-              this.inlineQueue[this.inlineQueue.length - 1].src = lastToken.text;
-            } else if (!this.tokens.links[token.tag]) {
-              this.tokens.links[token.tag] = {
-                href: token.href,
-                title: token.title
-              };
-            }
-            continue;
-          }
-          if (token = this.tokenizer.table(src)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          if (token = this.tokenizer.lheading(src)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          cutSrc = src;
-          if (this.options.extensions && this.options.extensions.startBlock) {
-            let startIndex = Infinity;
-            const tempSrc = src.slice(1);
-            let tempStart;
-            this.options.extensions.startBlock.forEach(function(getStartIndex) {
-              tempStart = getStartIndex.call({ lexer: this }, tempSrc);
-              if (typeof tempStart === "number" && tempStart >= 0) {
-                startIndex = Math.min(startIndex, tempStart);
-              }
-            });
-            if (startIndex < Infinity && startIndex >= 0) {
-              cutSrc = src.substring(0, startIndex + 1);
-            }
-          }
-          if (this.state.top && (token = this.tokenizer.paragraph(cutSrc))) {
-            lastToken = tokens[tokens.length - 1];
-            if (lastParagraphClipped && lastToken.type === "paragraph") {
-              lastToken.raw += "\n" + token.raw;
-              lastToken.text += "\n" + token.text;
-              this.inlineQueue.pop();
-              this.inlineQueue[this.inlineQueue.length - 1].src = lastToken.text;
-            } else {
-              tokens.push(token);
-            }
-            lastParagraphClipped = cutSrc.length !== src.length;
-            src = src.substring(token.raw.length);
-            continue;
-          }
-          if (token = this.tokenizer.text(src)) {
-            src = src.substring(token.raw.length);
-            lastToken = tokens[tokens.length - 1];
-            if (lastToken && lastToken.type === "text") {
-              lastToken.raw += "\n" + token.raw;
-              lastToken.text += "\n" + token.text;
-              this.inlineQueue.pop();
-              this.inlineQueue[this.inlineQueue.length - 1].src = lastToken.text;
-            } else {
-              tokens.push(token);
-            }
-            continue;
-          }
-          if (src) {
-            const errMsg = "Infinite loop on byte: " + src.charCodeAt(0);
-            if (this.options.silent) {
-              console.error(errMsg);
-              break;
-            } else {
-              throw new Error(errMsg);
-            }
-          }
-        }
-        this.state.top = true;
-        return tokens;
-      }
-      inline(src, tokens) {
-        this.inlineQueue.push({ src, tokens });
-      }
-      inlineTokens(src, tokens = []) {
-        let token, lastToken, cutSrc;
-        let maskedSrc = src;
-        let match;
-        let keepPrevChar, prevChar;
-        if (this.tokens.links) {
-          const links = Object.keys(this.tokens.links);
-          if (links.length > 0) {
-            while ((match = this.tokenizer.rules.inline.reflinkSearch.exec(maskedSrc)) != null) {
-              if (links.includes(match[0].slice(match[0].lastIndexOf("[") + 1, -1))) {
-                maskedSrc = maskedSrc.slice(0, match.index) + "[" + repeatString("a", match[0].length - 2) + "]" + maskedSrc.slice(this.tokenizer.rules.inline.reflinkSearch.lastIndex);
-              }
-            }
-          }
-        }
-        while ((match = this.tokenizer.rules.inline.blockSkip.exec(maskedSrc)) != null) {
-          maskedSrc = maskedSrc.slice(0, match.index) + "[" + repeatString("a", match[0].length - 2) + "]" + maskedSrc.slice(this.tokenizer.rules.inline.blockSkip.lastIndex);
-        }
-        while ((match = this.tokenizer.rules.inline.escapedEmSt.exec(maskedSrc)) != null) {
-          maskedSrc = maskedSrc.slice(0, match.index) + "++" + maskedSrc.slice(this.tokenizer.rules.inline.escapedEmSt.lastIndex);
-        }
-        while (src) {
-          if (!keepPrevChar) {
-            prevChar = "";
-          }
-          keepPrevChar = false;
-          if (this.options.extensions && this.options.extensions.inline && this.options.extensions.inline.some((extTokenizer) => {
-            if (token = extTokenizer.call({ lexer: this }, src, tokens)) {
-              src = src.substring(token.raw.length);
-              tokens.push(token);
-              return true;
-            }
-            return false;
-          })) {
-            continue;
-          }
-          if (token = this.tokenizer.escape(src)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          if (token = this.tokenizer.tag(src)) {
-            src = src.substring(token.raw.length);
-            lastToken = tokens[tokens.length - 1];
-            if (lastToken && token.type === "text" && lastToken.type === "text") {
-              lastToken.raw += token.raw;
-              lastToken.text += token.text;
-            } else {
-              tokens.push(token);
-            }
-            continue;
-          }
-          if (token = this.tokenizer.link(src)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          if (token = this.tokenizer.reflink(src, this.tokens.links)) {
-            src = src.substring(token.raw.length);
-            lastToken = tokens[tokens.length - 1];
-            if (lastToken && token.type === "text" && lastToken.type === "text") {
-              lastToken.raw += token.raw;
-              lastToken.text += token.text;
-            } else {
-              tokens.push(token);
-            }
-            continue;
-          }
-          if (token = this.tokenizer.emStrong(src, maskedSrc, prevChar)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          if (token = this.tokenizer.codespan(src)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          if (token = this.tokenizer.br(src)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          if (token = this.tokenizer.del(src)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          if (token = this.tokenizer.autolink(src, mangle)) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          if (!this.state.inLink && (token = this.tokenizer.url(src, mangle))) {
-            src = src.substring(token.raw.length);
-            tokens.push(token);
-            continue;
-          }
-          cutSrc = src;
-          if (this.options.extensions && this.options.extensions.startInline) {
-            let startIndex = Infinity;
-            const tempSrc = src.slice(1);
-            let tempStart;
-            this.options.extensions.startInline.forEach(function(getStartIndex) {
-              tempStart = getStartIndex.call({ lexer: this }, tempSrc);
-              if (typeof tempStart === "number" && tempStart >= 0) {
-                startIndex = Math.min(startIndex, tempStart);
-              }
-            });
-            if (startIndex < Infinity && startIndex >= 0) {
-              cutSrc = src.substring(0, startIndex + 1);
-            }
-          }
-          if (token = this.tokenizer.inlineText(cutSrc, smartypants)) {
-            src = src.substring(token.raw.length);
-            if (token.raw.slice(-1) !== "_") {
-              prevChar = token.raw.slice(-1);
-            }
-            keepPrevChar = true;
-            lastToken = tokens[tokens.length - 1];
-            if (lastToken && lastToken.type === "text") {
-              lastToken.raw += token.raw;
-              lastToken.text += token.text;
-            } else {
-              tokens.push(token);
-            }
-            continue;
-          }
-          if (src) {
-            const errMsg = "Infinite loop on byte: " + src.charCodeAt(0);
-            if (this.options.silent) {
-              console.error(errMsg);
-              break;
-            } else {
-              throw new Error(errMsg);
-            }
-          }
-        }
-        return tokens;
-      }
-    };
-    Renderer = class {
-      constructor(options2) {
-        this.options = options2 || defaults;
-      }
-      code(code, infostring, escaped3) {
-        const lang = (infostring || "").match(/\S*/)[0];
-        if (this.options.highlight) {
-          const out = this.options.highlight(code, lang);
-          if (out != null && out !== code) {
-            escaped3 = true;
-            code = out;
-          }
-        }
-        code = code.replace(/\n$/, "") + "\n";
-        if (!lang) {
-          return "<pre><code>" + (escaped3 ? code : escape2(code, true)) + "</code></pre>\n";
-        }
-        return '<pre><code class="' + this.options.langPrefix + escape2(lang, true) + '">' + (escaped3 ? code : escape2(code, true)) + "</code></pre>\n";
-      }
-      blockquote(quote) {
-        return "<blockquote>\n" + quote + "</blockquote>\n";
-      }
-      html(html) {
-        return html;
-      }
-      heading(text, level, raw, slugger) {
-        if (this.options.headerIds) {
-          return "<h" + level + ' id="' + this.options.headerPrefix + slugger.slug(raw) + '">' + text + "</h" + level + ">\n";
-        }
-        return "<h" + level + ">" + text + "</h" + level + ">\n";
-      }
-      hr() {
-        return this.options.xhtml ? "<hr/>\n" : "<hr>\n";
-      }
-      list(body, ordered, start) {
-        const type = ordered ? "ol" : "ul", startatt = ordered && start !== 1 ? ' start="' + start + '"' : "";
-        return "<" + type + startatt + ">\n" + body + "</" + type + ">\n";
-      }
-      listitem(text) {
-        return "<li>" + text + "</li>\n";
-      }
-      checkbox(checked) {
-        return "<input " + (checked ? 'checked="" ' : "") + 'disabled="" type="checkbox"' + (this.options.xhtml ? " /" : "") + "> ";
-      }
-      paragraph(text) {
-        return "<p>" + text + "</p>\n";
-      }
-      table(header, body) {
-        if (body)
-          body = "<tbody>" + body + "</tbody>";
-        return "<table>\n<thead>\n" + header + "</thead>\n" + body + "</table>\n";
-      }
-      tablerow(content) {
-        return "<tr>\n" + content + "</tr>\n";
-      }
-      tablecell(content, flags) {
-        const type = flags.header ? "th" : "td";
-        const tag = flags.align ? "<" + type + ' align="' + flags.align + '">' : "<" + type + ">";
-        return tag + content + "</" + type + ">\n";
-      }
-      strong(text) {
-        return "<strong>" + text + "</strong>";
-      }
-      em(text) {
-        return "<em>" + text + "</em>";
-      }
-      codespan(text) {
-        return "<code>" + text + "</code>";
-      }
-      br() {
-        return this.options.xhtml ? "<br/>" : "<br>";
-      }
-      del(text) {
-        return "<del>" + text + "</del>";
-      }
-      link(href, title, text) {
-        href = cleanUrl(this.options.sanitize, this.options.baseUrl, href);
-        if (href === null) {
-          return text;
-        }
-        let out = '<a href="' + escape2(href) + '"';
-        if (title) {
-          out += ' title="' + title + '"';
-        }
-        out += ">" + text + "</a>";
-        return out;
-      }
-      image(href, title, text) {
-        href = cleanUrl(this.options.sanitize, this.options.baseUrl, href);
-        if (href === null) {
-          return text;
-        }
-        let out = '<img src="' + href + '" alt="' + text + '"';
-        if (title) {
-          out += ' title="' + title + '"';
-        }
-        out += this.options.xhtml ? "/>" : ">";
-        return out;
-      }
-      text(text) {
-        return text;
-      }
-    };
-    TextRenderer = class {
-      strong(text) {
-        return text;
-      }
-      em(text) {
-        return text;
-      }
-      codespan(text) {
-        return text;
-      }
-      del(text) {
-        return text;
-      }
-      html(text) {
-        return text;
-      }
-      text(text) {
-        return text;
-      }
-      link(href, title, text) {
-        return "" + text;
-      }
-      image(href, title, text) {
-        return "" + text;
-      }
-      br() {
-        return "";
-      }
-    };
-    Slugger = class {
-      constructor() {
-        this.seen = {};
-      }
-      serialize(value) {
-        return value.toLowerCase().trim().replace(/<[!\/a-z].*?>/ig, "").replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,./:;<=>?@[\]^`{|}~]/g, "").replace(/\s/g, "-");
-      }
-      getNextSafeSlug(originalSlug, isDryRun) {
-        let slug = originalSlug;
-        let occurenceAccumulator = 0;
-        if (this.seen.hasOwnProperty(slug)) {
-          occurenceAccumulator = this.seen[originalSlug];
-          do {
-            occurenceAccumulator++;
-            slug = originalSlug + "-" + occurenceAccumulator;
-          } while (this.seen.hasOwnProperty(slug));
-        }
-        if (!isDryRun) {
-          this.seen[originalSlug] = occurenceAccumulator;
-          this.seen[slug] = 0;
-        }
-        return slug;
-      }
-      slug(value, options2 = {}) {
-        const slug = this.serialize(value);
-        return this.getNextSafeSlug(slug, options2.dryrun);
-      }
-    };
-    Parser = class {
-      constructor(options2) {
-        this.options = options2 || defaults;
-        this.options.renderer = this.options.renderer || new Renderer();
-        this.renderer = this.options.renderer;
-        this.renderer.options = this.options;
-        this.textRenderer = new TextRenderer();
-        this.slugger = new Slugger();
-      }
-      static parse(tokens, options2) {
-        const parser2 = new Parser(options2);
-        return parser2.parse(tokens);
-      }
-      static parseInline(tokens, options2) {
-        const parser2 = new Parser(options2);
-        return parser2.parseInline(tokens);
-      }
-      parse(tokens, top = true) {
-        let out = "", i2, j, k, l2, l3, row, cell, header, body, token, ordered, start, loose, itemBody, item, checked, task, checkbox, ret;
-        const l = tokens.length;
-        for (i2 = 0; i2 < l; i2++) {
-          token = tokens[i2];
-          if (this.options.extensions && this.options.extensions.renderers && this.options.extensions.renderers[token.type]) {
-            ret = this.options.extensions.renderers[token.type].call({ parser: this }, token);
-            if (ret !== false || !["space", "hr", "heading", "code", "table", "blockquote", "list", "html", "paragraph", "text"].includes(token.type)) {
-              out += ret || "";
-              continue;
-            }
-          }
-          switch (token.type) {
-            case "space": {
-              continue;
-            }
-            case "hr": {
-              out += this.renderer.hr();
-              continue;
-            }
-            case "heading": {
-              out += this.renderer.heading(this.parseInline(token.tokens), token.depth, unescape2(this.parseInline(token.tokens, this.textRenderer)), this.slugger);
-              continue;
-            }
-            case "code": {
-              out += this.renderer.code(token.text, token.lang, token.escaped);
-              continue;
-            }
-            case "table": {
-              header = "";
-              cell = "";
-              l2 = token.header.length;
-              for (j = 0; j < l2; j++) {
-                cell += this.renderer.tablecell(this.parseInline(token.header[j].tokens), { header: true, align: token.align[j] });
-              }
-              header += this.renderer.tablerow(cell);
-              body = "";
-              l2 = token.rows.length;
-              for (j = 0; j < l2; j++) {
-                row = token.rows[j];
-                cell = "";
-                l3 = row.length;
-                for (k = 0; k < l3; k++) {
-                  cell += this.renderer.tablecell(this.parseInline(row[k].tokens), { header: false, align: token.align[k] });
-                }
-                body += this.renderer.tablerow(cell);
-              }
-              out += this.renderer.table(header, body);
-              continue;
-            }
-            case "blockquote": {
-              body = this.parse(token.tokens);
-              out += this.renderer.blockquote(body);
-              continue;
-            }
-            case "list": {
-              ordered = token.ordered;
-              start = token.start;
-              loose = token.loose;
-              l2 = token.items.length;
-              body = "";
-              for (j = 0; j < l2; j++) {
-                item = token.items[j];
-                checked = item.checked;
-                task = item.task;
-                itemBody = "";
-                if (item.task) {
-                  checkbox = this.renderer.checkbox(checked);
-                  if (loose) {
-                    if (item.tokens.length > 0 && item.tokens[0].type === "paragraph") {
-                      item.tokens[0].text = checkbox + " " + item.tokens[0].text;
-                      if (item.tokens[0].tokens && item.tokens[0].tokens.length > 0 && item.tokens[0].tokens[0].type === "text") {
-                        item.tokens[0].tokens[0].text = checkbox + " " + item.tokens[0].tokens[0].text;
-                      }
-                    } else {
-                      item.tokens.unshift({
-                        type: "text",
-                        text: checkbox
-                      });
-                    }
-                  } else {
-                    itemBody += checkbox;
-                  }
-                }
-                itemBody += this.parse(item.tokens, loose);
-                body += this.renderer.listitem(itemBody, task, checked);
-              }
-              out += this.renderer.list(body, ordered, start);
-              continue;
-            }
-            case "html": {
-              out += this.renderer.html(token.text);
-              continue;
-            }
-            case "paragraph": {
-              out += this.renderer.paragraph(this.parseInline(token.tokens));
-              continue;
-            }
-            case "text": {
-              body = token.tokens ? this.parseInline(token.tokens) : token.text;
-              while (i2 + 1 < l && tokens[i2 + 1].type === "text") {
-                token = tokens[++i2];
-                body += "\n" + (token.tokens ? this.parseInline(token.tokens) : token.text);
-              }
-              out += top ? this.renderer.paragraph(body) : body;
-              continue;
-            }
-            default: {
-              const errMsg = 'Token with "' + token.type + '" type was not found.';
-              if (this.options.silent) {
-                console.error(errMsg);
-                return;
-              } else {
-                throw new Error(errMsg);
-              }
-            }
-          }
-        }
-        return out;
-      }
-      parseInline(tokens, renderer) {
-        renderer = renderer || this.renderer;
-        let out = "", i2, token, ret;
-        const l = tokens.length;
-        for (i2 = 0; i2 < l; i2++) {
-          token = tokens[i2];
-          if (this.options.extensions && this.options.extensions.renderers && this.options.extensions.renderers[token.type]) {
-            ret = this.options.extensions.renderers[token.type].call({ parser: this }, token);
-            if (ret !== false || !["escape", "html", "link", "image", "strong", "em", "codespan", "br", "del", "text"].includes(token.type)) {
-              out += ret || "";
-              continue;
-            }
-          }
-          switch (token.type) {
-            case "escape": {
-              out += renderer.text(token.text);
-              break;
-            }
-            case "html": {
-              out += renderer.html(token.text);
-              break;
-            }
-            case "link": {
-              out += renderer.link(token.href, token.title, this.parseInline(token.tokens, renderer));
-              break;
-            }
-            case "image": {
-              out += renderer.image(token.href, token.title, token.text);
-              break;
-            }
-            case "strong": {
-              out += renderer.strong(this.parseInline(token.tokens, renderer));
-              break;
-            }
-            case "em": {
-              out += renderer.em(this.parseInline(token.tokens, renderer));
-              break;
-            }
-            case "codespan": {
-              out += renderer.codespan(token.text);
-              break;
-            }
-            case "br": {
-              out += renderer.br();
-              break;
-            }
-            case "del": {
-              out += renderer.del(this.parseInline(token.tokens, renderer));
-              break;
-            }
-            case "text": {
-              out += renderer.text(token.text);
-              break;
-            }
-            default: {
-              const errMsg = 'Token with "' + token.type + '" type was not found.';
-              if (this.options.silent) {
-                console.error(errMsg);
-                return;
-              } else {
-                throw new Error(errMsg);
-              }
-            }
-          }
-        }
-        return out;
-      }
-    };
-    marked.options = marked.setOptions = function(opt) {
-      merge(marked.defaults, opt);
-      changeDefaults(marked.defaults);
-      return marked;
-    };
-    marked.getDefaults = getDefaults;
-    marked.defaults = defaults;
-    marked.use = function(...args) {
-      const opts = merge({}, ...args);
-      const extensions = marked.defaults.extensions || { renderers: {}, childTokens: {} };
-      let hasExtensions;
-      args.forEach((pack) => {
-        if (pack.extensions) {
-          hasExtensions = true;
-          pack.extensions.forEach((ext) => {
-            if (!ext.name) {
-              throw new Error("extension name required");
-            }
-            if (ext.renderer) {
-              const prevRenderer = extensions.renderers ? extensions.renderers[ext.name] : null;
-              if (prevRenderer) {
-                extensions.renderers[ext.name] = function(...args2) {
-                  let ret = ext.renderer.apply(this, args2);
-                  if (ret === false) {
-                    ret = prevRenderer.apply(this, args2);
-                  }
-                  return ret;
-                };
-              } else {
-                extensions.renderers[ext.name] = ext.renderer;
-              }
-            }
-            if (ext.tokenizer) {
-              if (!ext.level || ext.level !== "block" && ext.level !== "inline") {
-                throw new Error("extension level must be 'block' or 'inline'");
-              }
-              if (extensions[ext.level]) {
-                extensions[ext.level].unshift(ext.tokenizer);
-              } else {
-                extensions[ext.level] = [ext.tokenizer];
-              }
-              if (ext.start) {
-                if (ext.level === "block") {
-                  if (extensions.startBlock) {
-                    extensions.startBlock.push(ext.start);
-                  } else {
-                    extensions.startBlock = [ext.start];
-                  }
-                } else if (ext.level === "inline") {
-                  if (extensions.startInline) {
-                    extensions.startInline.push(ext.start);
-                  } else {
-                    extensions.startInline = [ext.start];
-                  }
-                }
-              }
-            }
-            if (ext.childTokens) {
-              extensions.childTokens[ext.name] = ext.childTokens;
-            }
-          });
-        }
-        if (pack.renderer) {
-          const renderer = marked.defaults.renderer || new Renderer();
-          for (const prop in pack.renderer) {
-            const prevRenderer = renderer[prop];
-            renderer[prop] = (...args2) => {
-              let ret = pack.renderer[prop].apply(renderer, args2);
-              if (ret === false) {
-                ret = prevRenderer.apply(renderer, args2);
-              }
-              return ret;
-            };
-          }
-          opts.renderer = renderer;
-        }
-        if (pack.tokenizer) {
-          const tokenizer = marked.defaults.tokenizer || new Tokenizer();
-          for (const prop in pack.tokenizer) {
-            const prevTokenizer = tokenizer[prop];
-            tokenizer[prop] = (...args2) => {
-              let ret = pack.tokenizer[prop].apply(tokenizer, args2);
-              if (ret === false) {
-                ret = prevTokenizer.apply(tokenizer, args2);
-              }
-              return ret;
-            };
-          }
-          opts.tokenizer = tokenizer;
-        }
-        if (pack.walkTokens) {
-          const walkTokens2 = marked.defaults.walkTokens;
-          opts.walkTokens = function(token) {
-            pack.walkTokens.call(this, token);
-            if (walkTokens2) {
-              walkTokens2.call(this, token);
-            }
-          };
-        }
-        if (hasExtensions) {
-          opts.extensions = extensions;
-        }
-        marked.setOptions(opts);
-      });
-    };
-    marked.walkTokens = function(tokens, callback) {
-      for (const token of tokens) {
-        callback.call(marked, token);
-        switch (token.type) {
-          case "table": {
-            for (const cell of token.header) {
-              marked.walkTokens(cell.tokens, callback);
-            }
-            for (const row of token.rows) {
-              for (const cell of row) {
-                marked.walkTokens(cell.tokens, callback);
-              }
-            }
-            break;
-          }
-          case "list": {
-            marked.walkTokens(token.items, callback);
-            break;
-          }
-          default: {
-            if (marked.defaults.extensions && marked.defaults.extensions.childTokens && marked.defaults.extensions.childTokens[token.type]) {
-              marked.defaults.extensions.childTokens[token.type].forEach(function(childTokens) {
-                marked.walkTokens(token[childTokens], callback);
-              });
-            } else if (token.tokens) {
-              marked.walkTokens(token.tokens, callback);
-            }
-          }
-        }
-      }
-    };
-    marked.parseInline = function(src, opt) {
-      if (typeof src === "undefined" || src === null) {
-        throw new Error("marked.parseInline(): input parameter is undefined or null");
-      }
-      if (typeof src !== "string") {
-        throw new Error("marked.parseInline(): input parameter is of type " + Object.prototype.toString.call(src) + ", string expected");
-      }
-      opt = merge({}, marked.defaults, opt || {});
-      checkSanitizeDeprecation(opt);
-      try {
-        const tokens = Lexer.lexInline(src, opt);
-        if (opt.walkTokens) {
-          marked.walkTokens(tokens, opt.walkTokens);
-        }
-        return Parser.parseInline(tokens, opt);
-      } catch (e2) {
-        e2.message += "\nPlease report this to https://github.com/markedjs/marked.";
-        if (opt.silent) {
-          return "<p>An error occurred:</p><pre>" + escape2(e2.message + "", true) + "</pre>";
-        }
-        throw e2;
-      }
-    };
-    marked.Parser = Parser;
-    marked.parser = Parser.parse;
-    marked.Renderer = Renderer;
-    marked.TextRenderer = TextRenderer;
-    marked.Lexer = Lexer;
-    marked.lexer = Lexer.lex;
-    marked.Tokenizer = Tokenizer;
-    marked.Slugger = Slugger;
-    marked.parse = marked;
-    options = marked.options;
-    setOptions = marked.setOptions;
-    use = marked.use;
-    walkTokens = marked.walkTokens;
-    parseInline = marked.parseInline;
-    parser = Parser.parse;
-    lexer = Lexer.lex;
-  }
-});
-
-// .svelte-kit/output/server/chunks/ProjectTag-d66515d2.js
-var css6, ProjectTag;
-var init_ProjectTag_d66515d2 = __esm({
-  ".svelte-kit/output/server/chunks/ProjectTag-d66515d2.js"() {
-    init_index_e8b4228d();
-    css6 = {
-      code: ".tag.svelte-lbxhh0{border:black solid 1px;color:var(--dark);border-radius:0.2em;background-color:var(--light);border-radius:0.2em;padding:0.1em 0.3em;height:fit-content;cursor:pointer;transition:all 0.2s ease;z-index:9;margin:0.2em}.tag.svelte-lbxhh0:hover{background-color:var(--dark);color:var(--light)}",
-      map: null
-    };
-    ProjectTag = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let { tag } = $$props;
-      if ($$props.tag === void 0 && $$bindings.tag && tag !== void 0)
-        $$bindings.tag(tag);
-      $$result.css.add(css6);
-      return `<p class="${"tag svelte-lbxhh0"}">${escape(tag)}
-</p>`;
-    });
-  }
-});
-
-// .svelte-kit/output/server/entries/pages/progetti/_slug_.svelte.js
-var slug_svelte_exports = {};
-__export(slug_svelte_exports, {
-  default: () => U5Bslugu5D,
-  load: () => load3
-});
-async function load3(page) {
-  const slug = page.params.slug;
-  const graphcms = new import_graphql_request2.GraphQLClient("https://api-eu-central-1.graphcms.com/v2/cl0se3jqv0c2e01w2c4b7ejbv/master", { headers: {} });
-  const query = import_graphql_request2.gql`
-		query project {
-			project(where: {slug: "${slug}"}) {
-				content
-				description
-				slug
-				tags
-				name
-				image{
-					url
-				}
-			}
-		}
-
-		`;
-  const { project } = await graphcms.request(query);
-  return { props: { project } };
-}
-var import_graphql_request2, css7, U5Bslugu5D;
-var init_slug_svelte = __esm({
-  ".svelte-kit/output/server/entries/pages/progetti/_slug_.svelte.js"() {
-    init_index_e8b4228d();
-    import_graphql_request2 = __toESM(require_dist(), 1);
-    init_marked_esm();
-    init_ProjectTag_d66515d2();
-    css7 = {
-      code: "h1.svelte-171jrsi{font-size:clamp(1.2em, 15vw, 4em);text-align:center;color:var(--dark)}.project.svelte-171jrsi{background-color:var(--light);padding:1em;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:100vh;gap:1em}.description.svelte-171jrsi{text-align:center}.cover.svelte-171jrsi{max-width:100%;height:50vh;border-radius:5px;object-fit:cover}.tags.svelte-171jrsi{z-index:2;display:flex;gap:0.5em;flex-wrap:wrap;padding:0 1em;justify-content:center;align-items:center}.content.svelte-171jrsi{max-width:50vw;width:100%}",
-      map: null
-    };
-    U5Bslugu5D = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let { project } = $$props;
-      if ($$props.project === void 0 && $$bindings.project && project !== void 0)
-        $$bindings.project(project);
-      $$result.css.add(css7);
-      return `${$$result.head += `${$$result.title = `<title>${escape(project.slug)}</title>`, ""}`, ""}
-<div class="${"project svelte-171jrsi"}">${project ? `<h1 class="${"svelte-171jrsi"}">${escape(project.name)}</h1>
-		<p class="${"description svelte-171jrsi"}">${escape(project.description)}</p>
-		<img class="${"cover svelte-171jrsi"}"${add_attribute("src", project.image[0].url, 0)} alt="${""}">
-		<div class="${"tags svelte-171jrsi"}">${each(project.tags, (tag) => {
-        return `${validate_component(ProjectTag, "ProjectTag").$$render($$result, { tag }, {}, {})}`;
-      })}</div>
-
-		${project.content ? `<div class="${"content svelte-171jrsi"}"><p><!-- HTML_TAG_START -->${marked(project.content)}<!-- HTML_TAG_END --></p></div>` : ``}` : ``}
-</div>`;
-    });
-  }
-});
-
-// .svelte-kit/output/server/nodes/3.js
-var __exports4 = {};
-__export(__exports4, {
-  css: () => css8,
-  entry: () => entry4,
-  js: () => js4,
-  module: () => slug_svelte_exports
-});
-var entry4, js4, css8;
-var init__4 = __esm({
-  ".svelte-kit/output/server/nodes/3.js"() {
-    init_slug_svelte();
-    entry4 = "pages/progetti/_slug_.svelte-c415d8a3.js";
-    js4 = ["pages/progetti/_slug_.svelte-c415d8a3.js", "chunks/vendor-bc34623b.js", "chunks/ProjectTag-8c565096.js", "chunks/filters-cc608ede.js", "chunks/singletons-d1fb5791.js"];
-    css8 = ["assets/pages/progetti/_slug_.svelte-15d5ed55.css", "assets/ProjectTag-69152cec.css"];
-  }
-});
-
-// .svelte-kit/output/server/chunks/RemoveFilter-8e957331.js
+// .svelte-kit/output/server/chunks/filters-d19f7bdb.js
 function writable2(value, start = noop2) {
   let stop;
   const subscribers = /* @__PURE__ */ new Set();
@@ -23610,14 +21479,253 @@ function writable2(value, start = noop2) {
   }
   return { set, update, subscribe: subscribe2 };
 }
-var subscriber_queue2, projectFilterStore, postFilterStore, css9, RemoveFilter;
-var init_RemoveFilter_8e957331 = __esm({
-  ".svelte-kit/output/server/chunks/RemoveFilter-8e957331.js"() {
-    init_index_e8b4228d();
+var subscriber_queue2, projectFilterStore, postFilterStore, cardOpened;
+var init_filters_d19f7bdb = __esm({
+  ".svelte-kit/output/server/chunks/filters-d19f7bdb.js"() {
+    init_index_42de8966();
     subscriber_queue2 = [];
     projectFilterStore = writable2();
     postFilterStore = writable2();
-    css9 = {
+    cardOpened = writable2(false);
+  }
+});
+
+// .svelte-kit/output/server/entries/pages/index.svelte.js
+var index_svelte_exports = {};
+__export(index_svelte_exports, {
+  default: () => Routes,
+  load: () => load2
+});
+async function load2() {
+  const graphcms = new import_graphql_request.GraphQLClient("https://api-eu-central-1.graphcms.com/v2/cl0se3jqv0c2e01w2c4b7ejbv/master", { headers: {} });
+  const query = import_graphql_request.gql`
+			query ProjectsIndex {
+				projects(orderBy: createdAt_DESC, first: 3) {
+					slug
+					description
+					id
+					tags
+					name
+					image {
+						url
+					}
+				}
+			}
+		`;
+  const queryPost = import_graphql_request.gql`
+			query PostsQuery {
+				posts(orderBy: publishedAt_DESC, first: 3) {
+					tags
+					date
+					id
+					slug
+					title
+					coverImage {
+						url
+					}
+				}
+			}
+		`;
+  const { projects } = await graphcms.request(query);
+  const { posts } = await graphcms.request(queryPost);
+  return { props: { projects, posts } };
+}
+var import_graphql_request, css$2, Image, css$1, ProfileCard, css5, Routes;
+var init_index_svelte = __esm({
+  ".svelte-kit/output/server/entries/pages/index.svelte.js"() {
+    init_index_42de8966();
+    import_graphql_request = __toESM(require_dist(), 1);
+    init_filters_d19f7bdb();
+    init_SEO_84e6e563();
+    css$2 = {
+      code: ".placeholder.svelte-1dywg78.svelte-1dywg78{width:100px;height:100px;background:linear-gradient(90deg, hsl(0 0% 0% / 0), rgba(75, 75, 75, 0.3), rgb(97, 97, 97));border-radius:0.2em;padding:2em;background-position:left;background-size:300%;animation:svelte-1dywg78-gradient 0.2s infinite alternate}.image.svelte-1dywg78.svelte-1dywg78{z-index:2;padding:1em}.picture.svelte-1dywg78.svelte-1dywg78{display:flex;justify-content:center;align-items:center}.picture.svelte-1dywg78>img.svelte-1dywg78{display:block;border-radius:0.2em;object-fit:cover;max-width:80%;min-height:70%;display:none;filter:grayscale(1) sepia(0.1)\r\n	}.show.svelte-1dywg78.svelte-1dywg78{display:inline-block !important}@keyframes svelte-1dywg78-gradient{0%{background-position:0% 50%}100%{background-position:50% 0%}}",
+      map: null
+    };
+    Image = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      $$result.css.add(css$2);
+      return `<div class="${"image svelte-1dywg78"}"><div class="${"picture svelte-1dywg78"}"><img class="${escape(null_to_empty("")) + " svelte-1dywg78"}" src="${"pictures/avatar.jpg"}" alt="${""}"></div>
+	${`<div class="${"placeholder svelte-1dywg78"}"></div>`}
+</div>`;
+    });
+    css$1 = {
+      code: ".evidenzia.svelte-1yudm3t.svelte-1yudm3t{background-color:var(--dark);color:var(--light);padding:0.2em}.to-click.svelte-1yudm3t.svelte-1yudm3t{border:none;outline:solid #fff 1px;background-color:transparent;color:var(--light);mix-blend-mode:difference;padding:0.2em;font-size:2em;cursor:pointer;transition:all 0.2s ease-in;position:relative;overflow:hidden;z-index:1}a.svelte-1yudm3t.svelte-1yudm3t{mix-blend-mode:normal;color:var(--dark);text-decoration:none}.to-click.svelte-1yudm3t.svelte-1yudm3t:hover{transform:scale(1.1);color:var(--dark)}.to-click.svelte-1yudm3t.svelte-1yudm3t:hover::after{transform:scaleY(100%)}.to-click.svelte-1yudm3t.svelte-1yudm3t::after{content:'';position:absolute;background-color:var(--light);width:100%;height:100%;top:0;left:0;transition:all 0.3s ease;transform:scaleY(0%);transform-origin:bottom;z-index:-1}.card-bg.svelte-1yudm3t.svelte-1yudm3t{background-color:var(--light);position:absolute;width:100%;height:100%;top:0;left:0;z-index:auto;transform:scaleY(-100%);transform-origin:bottom;animation:svelte-1yudm3t-bg-build 0.5s linear forwards;box-shadow:0 5px 10px rgba(0, 0, 0, 0.3)}.profile-card.svelte-1yudm3t.svelte-1yudm3t{width:fit-content;text-align:center;height:fit-content;padding:1em;border-radius:0.1em;width:80%;position:relative;overflow:hidden}.card.svelte-1yudm3t.svelte-1yudm3t{display:grid;grid-template-columns:1fr 1fr;place-items:center;position:relative;margin:1em}.text.svelte-1yudm3t.svelte-1yudm3t{color:var(--dark);font-weight:600}.descrizione.svelte-1yudm3t.svelte-1yudm3t{color:var(--dark);mix-blend-mode:darken}.socials.svelte-1yudm3t.svelte-1yudm3t{display:flex;flex-direction:row;flex-wrap:wrap;gap:0.5em;justify-content:center;align-content:center;margin:0.5em}.link.svelte-1yudm3t.svelte-1yudm3t{font-size:clamp(1em, 1.2em, 1.1em);position:relative;overflow:hidden}.link.svelte-1yudm3t.svelte-1yudm3t::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;transform-origin:left;transform:scaleX(-100%);background-color:var(--dark);transition:all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)}.link.svelte-1yudm3t.svelte-1yudm3t:hover::after{transform:scaleX(100%)}.info.svelte-1yudm3t.svelte-1yudm3t{text-align:center;display:flex;flex-direction:column;flex-wrap:wrap;justify-content:center;align-items:center;padding:1em 0.3em}.buttons.svelte-1yudm3t.svelte-1yudm3t{display:flex;gap:1em;justify-content:center;align-items:center}.button-link.svelte-1yudm3t.svelte-1yudm3t{text-decoration:none;width:100%;height:100%;color:var(--dark);background-color:var(--light);padding:0.2em 0.5em;font-size:clamp(1em, 1.1em, 1.2em);outline:black solid 1px;position:relative;overflow:hidden;display:flex;width:fit-content;justify-content:center;align-items:center;transition:all 0.2s ease}.about.svelte-1yudm3t.svelte-1yudm3t:hover{background-color:var(--dark);color:var(--light)}.click-after.svelte-1yudm3t.svelte-1yudm3t{overflow:hidden;height:100%;width:100%;position:absolute;left:0;top:0;text-align:center;display:flex}.button-link.svelte-1yudm3t:hover .click-after.svelte-1yudm3t::after{transform:translateX(0)}.button-link.svelte-1yudm3t:hover .cv.svelte-1yudm3t{transform:translateX(0);transition-delay:200ms}.click-after.svelte-1yudm3t.svelte-1yudm3t::after{content:'';background-color:rgb(0, 0, 0);width:100%;height:100%;position:absolute;text-align:center;top:0;left:0;transform:translateX(100%);transition:all 0.3s ease}.cv.svelte-1yudm3t.svelte-1yudm3t{width:100%;transform:translateX(100%);transition:all 0.2s ease;z-index:1;font-size:2em;color:var(--light);position:absolute;left:10%;display:flex;justify-content:center;align-items:center;height:100%}.name.svelte-1yudm3t.svelte-1yudm3t{font-size:clamp(1.7em, 4vw, 4em);color:var(--dark);font-weight:600;position:relative;overflow:hidden;mix-blend-mode:difference;z-index:1}.name.svelte-1yudm3t.svelte-1yudm3t::before{width:100%;height:100%;content:'';background-color:var(--light);animation:svelte-1yudm3t-coloring 1s cubic-bezier(0.455, 0.03, 0.515, 0.955) backwards;position:absolute;top:0;left:0;z-index:-1;transform-origin:left}@keyframes svelte-1yudm3t-coloring{0%{transform:scaleX(0%)}100%{transform:scaleX(100%)}}@keyframes svelte-1yudm3t-bg-build{0%{transform:scaleY(0%)}100%{transform:scaleY(100%)}}@media(max-width: 660px){.card.svelte-1yudm3t.svelte-1yudm3t{display:grid;grid-template-columns:1fr}.info.svelte-1yudm3t.svelte-1yudm3t{padding:0.5em;margin:0}}",
+      map: null
+    };
+    ProfileCard = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      let $cardOpened, $$unsubscribe_cardOpened;
+      $$unsubscribe_cardOpened = subscribe(cardOpened, (value) => $cardOpened = value);
+      $$result.css.add(css$1);
+      $$unsubscribe_cardOpened();
+      return `<div class="${escape($cardOpened == true ? "bg-var(--light)" : "") + " profile-card svelte-1yudm3t"}">${!$cardOpened ? `<button class="${"to-click svelte-1yudm3t"}">&lt; Hi /&gt; </button>` : `<div class="${"card svelte-1yudm3t"}"><div class="${"card-bg svelte-1yudm3t"}"></div>
+			${validate_component(Image, "Image").$$render($$result, {}, {}, {})}
+			<div class="${"info svelte-1yudm3t"}"><div class="${"text svelte-1yudm3t"}"><p class="${"name svelte-1yudm3t"}">Daniele Avolio</p>
+					<p class="${"descrizione svelte-1yudm3t"}">Studente di Informatica presso l&#39;Universit\xE0 della Calabria. Sviluppatore <span class="${"evidenzia svelte-1yudm3t"}">FrontEnd</span>
+						specializzato nell&#39;utilizzo del framework
+						<span class="${"evidenzia svelte-1yudm3t"}">Svelte | SvelteKit</span>.
+					</p></div>
+				<div class="${"socials svelte-1yudm3t"}">
+					<a class="${"link svelte-1yudm3t"}" target="${"_blank"}" href="${"https://www.linkedin.com/in/danieleavolio/"}">Linkedin</a>
+					
+					<a class="${"link svelte-1yudm3t"}" target="${"_blank"}" href="${"https://github.com/danieleavolio"}">Github</a>
+					
+					<a class="${"link svelte-1yudm3t"}" target="${"_blank"}" href="${"https://twitter.com/avolio_daniele"}">Twitter</a></div>
+				<div class="${"buttons svelte-1yudm3t"}"><a class="${"button-link svelte-1yudm3t"}" target="${"_blank"}" href="${"https://drive.google.com/file/d/1g0BVkOf7vdwjki8_98OVv6eFKiNzaTK6/view?usp=sharing"}">Visualizza CV <span class="${"click-after svelte-1yudm3t"}"><span class="${"material-icons cv svelte-1yudm3t"}">file_presents</span></span></a>
+					<a href="${"/about"}" class="${"button-link about svelte-1yudm3t"}">Su di me<span class="${"material-icons"}">person</span></a></div></div></div>`}
+</div>`;
+    });
+    css5 = {
+      code: "h1.svelte-cnxopc{font-size:clamp(2.5em, 8vw, 5em);text-align:center}section.svelte-cnxopc{max-width:100vw;min-height:100vh;display:flex;justify-content:center;align-items:center;flex-direction:column;gap:1em}.index.svelte-cnxopc{display:grid;place-items:center;grid-template-rows:1fr}.expand.svelte-cnxopc{color:var(--light);font-size:2.5em;animation:svelte-cnxopc-down-indicator 1s ease-in-out alternate infinite;text-decoration:none}.light.svelte-cnxopc{background-color:var(--light)}.dark.svelte-cnxopc{background-color:var(--dark)}.dark-text.svelte-cnxopc{color:var(--dark)}.light-text.svelte-cnxopc{color:var(--light)}@keyframes svelte-cnxopc-down-indicator{0%{transform:translateY(-20%)}100%{transform:translateY(0%)}}",
+      map: null
+    };
+    Routes = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      let { projects } = $$props;
+      let { posts } = $$props;
+      if ($$props.projects === void 0 && $$bindings.projects && projects !== void 0)
+        $$bindings.projects(projects);
+      if ($$props.posts === void 0 && $$bindings.posts && posts !== void 0)
+        $$bindings.posts(posts);
+      $$result.css.add(css5);
+      return `${validate_component(SEO, "Seo").$$render($$result, {
+        title: "Daniele Avolio - Web Developer",
+        metadescription: "Sono Daniele Avolio, sviluppatore specializzato nella programmazione lato Front-End, utilizzando le pi\xF9 aggiornate tecnologie e creando web application performanti."
+      }, {}, {})}
+
+<section class="${"dark index svelte-cnxopc"}">${validate_component(ProfileCard, "ProfileCard").$$render($$result, {}, {}, {})}
+	<a href="${"#posts"}" class="${"material-icons expand svelte-cnxopc"}">expand_more
+	</a></section>
+
+${``}`;
+    });
+  }
+});
+
+// .svelte-kit/output/server/nodes/2.js
+var __exports3 = {};
+__export(__exports3, {
+  css: () => css6,
+  entry: () => entry3,
+  js: () => js3,
+  module: () => index_svelte_exports
+});
+var entry3, js3, css6;
+var init__3 = __esm({
+  ".svelte-kit/output/server/nodes/2.js"() {
+    init_index_svelte();
+    entry3 = "pages/index.svelte-f92c0f10.js";
+    js3 = ["pages/index.svelte-f92c0f10.js", "chunks/vendor-b221bc45.js", "chunks/PostsList-fe00c5cc.js", "chunks/filters-eaee7eec.js", "chunks/singletons-d1fb5791.js", "chunks/PostTag-71ddb11a.js", "chunks/ProjectList-5d83e7a4.js", "chunks/ProjectTag-00ef860c.js", "chunks/SEO-64b2f8e7.js"];
+    css6 = ["assets/pages/index.svelte-06b0ba33.css", "assets/PostsList-b122cbdc.css", "assets/PostTag-6c62c255.css", "assets/ProjectList-11399a71.css", "assets/ProjectTag-69152cec.css"];
+  }
+});
+
+// .svelte-kit/output/server/chunks/ProjectTag-e250adbe.js
+var css7, ProjectTag;
+var init_ProjectTag_e250adbe = __esm({
+  ".svelte-kit/output/server/chunks/ProjectTag-e250adbe.js"() {
+    init_index_42de8966();
+    css7 = {
+      code: ".tag.svelte-lbxhh0{border:black solid 1px;color:var(--dark);border-radius:0.2em;background-color:var(--light);border-radius:0.2em;padding:0.1em 0.3em;height:fit-content;cursor:pointer;transition:all 0.2s ease;z-index:9;margin:0.2em}.tag.svelte-lbxhh0:hover{background-color:var(--dark);color:var(--light)}",
+      map: null
+    };
+    ProjectTag = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      let { tag } = $$props;
+      if ($$props.tag === void 0 && $$bindings.tag && tag !== void 0)
+        $$bindings.tag(tag);
+      $$result.css.add(css7);
+      return `<p class="${"tag svelte-lbxhh0"}">${escape(tag)}
+</p>`;
+    });
+  }
+});
+
+// .svelte-kit/output/server/entries/pages/progetti/_slug_.svelte.js
+var slug_svelte_exports = {};
+__export(slug_svelte_exports, {
+  default: () => U5Bslugu5D,
+  load: () => load3
+});
+async function load3(page) {
+  const slug = page.params.slug;
+  const graphcms = new import_graphql_request2.GraphQLClient("https://api-eu-central-1.graphcms.com/v2/cl0se3jqv0c2e01w2c4b7ejbv/master", { headers: {} });
+  const query = import_graphql_request2.gql`
+		query MyProject {
+			project(where: {slug: "${slug}"}) {
+				content{
+          			html
+        		}
+				description
+				slug
+				tags
+				name
+				image{
+					url
+					fileName
+				}
+				createdAt
+			}
+		}
+		`;
+  const { project } = await graphcms.request(query);
+  return { props: { project } };
+}
+var import_graphql_request2, css8, U5Bslugu5D;
+var init_slug_svelte = __esm({
+  ".svelte-kit/output/server/entries/pages/progetti/_slug_.svelte.js"() {
+    init_index_42de8966();
+    import_graphql_request2 = __toESM(require_dist(), 1);
+    init_ProjectTag_e250adbe();
+    init_SEO_84e6e563();
+    css8 = {
+      code: "h1.svelte-1jf5nsp{font-size:clamp(1.2em, 10vw, 4em);text-align:center;color:var(--dark)}.project.svelte-1jf5nsp{background-color:var(--light);padding:1em;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:100vh;gap:1em;white-space:break-spaces}.description.svelte-1jf5nsp{text-align:center;width:90%}.cover.svelte-1jf5nsp{max-width:100%;height:50vh;border-radius:5px;object-fit:contain}.tags.svelte-1jf5nsp{z-index:2;display:flex;gap:0.5em;flex-wrap:wrap;padding:0 1em;justify-content:center;align-items:center}.content.svelte-1jf5nsp{width:90%}",
+      map: null
+    };
+    U5Bslugu5D = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      let { project } = $$props;
+      if ($$props.project === void 0 && $$bindings.project && project !== void 0)
+        $$bindings.project(project);
+      $$result.css.add(css8);
+      return `${validate_component(SEO, "Seo").$$render($$result, {
+        title: project.name,
+        metadescription: project.description
+      }, {}, {})}
+${$$result.head += `<meta property="${"og:type"}" content="${"article"}" data-svelte="svelte-86sdcj">`, ""}
+<div class="${"project svelte-1jf5nsp"}">${project ? `<h1 class="${"svelte-1jf5nsp"}">${escape(project.name)}</h1>
+		<p class="${"description svelte-1jf5nsp"}">${escape(project.description)}</p>
+		<img class="${"cover svelte-1jf5nsp"}"${add_attribute("src", project.image[0].url, 0)}${add_attribute("alt", project.image[0].fileName, 0)}>
+		<div class="${"tags svelte-1jf5nsp"}">${each(project.tags, (tag) => {
+        return `${validate_component(ProjectTag, "ProjectTag").$$render($$result, { tag }, {}, {})}`;
+      })}</div>
+		<div class="${"date"}"><p>Pubblicato il ${escape(new Date(project.createdAt).toLocaleDateString())}</p></div>
+
+		${project.content ? `<div class="${"content svelte-1jf5nsp"}"><p><!-- HTML_TAG_START -->${project.content.html}<!-- HTML_TAG_END --></p></div>` : ``}` : ``}
+</div>`;
+    });
+  }
+});
+
+// .svelte-kit/output/server/nodes/3.js
+var __exports4 = {};
+__export(__exports4, {
+  css: () => css9,
+  entry: () => entry4,
+  js: () => js4,
+  module: () => slug_svelte_exports
+});
+var entry4, js4, css9;
+var init__4 = __esm({
+  ".svelte-kit/output/server/nodes/3.js"() {
+    init_slug_svelte();
+    entry4 = "pages/progetti/_slug_.svelte-1af6a87b.js";
+    js4 = ["pages/progetti/_slug_.svelte-1af6a87b.js", "chunks/vendor-b221bc45.js", "chunks/ProjectTag-00ef860c.js", "chunks/filters-eaee7eec.js", "chunks/singletons-d1fb5791.js", "chunks/SEO-64b2f8e7.js"];
+    css9 = ["assets/pages/progetti/_slug_.svelte-ca348c0d.css", "assets/ProjectTag-69152cec.css"];
+  }
+});
+
+// .svelte-kit/output/server/chunks/RemoveFilter-51a1f9e9.js
+var css10, RemoveFilter;
+var init_RemoveFilter_51a1f9e9 = __esm({
+  ".svelte-kit/output/server/chunks/RemoveFilter-51a1f9e9.js"() {
+    init_index_42de8966();
+    css10 = {
       code: ".tag.svelte-1pyqahp{border:white solid 1px;border-radius:0.2em;padding:0.1em 0.3em;cursor:pointer;transition:all 0.2s ease;color:var(--light)}.tag.svelte-1pyqahp:hover{background-color:var(--light);color:var(--dark)}.dark.svelte-1pyqahp{border:black solid 1px;color:var(--dark)}.dark.svelte-1pyqahp:hover{background-color:var(--dark);color:var(--light)}",
       map: null
     };
@@ -23625,7 +21733,7 @@ var init_RemoveFilter_8e957331 = __esm({
       let { theme = "" } = $$props;
       if ($$props.theme === void 0 && $$bindings.theme && theme !== void 0)
         $$bindings.theme(theme);
-      $$result.css.add(css9);
+      $$result.css.add(css10);
       return `<p class="${escape(theme == "posts" ? "dark" : "") + " tag material-icons svelte-1pyqahp"}">delete</p>`;
     });
   }
@@ -23656,13 +21764,15 @@ async function load4() {
   const { projects } = await graphcms.request(query);
   return { props: { projects } };
 }
-var import_graphql_request3, css$3, Progetto, css$2, ProjectList, css$12, ProjectFilterTag, css10, Progetti;
+var import_graphql_request3, css$3, Progetto, css$22, ProjectList, css$12, ProjectFilterTag, css11, Progetti;
 var init_progetti_svelte = __esm({
   ".svelte-kit/output/server/entries/pages/progetti.svelte.js"() {
-    init_index_e8b4228d();
+    init_index_42de8966();
     import_graphql_request3 = __toESM(require_dist(), 1);
-    init_ProjectTag_d66515d2();
-    init_RemoveFilter_8e957331();
+    init_ProjectTag_e250adbe();
+    init_filters_d19f7bdb();
+    init_RemoveFilter_51a1f9e9();
+    init_SEO_84e6e563();
     css$3 = {
       code: ".progetto.svelte-13j2cdq.svelte-13j2cdq{color:var(--light);display:flex;flex-direction:column;white-space:break-spaces;max-width:400px;max-height:350px;overflow:hidden;position:relative}.title.svelte-13j2cdq.svelte-13j2cdq{background-color:var(--light);color:var(--dark);padding:0 1em;cursor:pointer}.progetto.svelte-13j2cdq:hover .cover.svelte-13j2cdq{filter:blur(5px);transform:scale(1.1)}.cover.svelte-13j2cdq.svelte-13j2cdq{width:100%;height:200px;object-fit:cover;transition:all 0.2s ease;cursor:pointer}.tags.svelte-13j2cdq.svelte-13j2cdq{background-color:var(--light);z-index:10;height:100%;display:flex;gap:0.5em;flex-wrap:wrap;justify-content:center;align-items:center;padding:0 1em}",
       map: null
@@ -23683,19 +21793,19 @@ var init_progetti_svelte = __esm({
       })}</div>
 </div>`;
     });
-    css$2 = {
-      code: "a.svelte-9swqz3{margin:1em}.lista-progetti.svelte-9swqz3{display:grid;grid-template-columns:1fr 1fr 1fr;place-items:center;gap:5em 1em;flex-wrap:wrap;margin:1em}@media(max-width: 1000px){.lista-progetti.svelte-9swqz3{display:flex;flex-direction:column;justify-content:center;align-items:center;flex-wrap:wrap}}",
+    css$22 = {
+      code: "a.svelte-wetcq3{margin:1em}.lista-progetti.svelte-wetcq3{display:flex;justify-content:center;align-items:center;gap:3em 1em;flex-wrap:wrap;margin:1em}@media(max-width: 1000px){.lista-progetti.svelte-wetcq3{display:flex;flex-direction:column;justify-content:center;align-items:center;flex-wrap:wrap}}",
       map: null
     };
     ProjectList = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       let { projects } = $$props;
       if ($$props.projects === void 0 && $$bindings.projects && projects !== void 0)
         $$bindings.projects(projects);
-      $$result.css.add(css$2);
-      return `<div class="${"lista-progetti svelte-9swqz3"}">${each(projects, (project, i2) => {
+      $$result.css.add(css$22);
+      return `<div class="${"lista-progetti svelte-wetcq3"}">${each(projects, (project, i2) => {
         return `${validate_component(Progetto, "Progetto").$$render($$result, { project, index: i2 }, {}, {})}`;
       })}</div>
-${projects.length == 3 ? `<a class="${"dark-button svelte-9swqz3"}" href="${"/progetti"}">Altri progetti</a>` : ``}`;
+${projects.length == 3 ? `<a class="${"dark-button svelte-wetcq3"}" href="${"/progetti"}">Altri progetti</a>` : ``}`;
     });
     css$12 = {
       code: ".tag.svelte-1y5873w{border:white solid 1px;color:var(--light);border-radius:0.2em;padding:0.1em 0.3em;cursor:pointer;transition:all 0.2s ease;font-size:clamp(1em, 1.2em, 1.5em)}.tag.svelte-1y5873w:hover{background-color:var(--light);color:var(--dark)}",
@@ -23712,7 +21822,7 @@ ${projects.length == 3 ? `<a class="${"dark-button svelte-9swqz3"}" href="${"/pr
       return `<p class="${"tag svelte-1y5873w"}">${escape(tag)}
 </p>`;
     });
-    css10 = {
+    css11 = {
       code: ".container.svelte-1lymafv{background-color:var(--dark);display:grid;grid-template-columns:1fr;place-items:center}.progetti.svelte-1lymafv{background-color:var(--dark);display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:100vh}.tag-list.svelte-1lymafv{display:flex;gap:1em;flex-wrap:wrap;justify-content:center;align-items:center;width:50%}h1.svelte-1lymafv{font-size:3em;color:var(--light)}",
       map: null
     };
@@ -23732,13 +21842,16 @@ ${projects.length == 3 ? `<a class="${"dark-button svelte-9swqz3"}" href="${"/pr
       };
       if ($$props.projects === void 0 && $$bindings.projects && projects !== void 0)
         $$bindings.projects(projects);
-      $$result.css.add(css10);
+      $$result.css.add(css11);
       let $$settled;
       let $$rendered;
       do {
         $$settled = true;
         progettiFiltrati = filtaProgetti(tagScelto);
-        $$rendered = `${$$result.head += `${$$result.title = `<title>Progetti</title>`, ""}`, ""}
+        $$rendered = `${validate_component(SEO, "Seo").$$render($$result, {
+          title: "Progetti del sito",
+          metadescription: "Tutti i progetti realizzati tramite i linguaggi di programmazione presenti nella lista tag come Java, Javascript, React, Svelte, ecc."
+        }, {}, {})}
 
 <div class="${"container svelte-1lymafv"}"><h1 class="${"svelte-1lymafv"}">Progetti</h1>
 	<div class="${"tag-list svelte-1lymafv"}">${each(filtri, (tag) => {
@@ -23762,18 +21875,18 @@ ${projects.length == 3 ? `<a class="${"dark-button svelte-9swqz3"}" href="${"/pr
 // .svelte-kit/output/server/nodes/4.js
 var __exports5 = {};
 __export(__exports5, {
-  css: () => css11,
+  css: () => css12,
   entry: () => entry5,
   js: () => js5,
   module: () => progetti_svelte_exports
 });
-var entry5, js5, css11;
+var entry5, js5, css12;
 var init__5 = __esm({
   ".svelte-kit/output/server/nodes/4.js"() {
     init_progetti_svelte();
-    entry5 = "pages/progetti.svelte-f15780f0.js";
-    js5 = ["pages/progetti.svelte-f15780f0.js", "chunks/vendor-bc34623b.js", "chunks/ProjectList-d56948d6.js", "chunks/filters-cc608ede.js", "chunks/singletons-d1fb5791.js", "chunks/ProjectTag-8c565096.js", "chunks/RemoveFilter-2f519abb.js"];
-    css11 = ["assets/pages/progetti.svelte-8cb38541.css", "assets/ProjectList-039c1d26.css", "assets/ProjectTag-69152cec.css", "assets/RemoveFilter-556f3651.css"];
+    entry5 = "pages/progetti.svelte-dd1b35b2.js";
+    js5 = ["pages/progetti.svelte-dd1b35b2.js", "chunks/vendor-b221bc45.js", "chunks/ProjectList-5d83e7a4.js", "chunks/filters-eaee7eec.js", "chunks/singletons-d1fb5791.js", "chunks/ProjectTag-00ef860c.js", "chunks/RemoveFilter-80fb43fb.js", "chunks/SEO-64b2f8e7.js"];
+    css12 = ["assets/pages/progetti.svelte-8cb38541.css", "assets/ProjectList-11399a71.css", "assets/ProjectTag-69152cec.css", "assets/RemoveFilter-556f3651.css"];
   }
 });
 
@@ -23782,11 +21895,12 @@ var about_svelte_exports = {};
 __export(about_svelte_exports, {
   default: () => About
 });
-var css$22, TimelineIcon, css$13, Timeline, css12, About;
+var css$23, TimelineIcon, css$13, Timeline, css13, About;
 var init_about_svelte = __esm({
   ".svelte-kit/output/server/entries/pages/about.svelte.js"() {
-    init_index_e8b4228d();
-    css$22 = {
+    init_index_42de8966();
+    init_SEO_84e6e563();
+    css$23 = {
       code: ".container.svelte-1dev57{display:flex;flex-direction:column;justify-content:center;align-items:center;margin:0;padding:0}.icon.svelte-1dev57{background-color:var(--dark);color:var(--light);display:flex;justify-content:center;align-items:center;border-radius:0.5em;padding:0.5em}span.svelte-1dev57{font-size:3em}.data.svelte-1dev57{margin:0;padding:0;font-size:1.2em;font-weight:600}.start.svelte-1dev57{margin:0;padding:0.5em;border-radius:1em;background-color:var(--dark);color:var(--light)}.connect-line.svelte-1dev57{width:3px;height:100%;background-color:var(--dark)}",
       map: null
     };
@@ -23800,7 +21914,7 @@ var init_about_svelte = __esm({
         $$bindings.date(date);
       if ($$props.start === void 0 && $$bindings.start && start !== void 0)
         $$bindings.start(start);
-      $$result.css.add(css$22);
+      $$result.css.add(css$23);
       return `<div class="${"container svelte-1dev57"}"><div class="${"icon svelte-1dev57"}"><span class="${"material-icons svelte-1dev57"}">${escape(icon)}</span></div>
 	<div class="${"connect-line svelte-1dev57"}"></div>
 	<p class="${"data svelte-1dev57"}">${escape(date)}</p>
@@ -23830,7 +21944,7 @@ var init_about_svelte = __esm({
 					Informatica, sviluppando come Tesi un sito per collegare gli studenti di tutto l&#39;Ateneo.
 					E&#39; possibile visionare la pagina del progetto.
 				</p>
-				<a href="${"/progetti"}" class="${"dark-button project-link svelte-xcg3y4"}">Progetto</a></div></div></div>
+				<a href="${"/progetti/link4students"}" class="${"dark-button project-link svelte-xcg3y4"}">Progetto</a></div></div></div>
 
 	<div class="${"timeline-section svelte-xcg3y4"}"><div class="${"icon-text svelte-xcg3y4"}">${validate_component(TimelineIcon, "TimelineIcon").$$render($$result, {
         icon: "history_edu",
@@ -23844,14 +21958,17 @@ var init_about_svelte = __esm({
 				</p></div></div></div>
 </div>`;
     });
-    css12 = {
-      code: "h1.svelte-ha9dg0{color:var(--dark);font-size:3em}.about.svelte-ha9dg0{width:100vw;min-height:100vh;background-color:var(--light);display:flex;flex-direction:column;gap:1em;justify-content:center;align-items:center}",
+    css13 = {
+      code: "h1.svelte-1h2ytaz{color:var(--dark);font-size:3em}.about.svelte-1h2ytaz{min-height:100vh;background-color:var(--light);display:flex;flex-direction:column;gap:1em;justify-content:center;align-items:center}",
       map: null
     };
     About = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      $$result.css.add(css12);
-      return `${$$result.head += `${$$result.title = `<title>Su di me</title>`, ""}`, ""}
-<div class="${"about svelte-ha9dg0"}"><h1 class="${"svelte-ha9dg0"}">Su di me</h1>
+      $$result.css.add(css13);
+      return `${validate_component(SEO, "Seo").$$render($$result, {
+        title: "Su di me",
+        metadescription: "Laurea Triennale in Informatica presso L'Universit\xE0 Della Calabria conseguita con progetto finale di Link4Students, un portale web per gli studenti della medesima universit\xE0 che permette agli studenti di connettersi tra loro"
+      }, {}, {})}
+<div class="${"about svelte-1h2ytaz"}"><h1 class="${"svelte-1h2ytaz"}">Su di me</h1>
 	${validate_component(Timeline, "Timeline").$$render($$result, {}, {}, {})}
 </div>`;
     });
@@ -23861,27 +21978,27 @@ var init_about_svelte = __esm({
 // .svelte-kit/output/server/nodes/5.js
 var __exports6 = {};
 __export(__exports6, {
-  css: () => css13,
+  css: () => css14,
   entry: () => entry6,
   js: () => js6,
   module: () => about_svelte_exports
 });
-var entry6, js6, css13;
+var entry6, js6, css14;
 var init__6 = __esm({
   ".svelte-kit/output/server/nodes/5.js"() {
     init_about_svelte();
-    entry6 = "pages/about.svelte-63742d93.js";
-    js6 = ["pages/about.svelte-63742d93.js", "chunks/vendor-bc34623b.js"];
-    css13 = ["assets/pages/about.svelte-ed811154.css"];
+    entry6 = "pages/about.svelte-6e2b1c44.js";
+    js6 = ["pages/about.svelte-6e2b1c44.js", "chunks/vendor-b221bc45.js", "chunks/SEO-64b2f8e7.js"];
+    css14 = ["assets/pages/about.svelte-dad71cc0.css"];
   }
 });
 
-// .svelte-kit/output/server/chunks/PostTag-bd0ffafb.js
-var css14, PostTag;
-var init_PostTag_bd0ffafb = __esm({
-  ".svelte-kit/output/server/chunks/PostTag-bd0ffafb.js"() {
-    init_index_e8b4228d();
-    css14 = {
+// .svelte-kit/output/server/chunks/PostTag-8a21b7cb.js
+var css15, PostTag;
+var init_PostTag_8a21b7cb = __esm({
+  ".svelte-kit/output/server/chunks/PostTag-8a21b7cb.js"() {
+    init_index_42de8966();
+    css15 = {
       code: ".tag.svelte-13ts5dg{border:white solid 1px;background-color:var(--dark);color:var(--light);border-radius:0.2em;padding:0.1em 0.3em;height:fit-content;cursor:pointer;transition:all 0.2s ease;z-index:9;margin:0.2em}.tag.svelte-13ts5dg:hover{background-color:var(--light);color:var(--dark)}",
       map: null
     };
@@ -23889,7 +22006,7 @@ var init_PostTag_bd0ffafb = __esm({
       let { tag } = $$props;
       if ($$props.tag === void 0 && $$bindings.tag && tag !== void 0)
         $$bindings.tag(tag);
-      $$result.css.add(css14);
+      $$result.css.add(css15);
       return `<p class="${"tag svelte-13ts5dg"}">${escape(tag)}
 </p>`;
     });
@@ -23914,9 +22031,13 @@ async function load5(page) {
 							url
 						}
 					}
-					content
+					content{
+						html
+					}
+					introduction
 					coverImage {
 						url
+						fileName
 					}
 					date
 					tags
@@ -23928,13 +22049,13 @@ async function load5(page) {
   const { post } = await graphcms.request(query);
   return { props: { post } };
 }
-var import_graphql_request4, css$14, Footer, css15, U5Bslugu5D2;
+var import_graphql_request4, css$14, Footer, css16, U5Bslugu5D2;
 var init_slug_svelte2 = __esm({
   ".svelte-kit/output/server/entries/pages/posts/_slug_.svelte.js"() {
-    init_index_e8b4228d();
+    init_index_42de8966();
     import_graphql_request4 = __toESM(require_dist(), 1);
-    init_marked_esm();
-    init_PostTag_bd0ffafb();
+    init_PostTag_8a21b7cb();
+    init_SEO_84e6e563();
     css$14 = {
       code: "footer.svelte-1w13f4y{background-color:var(--dark);font-weight:500;text-align:center;color:var(--light)}",
       map: null
@@ -23944,27 +22065,32 @@ var init_slug_svelte2 = __esm({
       return `<footer class="${"svelte-1w13f4y"}">\xA9 2021 All rights reserved. Design &amp; Code by Daniele Avolio.
 </footer>&gt;`;
     });
-    css15 = {
-      code: "h1.svelte-1svz8er{font-size:clamp(1.2em, 15vw, 4em);text-align:center;color:var(--light)}.avatar.svelte-1svz8er{object-fit:cover;width:80px;height:80px;border-radius:0.3em}.project.svelte-1svz8er{background-color:var(--dark);padding:1em;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:100vh;gap:1em;white-space:break-spaces}.author.svelte-1svz8er{color:var(--light);display:flex;gap:0.5em;justify-content:center;align-items:center}.cover.svelte-1svz8er{max-width:100%;height:50vh;border-radius:5px;object-fit:cover}.tags.svelte-1svz8er{z-index:2;display:flex;gap:0.5em;flex-wrap:wrap;padding:0 1em;justify-content:center;align-items:center}.content.svelte-1svz8er{color:var(--light);width:100%}",
+    css16 = {
+      code: "h1.svelte-7hqvya{font-size:clamp(1.2em, 10vw, 4em);text-align:center;color:var(--light)}h3.svelte-7hqvya{font-size:clamp(1em, 2vw, 1.5em);text-align:center;color:var(--light);font-style:italic;font-weight:500}.avatar.svelte-7hqvya{object-fit:cover;width:80px;height:80px;border-radius:0.3em}.project.svelte-7hqvya{background-color:var(--dark);padding:1em;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:100vh;gap:1em;white-space:break-spaces}.author.svelte-7hqvya{color:var(--light);display:flex;gap:0.5em;justify-content:center;align-items:center}.name-date.svelte-7hqvya{color:var(--light);display:flex;flex-direction:column;justify-content:center;align-items:center}.cover.svelte-7hqvya{max-width:100%;height:50vh;border-radius:5px;object-fit:contain}.tags.svelte-7hqvya{z-index:2;display:flex;gap:0.5em;flex-wrap:wrap;padding:0 1em;justify-content:center;align-items:center}.content.svelte-7hqvya{color:var(--light);width:90%}",
       map: null
     };
     U5Bslugu5D2 = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       let { post } = $$props;
       if ($$props.post === void 0 && $$bindings.post && post !== void 0)
         $$bindings.post(post);
-      $$result.css.add(css15);
-      return `${$$result.head += `${$$result.title = `<title>${escape(post.slug)}</title>`, ""}`, ""}
-<div class="${"project svelte-1svz8er"}">${post ? `<h1 class="${"svelte-1svz8er"}">${escape(post.title)}</h1>
-		<div class="${"tags svelte-1svz8er"}">${each(post.tags, (tag) => {
+      $$result.css.add(css16);
+      return `${validate_component(SEO, "Seo").$$render($$result, {
+        title: post.title,
+        metadescription: post.introduction
+      }, {}, {})}
+${$$result.head += `<meta property="${"og:type"}" content="${"article"}" data-svelte="svelte-86sdcj">`, ""}
+<div class="${"project svelte-7hqvya"}">${post ? `<h1 class="${"svelte-7hqvya"}">${escape(post.title)}</h1>
+		<h3 class="${"svelte-7hqvya"}">${escape(post.introduction)}</h3>
+		<div class="${"tags svelte-7hqvya"}">${each(post.tags, (tag) => {
         return `${validate_component(PostTag, "PostTag").$$render($$result, { tag }, {}, {})}`;
       })}</div>
-		<div class="${"author svelte-1svz8er"}"><img class="${"avatar svelte-1svz8er"}"${add_attribute("src", post.authors[0].picture.url, 0)} alt="${""}">
+		<div class="${"author svelte-7hqvya"}"><img class="${"avatar svelte-7hqvya"}"${add_attribute("src", post.authors[0].picture.url, 0)} alt="${""}">
 
-			<div class="${"name-date"}"><p>${escape(post.authors[0].name)}</p>
+			<div class="${"name-date svelte-7hqvya"}"><p>${escape(post.authors[0].name)}</p>
 				<p>${escape(post.date)}</p></div></div>
-		<img class="${"cover svelte-1svz8er"}"${add_attribute("src", post.coverImage.url, 0)} alt="${""}">
+		<img class="${"cover svelte-7hqvya"}"${add_attribute("src", post.coverImage.url, 0)}${add_attribute("alt", post.coverImage.fileName, 0)}>
 
-		${post.content ? `<div class="${"content svelte-1svz8er"}"><p><!-- HTML_TAG_START -->${marked(post.content)}<!-- HTML_TAG_END --></p></div>` : ``}` : ``}
+		${post.content ? `<div class="${"content svelte-7hqvya"}"><p><!-- HTML_TAG_START -->${post.content.html}<!-- HTML_TAG_END --></p></div>` : ``}` : ``}
 	${validate_component(Footer, "Footer").$$render($$result, {}, {}, {})}
 </div>`;
     });
@@ -23974,18 +22100,18 @@ var init_slug_svelte2 = __esm({
 // .svelte-kit/output/server/nodes/6.js
 var __exports7 = {};
 __export(__exports7, {
-  css: () => css16,
+  css: () => css17,
   entry: () => entry7,
   js: () => js7,
   module: () => slug_svelte_exports2
 });
-var entry7, js7, css16;
+var entry7, js7, css17;
 var init__7 = __esm({
   ".svelte-kit/output/server/nodes/6.js"() {
     init_slug_svelte2();
-    entry7 = "pages/posts/_slug_.svelte-aedaac92.js";
-    js7 = ["pages/posts/_slug_.svelte-aedaac92.js", "chunks/vendor-bc34623b.js", "chunks/PostTag-fd67d1e4.js", "chunks/filters-cc608ede.js", "chunks/singletons-d1fb5791.js"];
-    css16 = ["assets/pages/posts/_slug_.svelte-60dff162.css", "assets/PostTag-6c62c255.css"];
+    entry7 = "pages/posts/_slug_.svelte-b3cc08b4.js";
+    js7 = ["pages/posts/_slug_.svelte-b3cc08b4.js", "chunks/vendor-b221bc45.js", "chunks/PostTag-71ddb11a.js", "chunks/filters-eaee7eec.js", "chunks/singletons-d1fb5791.js", "chunks/SEO-64b2f8e7.js"];
+    css17 = ["assets/pages/posts/_slug_.svelte-0d0b37f5.css", "assets/PostTag-6c62c255.css"];
   }
 });
 
@@ -24001,17 +22127,10 @@ async function load6() {
 			query Posts {
 				posts(orderBy: publishedAt_DESC) {
 					tags
-					content
 					date
 					id
 					slug
 					title
-					authors {
-						name
-						picture {
-							url
-						}
-					}
 					coverImage {
 						url
 					}
@@ -24021,13 +22140,15 @@ async function load6() {
   const { posts } = await graphcms.request(query);
   return { props: { posts } };
 }
-var import_graphql_request5, css$32, Post, css$23, PostsList, css$15, PostFilterTag, css17, Posts;
+var import_graphql_request5, css$32, Post, css$24, PostsList, css$15, PostFilterTag, css18, Posts;
 var init_posts_svelte = __esm({
   ".svelte-kit/output/server/entries/pages/posts.svelte.js"() {
-    init_index_e8b4228d();
+    init_index_42de8966();
     import_graphql_request5 = __toESM(require_dist(), 1);
-    init_PostTag_bd0ffafb();
-    init_RemoveFilter_8e957331();
+    init_PostTag_8a21b7cb();
+    init_filters_d19f7bdb();
+    init_RemoveFilter_51a1f9e9();
+    init_SEO_84e6e563();
     css$32 = {
       code: ".post.svelte-1mzya1b.svelte-1mzya1b{color:var(--dark);display:flex;flex-direction:column;white-space:break-spaces;max-width:400px;height:100%;overflow:hidden;position:relative;text-align:center}.title.svelte-1mzya1b.svelte-1mzya1b{background-color:var(--dark);color:var(--light);padding:0 1em;cursor:pointer}.post.svelte-1mzya1b:hover .cover.svelte-1mzya1b{filter:blur(2px);transform:scale(1.1)}.cover.svelte-1mzya1b.svelte-1mzya1b{width:100%;height:200px;object-fit:cover;transition:all 0.2s ease;cursor:pointer}.tags.svelte-1mzya1b.svelte-1mzya1b{background-color:var(--dark);z-index:10;height:100%;display:flex;gap:0.5em;flex-wrap:wrap;justify-content:center;align-items:center;padding:0 1em}",
       map: null
@@ -24047,19 +22168,19 @@ var init_posts_svelte = __esm({
       })}</div>
 </div>`;
     });
-    css$23 = {
-      code: "a.svelte-9u023l{margin:1em}.lista-progetti.svelte-9u023l{display:grid;grid-template-columns:1fr 1fr 1fr;place-items:center;gap:5em 1em;flex-wrap:wrap;margin:1em}@media(max-width: 1000px){.lista-progetti.svelte-9u023l{display:flex;flex-direction:column;justify-content:center;align-items:center;flex-wrap:wrap}}",
+    css$24 = {
+      code: "a.svelte-wg0mm5{margin:1em}.lista-progetti.svelte-wg0mm5{display:flex;justify-content:center;align-items:center;gap:3em 1em;flex-wrap:wrap;margin:1em}@media(max-width: 1000px){.lista-progetti.svelte-wg0mm5{display:flex;flex-direction:column;justify-content:center;align-items:center;flex-wrap:wrap}}",
       map: null
     };
     PostsList = create_ssr_component(($$result, $$props, $$bindings, slots) => {
       let { posts } = $$props;
       if ($$props.posts === void 0 && $$bindings.posts && posts !== void 0)
         $$bindings.posts(posts);
-      $$result.css.add(css$23);
-      return `<div class="${"lista-progetti svelte-9u023l"}">${each(posts, (post, i2) => {
+      $$result.css.add(css$24);
+      return `<div class="${"lista-progetti svelte-wg0mm5"}">${each(posts, (post, i2) => {
         return `${validate_component(Post, "Post").$$render($$result, { post, index: i2 }, {}, {})}`;
       })}</div>
-${posts.length == 3 ? `<a class="${"dark-button svelte-9u023l"}" href="${"/posts"}">Altri post</a>` : ``}`;
+${posts.length == 3 ? `<a class="${"dark-button svelte-wg0mm5"}" href="${"/posts"}">Altri post</a>` : ``}`;
     });
     css$15 = {
       code: ".tag.svelte-27i8c6{border:black solid 1px;color:var(--dark);border-radius:0.2em;padding:0.1em 0.3em;cursor:pointer;transition:all 0.2s ease;font-size:clamp(1em, 1.2em, 1.5em)}.tag.svelte-27i8c6:hover{background-color:var(--dark);color:var(--light)}",
@@ -24076,7 +22197,7 @@ ${posts.length == 3 ? `<a class="${"dark-button svelte-9u023l"}" href="${"/posts
       return `<p class="${"tag svelte-27i8c6"}">${escape(tag)}
 </p>`;
     });
-    css17 = {
+    css18 = {
       code: ".container.svelte-1vx4usr{background-color:var(--light);display:grid;grid-template-columns:1fr;place-items:center}.post.svelte-1vx4usr{background-color:var(--light);display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:100vh}.tag-list.svelte-1vx4usr{display:flex;gap:1em;flex-wrap:wrap;justify-content:center;align-items:center;width:50%}h1.svelte-1vx4usr{font-size:3em;color:var(--dark)}",
       map: null
     };
@@ -24096,13 +22217,16 @@ ${posts.length == 3 ? `<a class="${"dark-button svelte-9u023l"}" href="${"/posts
       };
       if ($$props.posts === void 0 && $$bindings.posts && posts !== void 0)
         $$bindings.posts(posts);
-      $$result.css.add(css17);
+      $$result.css.add(css18);
       let $$settled;
       let $$rendered;
       do {
         $$settled = true;
         postFiltrati = filtraPost(tagScelto);
-        $$rendered = `${$$result.head += `${$$result.title = `<title>Posts</title>`, ""}`, ""}
+        $$rendered = `${validate_component(SEO, "Seo").$$render($$result, {
+          title: "Post del sito",
+          metadescription: "Javascript, Svelte, HTML, CSS. Tutti i post riguardo i linguaggi di programmazione e gli strumenti utilizzati"
+        }, {}, {})}
 <div class="${"container svelte-1vx4usr"}"><h1 class="${"svelte-1vx4usr"}">Posts</h1>
 	<div class="${"tag-list svelte-1vx4usr"}">${each(filtri, (tag) => {
           return `${validate_component(PostFilterTag, "PostFilterTag").$$render($$result, { tag, tagScelto }, {
@@ -24125,18 +22249,18 @@ ${posts.length == 3 ? `<a class="${"dark-button svelte-9u023l"}" href="${"/posts
 // .svelte-kit/output/server/nodes/7.js
 var __exports8 = {};
 __export(__exports8, {
-  css: () => css18,
+  css: () => css19,
   entry: () => entry8,
   js: () => js8,
   module: () => posts_svelte_exports
 });
-var entry8, js8, css18;
+var entry8, js8, css19;
 var init__8 = __esm({
   ".svelte-kit/output/server/nodes/7.js"() {
     init_posts_svelte();
-    entry8 = "pages/posts.svelte-1acfff15.js";
-    js8 = ["pages/posts.svelte-1acfff15.js", "chunks/vendor-bc34623b.js", "chunks/filters-cc608ede.js", "chunks/singletons-d1fb5791.js", "chunks/PostsList-73fc94da.js", "chunks/PostTag-fd67d1e4.js", "chunks/RemoveFilter-2f519abb.js"];
-    css18 = ["assets/pages/posts.svelte-036c60e3.css", "assets/PostsList-a7f30869.css", "assets/PostTag-6c62c255.css", "assets/RemoveFilter-556f3651.css"];
+    entry8 = "pages/posts.svelte-67a145cf.js";
+    js8 = ["pages/posts.svelte-67a145cf.js", "chunks/vendor-b221bc45.js", "chunks/filters-eaee7eec.js", "chunks/singletons-d1fb5791.js", "chunks/PostsList-fe00c5cc.js", "chunks/PostTag-71ddb11a.js", "chunks/RemoveFilter-80fb43fb.js", "chunks/SEO-64b2f8e7.js"];
+    css19 = ["assets/pages/posts.svelte-036c60e3.css", "assets/PostsList-b122cbdc.css", "assets/PostTag-6c62c255.css", "assets/RemoveFilter-556f3651.css"];
   }
 });
 
@@ -24222,7 +22346,7 @@ async function setResponse(res, response) {
 }
 
 // .svelte-kit/output/server/index.js
-init_index_e8b4228d();
+init_index_42de8966();
 var __accessCheck2 = (obj, member, msg) => {
   if (!member.has(obj))
     throw TypeError("Cannot " + msg);
@@ -24989,7 +23113,7 @@ var updated = __spreadProps(__spreadValues({}, readable(false)), {
 });
 async function render_response({
   branch,
-  options: options2,
+  options,
   state,
   $session,
   page_config,
@@ -25000,15 +23124,15 @@ async function render_response({
   stuff
 }) {
   if (state.prerender) {
-    if (options2.csp.mode === "nonce") {
+    if (options.csp.mode === "nonce") {
       throw new Error('Cannot use prerendering if config.kit.csp.mode === "nonce"');
     }
-    if (options2.template_contains_nonce) {
+    if (options.template_contains_nonce) {
       throw new Error("Cannot use prerendering if page template contains %svelte.nonce%");
     }
   }
-  const stylesheets = new Set(options2.manifest._.entry.css);
-  const modulepreloads = new Set(options2.manifest._.entry.js);
+  const stylesheets = new Set(options.manifest._.entry.css);
+  const modulepreloads = new Set(options.manifest._.entry.js);
   const styles = /* @__PURE__ */ new Map();
   const serialized_data = [];
   let shadow_props;
@@ -25016,7 +23140,7 @@ async function render_response({
   let is_private = false;
   let maxage;
   if (error2) {
-    error2.stack = options2.get_stack(error2);
+    error2.stack = options.get_stack(error2);
   }
   if (resolve_opts.ssr) {
     branch.forEach(({ node, props: props2, loaded, fetched, uses_credentials }) => {
@@ -25072,7 +23196,7 @@ async function render_response({
     });
     session_tracking_active = true;
     try {
-      rendered = options2.root.render(props);
+      rendered = options.root.render(props);
     } finally {
       unsubscribe();
     }
@@ -25082,28 +23206,28 @@ async function render_response({
   let { head, html: body } = rendered;
   const inlined_style = Array.from(styles.values()).join("\n");
   await csp_ready;
-  const csp = new Csp(options2.csp, {
-    dev: options2.dev,
+  const csp = new Csp(options.csp, {
+    dev: options.dev,
     prerender: !!state.prerender,
-    needs_nonce: options2.template_contains_nonce
+    needs_nonce: options.template_contains_nonce
   });
   const target = hash(body);
   const init_app = `
-		import { start } from ${s2(options2.prefix + options2.manifest._.entry.file)};
+		import { start } from ${s2(options.prefix + options.manifest._.entry.file)};
 		start({
 			target: document.querySelector('[data-hydrate="${target}"]').parentNode,
-			paths: ${s2(options2.paths)},
+			paths: ${s2(options.paths)},
 			session: ${try_serialize($session, (error3) => {
     throw new Error(`Failed to serialize session data: ${error3.message}`);
   })},
 			route: ${!!page_config.router},
 			spa: ${!resolve_opts.ssr},
-			trailing_slash: ${s2(options2.trailing_slash)},
+			trailing_slash: ${s2(options.trailing_slash)},
 			hydrate: ${resolve_opts.ssr && page_config.hydrate ? `{
 				status: ${status},
 				error: ${serialize_error(error2)},
 				nodes: [
-					${(branch || []).map(({ node }) => `import(${s2(options2.prefix + node.entry)})`).join(",\n						")}
+					${(branch || []).map(({ node }) => `import(${s2(options.prefix + node.entry)})`).join(",\n						")}
 				],
 				params: ${devalue(event.params)},
 				routeId: ${s2(event.routeId)}
@@ -25112,10 +23236,10 @@ async function render_response({
 	`;
   const init_service_worker = `
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('${options2.service_worker}');
+			navigator.serviceWorker.register('${options.service_worker}');
 		}
 	`;
-  if (options2.amp) {
+  if (options.amp) {
     const styles2 = `${inlined_style}
 ${rendered.css.code}`;
     head += `
@@ -25124,14 +23248,14 @@ ${rendered.css.code}`;
 		<script async src="https://cdn.ampproject.org/v0.js"><\/script>
 
 		<style amp-custom>${styles2}</style>`;
-    if (options2.service_worker) {
+    if (options.service_worker) {
       head += '<script async custom-element="amp-install-serviceworker" src="https://cdn.ampproject.org/v0/amp-install-serviceworker-0.1.js"><\/script>';
-      body += `<amp-install-serviceworker src="${options2.service_worker}" layout="nodisplay"></amp-install-serviceworker>`;
+      body += `<amp-install-serviceworker src="${options.service_worker}" layout="nodisplay"></amp-install-serviceworker>`;
     }
   } else {
     if (inlined_style) {
       const attributes = [];
-      if (options2.dev)
+      if (options.dev)
         attributes.push(" data-svelte");
       if (csp.style_needs_nonce)
         attributes.push(` nonce="${csp.nonce}"`);
@@ -25142,7 +23266,7 @@ ${rendered.css.code}`;
     head += Array.from(stylesheets).map((dep) => {
       const attributes = [
         'rel="stylesheet"',
-        `href="${options2.prefix + dep}"`
+        `href="${options.prefix + dep}"`
       ];
       if (csp.style_needs_nonce) {
         attributes.push(`nonce="${csp.nonce}"`);
@@ -25155,7 +23279,7 @@ ${rendered.css.code}`;
     }).join("");
     if (page_config.router || page_config.hydrate) {
       head += Array.from(modulepreloads).map((dep) => `
-	<link rel="modulepreload" href="${options2.prefix + dep}">`).join("");
+	<link rel="modulepreload" href="${options.prefix + dep}">`).join("");
       const attributes = ['type="module"', `data-hydrate="${target}"`];
       csp.add_script(init_app);
       if (csp.script_needs_nonce) {
@@ -25168,13 +23292,13 @@ ${rendered.css.code}`;
         body += render_json_payload_script({ type: "props" }, shadow_props);
       }
     }
-    if (options2.service_worker) {
+    if (options.service_worker) {
       csp.add_script(init_service_worker);
       head += `
 				<script${csp.script_needs_nonce ? ` nonce="${csp.nonce}"` : ""}>${init_service_worker}<\/script>`;
     }
   }
-  if (state.prerender && !options2.amp) {
+  if (state.prerender && !options.amp) {
     const http_equiv = [];
     const csp_headers = csp.get_meta();
     if (csp_headers) {
@@ -25187,10 +23311,10 @@ ${rendered.css.code}`;
       head = http_equiv.join("\n") + head;
     }
   }
-  const segments = event.url.pathname.slice(options2.paths.base.length).split("/").slice(2);
-  const assets2 = options2.paths.assets || (segments.length > 0 ? segments.map(() => "..").join("/") : ".");
+  const segments = event.url.pathname.slice(options.paths.base.length).split("/").slice(2);
+  const assets2 = options.paths.assets || (segments.length > 0 ? segments.map(() => "..").join("/") : ".");
   const html = await resolve_opts.transformPage({
-    html: options2.template({ head, body, assets: assets2, nonce: csp.nonce })
+    html: options.template({ head, body, assets: assets2, nonce: csp.nonce })
   });
   const headers = new Headers({
     "content-type": "text/html",
@@ -25199,7 +23323,7 @@ ${rendered.css.code}`;
   if (maxage) {
     headers.set("cache-control", `${is_private ? "private" : "public"}, max-age=${maxage}`);
   }
-  if (!options2.floc) {
+  if (!options.floc) {
     headers.set("permissions-policy", "interest-cohort=()");
   }
   if (!state.prerender) {
@@ -25317,7 +23441,7 @@ function normalize_path(path, trailing_slash) {
 }
 async function load_node({
   event,
-  options: options2,
+  options,
   state,
   route,
   node,
@@ -25333,7 +23457,7 @@ async function load_node({
   const fetched = [];
   let set_cookie_headers = [];
   let loaded;
-  const shadow = is_leaf ? await load_shadow_data(route, event, options2, !!state.prerender) : {};
+  const shadow = is_leaf ? await load_shadow_data(route, event, options, !!state.prerender) : {};
   if (shadow.cookies) {
     set_cookie_headers.push(...shadow.cookies);
   }
@@ -25384,16 +23508,16 @@ async function load_node({
         const resolved = resolve(event.url.pathname, requested.split("?")[0]);
         let response;
         let dependency;
-        const prefix = options2.paths.assets || options2.paths.base;
+        const prefix = options.paths.assets || options.paths.base;
         const filename = decodeURIComponent(resolved.startsWith(prefix) ? resolved.slice(prefix.length) : resolved).slice(1);
         const filename_html = `${filename}/index.html`;
-        const is_asset = options2.manifest.assets.has(filename);
-        const is_asset_html = options2.manifest.assets.has(filename_html);
+        const is_asset = options.manifest.assets.has(filename);
+        const is_asset_html = options.manifest.assets.has(filename_html);
         if (is_asset || is_asset_html) {
           const file = is_asset ? filename : filename_html;
-          if (options2.read) {
-            const type = is_asset ? options2.manifest.mimeTypes[filename.slice(filename.lastIndexOf("."))] : "text/html";
-            response = new Response(options2.read(file), {
+          if (options.read) {
+            const type = is_asset ? options.manifest.mimeTypes[filename.slice(filename.lastIndexOf("."))] : "text/html";
+            response = new Response(options.read(file), {
               headers: type ? { "content-type": type } : {}
             });
           } else {
@@ -25414,7 +23538,7 @@ async function load_node({
           if (opts.body && typeof opts.body !== "string") {
             throw new Error("Request body must be a string");
           }
-          response = await respond(new Request(new URL(requested, event.url).href, opts), options2, {
+          response = await respond(new Request(new URL(requested, event.url).href, opts), options, {
             getClientAddress: state.getClientAddress,
             initiator: route,
             prerender: state.prerender
@@ -25434,7 +23558,7 @@ async function load_node({
               opts.headers.set("cookie", cookie);
           }
           const external_request = new Request(requested, opts);
-          response = await options2.hooks.externalFetch.call(null, external_request);
+          response = await options.hooks.externalFetch.call(null, external_request);
         }
         const proxy = new Proxy(response, {
           get(response2, key2, _receiver) {
@@ -25493,7 +23617,7 @@ async function load_node({
       },
       stuff: __spreadValues({}, stuff)
     };
-    if (options2.dev) {
+    if (options.dev) {
       Object.defineProperty(load_input, "page", {
         get: () => {
           throw new Error("`page` in `load` functions has been replaced by `url` and `params`");
@@ -25506,7 +23630,7 @@ async function load_node({
     }
     loaded = await module2.load.call(null, load_input);
     if (!loaded) {
-      throw new Error(`load function must return a value${options2.dev ? ` (${node.entry})` : ""}`);
+      throw new Error(`load function must return a value${options.dev ? ` (${node.entry})` : ""}`);
     }
     if (loaded.fallthrough) {
       throw new Error("fallthrough is no longer supported. Use matchers instead: https://kit.svelte.dev/docs/routing#advanced-routing-matching");
@@ -25536,7 +23660,7 @@ async function load_node({
     uses_credentials
   };
 }
-async function load_shadow_data(route, event, options2, prerender) {
+async function load_shadow_data(route, event, options, prerender) {
   if (!route.shadow)
     return {};
   try {
@@ -25594,7 +23718,7 @@ async function load_shadow_data(route, event, options2, prerender) {
     return data;
   } catch (e2) {
     const error2 = coalesce_to_error(e2);
-    options2.handle_error(error2, event);
+    options.handle_error(error2, event);
     return {
       status: 500,
       error: error2
@@ -25628,7 +23752,7 @@ function validate_shadow_output(result) {
 }
 async function respond_with_error({
   event,
-  options: options2,
+  options,
   state,
   $session,
   status,
@@ -25636,11 +23760,11 @@ async function respond_with_error({
   resolve_opts
 }) {
   try {
-    const default_layout = await options2.manifest._.nodes[0]();
-    const default_error = await options2.manifest._.nodes[1]();
+    const default_layout = await options.manifest._.nodes[0]();
+    const default_error = await options.manifest._.nodes[1]();
     const layout_loaded = await load_node({
       event,
-      options: options2,
+      options,
       state,
       route: null,
       node: default_layout,
@@ -25651,7 +23775,7 @@ async function respond_with_error({
     });
     const error_loaded = await load_node({
       event,
-      options: options2,
+      options,
       state,
       route: null,
       node: default_error,
@@ -25663,12 +23787,12 @@ async function respond_with_error({
       error: error2
     });
     return await render_response({
-      options: options2,
+      options,
       state,
       $session,
       page_config: {
-        hydrate: options2.hydrate,
-        router: options2.router
+        hydrate: options.hydrate,
+        router: options.router
       },
       stuff: error_loaded.stuff,
       status,
@@ -25679,14 +23803,14 @@ async function respond_with_error({
     });
   } catch (err) {
     const error3 = coalesce_to_error(err);
-    options2.handle_error(error3, event);
+    options.handle_error(error3, event);
     return new Response(error3.stack, {
       status: 500
     });
   }
 }
 async function respond$1(opts) {
-  const { event, options: options2, state, $session, route, resolve_opts } = opts;
+  const { event, options, state, $session, route, resolve_opts } = opts;
   let nodes;
   if (!resolve_opts.ssr) {
     return await render_response(__spreadProps(__spreadValues({}, opts), {
@@ -25702,13 +23826,13 @@ async function respond$1(opts) {
     }));
   }
   try {
-    nodes = await Promise.all(route.a.map((n) => options2.manifest._.nodes[n] && options2.manifest._.nodes[n]()));
+    nodes = await Promise.all(route.a.map((n) => options.manifest._.nodes[n] && options.manifest._.nodes[n]()));
   } catch (err) {
     const error3 = coalesce_to_error(err);
-    options2.handle_error(error3, event);
+    options.handle_error(error3, event);
     return await respond_with_error({
       event,
-      options: options2,
+      options,
       state,
       $session,
       status: 500,
@@ -25717,7 +23841,7 @@ async function respond$1(opts) {
     });
   }
   const leaf = nodes[nodes.length - 1].module;
-  let page_config = get_page_config(leaf, options2);
+  let page_config = get_page_config(leaf, options);
   if (state.prerender) {
     const should_prerender = leaf.prerender ?? state.prerender.default;
     if (!should_prerender) {
@@ -25758,7 +23882,7 @@ async function respond$1(opts) {
             }
           } catch (err) {
             const e2 = coalesce_to_error(err);
-            options2.handle_error(e2, event);
+            options.handle_error(e2, event);
             status = 500;
             error2 = e2;
           }
@@ -25768,7 +23892,7 @@ async function respond$1(opts) {
           if (error2) {
             while (i2--) {
               if (route.b[i2]) {
-                const error_node = await options2.manifest._.nodes[route.b[i2]]();
+                const error_node = await options.manifest._.nodes[route.b[i2]]();
                 let node_loaded;
                 let j = i2;
                 while (!(node_loaded = branch[j])) {
@@ -25786,20 +23910,20 @@ async function respond$1(opts) {
                   if (error_loaded.loaded.error) {
                     continue;
                   }
-                  page_config = get_page_config(error_node.module, options2);
+                  page_config = get_page_config(error_node.module, options);
                   branch = branch.slice(0, j + 1).concat(error_loaded);
                   stuff = __spreadValues(__spreadValues({}, node_loaded.stuff), error_loaded.stuff);
                   break ssr;
                 } catch (err) {
                   const e2 = coalesce_to_error(err);
-                  options2.handle_error(e2, event);
+                  options.handle_error(e2, event);
                   continue;
                 }
               }
             }
             return with_cookies(await respond_with_error({
               event,
-              options: options2,
+              options,
               state,
               $session,
               status,
@@ -25824,20 +23948,20 @@ async function respond$1(opts) {
     })), set_cookie_headers);
   } catch (err) {
     const error3 = coalesce_to_error(err);
-    options2.handle_error(error3, event);
+    options.handle_error(error3, event);
     return with_cookies(await respond_with_error(__spreadProps(__spreadValues({}, opts), {
       status: 500,
       error: error3
     })), set_cookie_headers);
   }
 }
-function get_page_config(leaf, options2) {
+function get_page_config(leaf, options) {
   if ("ssr" in leaf) {
     throw new Error("`export const ssr` has been removed \u2014 use the handle hook instead: https://kit.svelte.dev/docs/hooks#handle");
   }
   return {
-    router: "router" in leaf ? !!leaf.router : options2.router,
-    hydrate: "hydrate" in leaf ? !!leaf.hydrate : options2.hydrate
+    router: "router" in leaf ? !!leaf.router : options.router,
+    hydrate: "hydrate" in leaf ? !!leaf.hydrate : options.hydrate
   };
 }
 function with_cookies(response, set_cookie_headers) {
@@ -25848,7 +23972,7 @@ function with_cookies(response, set_cookie_headers) {
   }
   return response;
 }
-async function render_page(event, route, options2, state, resolve_opts) {
+async function render_page(event, route, options, state, resolve_opts) {
   if (state.initiator === route) {
     return new Response(`Not found: ${event.url.pathname}`, {
       status: 404
@@ -25863,10 +23987,10 @@ async function render_page(event, route, options2, state, resolve_opts) {
       return render_endpoint(event, await route.shadow());
     }
   }
-  const $session = await options2.hooks.getSession(event);
+  const $session = await options.hooks.getSession(event);
   return respond$1({
     event,
-    options: options2,
+    options,
     state,
     $session,
     resolve_opts,
@@ -25924,10 +24048,10 @@ function exec(match, names, types2, matchers) {
 }
 var DATA_SUFFIX = "/__data.json";
 var default_transform = ({ html }) => html;
-async function respond(request, options2, state) {
+async function respond(request, options, state) {
   var _a4, _b, _c;
   let url = new URL(request.url);
-  const normalized = normalize_path(url.pathname, options2.trailing_slash);
+  const normalized = normalize_path(url.pathname, options.trailing_slash);
   if (normalized !== url.pathname && !((_a4 = state.prerender) == null ? void 0 : _a4.fallback)) {
     return new Response(void 0, {
       status: 301,
@@ -25936,7 +24060,7 @@ async function respond(request, options2, state) {
       }
     });
   }
-  const { parameter, allowed } = options2.method_override;
+  const { parameter, allowed } = options.method_override;
   const method_override = (_b = url.searchParams.get(parameter)) == null ? void 0 : _b.toUpperCase();
   if (method_override) {
     if (request.method === "POST") {
@@ -25962,21 +24086,21 @@ async function respond(request, options2, state) {
   let decoded = decodeURI(url.pathname);
   let route = null;
   let params = {};
-  if (options2.paths.base && !((_c = state.prerender) == null ? void 0 : _c.fallback)) {
-    if (!decoded.startsWith(options2.paths.base)) {
+  if (options.paths.base && !((_c = state.prerender) == null ? void 0 : _c.fallback)) {
+    if (!decoded.startsWith(options.paths.base)) {
       return new Response(void 0, { status: 404 });
     }
-    decoded = decoded.slice(options2.paths.base.length) || "/";
+    decoded = decoded.slice(options.paths.base.length) || "/";
   }
   const is_data_request = decoded.endsWith(DATA_SUFFIX);
   if (is_data_request) {
     decoded = decoded.slice(0, -DATA_SUFFIX.length) || "/";
-    const normalized2 = normalize_path(url.pathname.slice(0, -DATA_SUFFIX.length), options2.trailing_slash);
+    const normalized2 = normalize_path(url.pathname.slice(0, -DATA_SUFFIX.length), options.trailing_slash);
     url = new URL(url.origin + normalized2 + url.search);
   }
   if (!state.prerender || !state.prerender.fallback) {
-    const matchers = await options2.manifest._.matchers();
-    for (const candidate of options2.manifest._.routes) {
+    const matchers = await options.manifest._.matchers();
+    for (const candidate of options.manifest._.routes) {
       const match = candidate.pattern.exec(decoded);
       if (!match)
         continue;
@@ -26030,7 +24154,7 @@ async function respond(request, options2, state) {
     transformPage: default_transform
   };
   try {
-    const response = await options2.hooks.handle({
+    const response = await options.hooks.handle({
       event,
       resolve: async (event2, opts) => {
         if (opts) {
@@ -26042,9 +24166,9 @@ async function respond(request, options2, state) {
         if (state.prerender && state.prerender.fallback) {
           return await render_response({
             event: event2,
-            options: options2,
+            options,
             state,
-            $session: await options2.hooks.getSession(event2),
+            $session: await options.hooks.getSession(event2),
             page_config: { router: true, hydrate: true },
             stuff: {},
             status: 200,
@@ -26073,7 +24197,7 @@ async function respond(request, options2, state) {
               }
             }
           } else {
-            response2 = route.type === "endpoint" ? await render_endpoint(event2, await route.load()) : await render_page(event2, route, options2, state, resolve_opts);
+            response2 = route.type === "endpoint" ? await render_endpoint(event2, await route.load()) : await render_page(event2, route, options, state, resolve_opts);
           }
           if (response2) {
             if (response2.status === 200 && response2.headers.has("etag")) {
@@ -26105,10 +24229,10 @@ async function respond(request, options2, state) {
           }
         }
         if (!state.initiator) {
-          const $session = await options2.hooks.getSession(event2);
+          const $session = await options.hooks.getSession(event2);
           return await respond_with_error({
             event: event2,
-            options: options2,
+            options,
             state,
             $session,
             status: 404,
@@ -26131,12 +24255,12 @@ async function respond(request, options2, state) {
     return response;
   } catch (e2) {
     const error2 = coalesce_to_error(e2);
-    options2.handle_error(error2, event);
+    options.handle_error(error2, event);
     try {
-      const $session = await options2.hooks.getSession(event);
+      const $session = await options.hooks.getSession(event);
       return await respond_with_error({
         event,
-        options: options2,
+        options,
         state,
         $session,
         status: 500,
@@ -26145,7 +24269,7 @@ async function respond(request, options2, state) {
       });
     } catch (e22) {
       const error3 = coalesce_to_error(e22);
-      return new Response(options2.dev ? error3.stack : error3.message, {
+      return new Response(options.dev ? error3.stack : error3.message, {
         status: 500
       });
     }
@@ -26194,7 +24318,7 @@ var Server = class {
       trailing_slash: "never"
     };
   }
-  async respond(request, options2 = {}) {
+  async respond(request, options = {}) {
     if (!(request instanceof Request)) {
       throw new Error("The first argument to server.respond must be a Request object. See https://github.com/sveltejs/kit/pull/3384 for details");
     }
@@ -26207,7 +24331,7 @@ var Server = class {
         externalFetch: module2.externalFetch || fetch
       };
     }
-    return respond(request, this.options, options2);
+    return respond(request, this.options, options);
   }
 };
 
@@ -26217,7 +24341,7 @@ var manifest = {
   assets: /* @__PURE__ */ new Set(["favicon.png", "pictures/alex.jpg", "pictures/avatar.jpg", "pictures/emil.png", "pictures/icons/bootstrap-plain.svg", "pictures/icons/cplusplus-plain.svg", "pictures/icons/css3-plain.svg", "pictures/icons/firebase-plain.svg", "pictures/icons/git-plain.svg", "pictures/icons/github-original.svg", "pictures/icons/html5-plain.svg", "pictures/icons/intellij-plain.svg", "pictures/icons/java-plain.svg", "pictures/icons/javascript-plain.svg", "pictures/icons/mysql-plain.svg", "pictures/icons/nodejs-plain.svg", "pictures/icons/npm-original-wordmark.svg", "pictures/icons/perl-plain.svg", "pictures/icons/postgresql-plain.svg", "pictures/icons/python-plain.svg", "pictures/icons/svelte-plain.svg", "pictures/icons/typescript-plain.svg", "pictures/icons/vscode-plain.svg", "pictures/me.jpg"]),
   mimeTypes: { ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml" },
   _: {
-    entry: { "file": "start-162a8162.js", "js": ["start-162a8162.js", "chunks/vendor-bc34623b.js", "chunks/singletons-d1fb5791.js"], "css": [] },
+    entry: { "file": "start-8b648089.js", "js": ["start-8b648089.js", "chunks/vendor-b221bc45.js", "chunks/singletons-d1fb5791.js"], "css": [] },
     nodes: [
       () => Promise.resolve().then(() => (init__(), __exports)),
       () => Promise.resolve().then(() => (init__2(), __exports2)),

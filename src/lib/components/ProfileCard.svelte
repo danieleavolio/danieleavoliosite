@@ -1,15 +1,16 @@
 <script>
-	let isShown = false;
+	import { cardOpened } from '$lib/stores/filters';
+
 	import { fade } from 'svelte/transition';
 	import Image from './Image.svelte';
 </script>
 
 <div
 	in:fade={{ duration: 500, delay: 500 }}
-	class="{isShown == true ? 'bg-var(--light)' : ''}  profile-card"
+	class="{$cardOpened == true ? 'bg-var(--light)' : ''}  profile-card"
 >
-	{#if !isShown}
-		<button class="to-click" on:click={() => (isShown = !isShown)}>&lt Hi /&gt </button>
+	{#if !$cardOpened}
+		<button class="to-click" on:click={() => cardOpened.set(true)}>&lt Hi /&gt </button>
 	{:else}
 		<div class="card">
 			<div class="card-bg" />
@@ -27,14 +28,19 @@
 				</div>
 				<div class="socials">
 					<!-- svelte-ignore a11y-invalid-attribute -->
-					<a class=" link" target="_blank" href="https://www.linkedin.com/in/danieleavolio/">Linkedin</a>
+					<a class=" link" target="_blank" href="https://www.linkedin.com/in/danieleavolio/"
+						>Linkedin</a
+					>
 					<!-- svelte-ignore a11y-invalid-attribute -->
 					<a class=" link" target="_blank" href="https://github.com/danieleavolio">Github</a>
 					<!-- svelte-ignore a11y-invalid-attribute -->
 					<a class=" link" target="_blank" href="https://twitter.com/avolio_daniele">Twitter</a>
 				</div>
 				<div class="buttons">
-					<a class="button-link" target="_blank" href="https://drive.google.com/file/d/1g0BVkOf7vdwjki8_98OVv6eFKiNzaTK6/view?usp=sharing"
+					<a
+						class="button-link"
+						target="_blank"
+						href="https://drive.google.com/file/d/1g0BVkOf7vdwjki8_98OVv6eFKiNzaTK6/view?usp=sharing"
 						>Visualizza CV <span class="click-after"
 							><span class="material-icons cv">file_presents</span></span
 						></a
@@ -300,12 +306,12 @@
 		}
 	}
 
-	@media (max-width:660px){
-		.card{
+	@media (max-width: 660px) {
+		.card {
 			display: grid;
 			grid-template-columns: 1fr;
 		}
-		.info{
+		.info {
 			padding: 0.5em;
 			margin: 0;
 		}

@@ -23,6 +23,7 @@
 					introduction
 					coverImage {
 						url
+						fileName
 					}
 					date
 					tags
@@ -70,7 +71,7 @@
 				<p>{post.date}</p>
 			</div>
 		</div>
-		<img class="cover" src={post.coverImage.url} alt="" />
+		<img class="cover" src={post.coverImage.url} alt="{post.coverImage.fileName}" />
 
 		{#if post.content}
 			<div class="content">
@@ -149,6 +150,6 @@
 
 	.content {
 		color: var(--light);
-		width: 70%;
+		width: 90%;
 	}
 </style>

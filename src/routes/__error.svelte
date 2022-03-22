@@ -7,12 +7,17 @@
 </script>
 
 <script>
+import Seo from "$lib/components/SEO.svelte";
+
+
 	export let error, status;
 </script>
 
 <svelte:head>
 	<title>Ops.. Errore {status}</title>
 </svelte:head>
+
+<Seo title={"Ops.. Errore"} metadescription="Qualcosa è andato storto.." />
 <div class="error-page">
 	<div class="error">
 		<h1>Qualcosa è andato storto..</h1>
@@ -28,7 +33,7 @@
 		place-items: center;
 	}
 
-	.error{
+	.error {
 		background-color: var(--dark);
 		width: fit-content;
 		color: var(--light);

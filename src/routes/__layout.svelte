@@ -1,19 +1,16 @@
 <script>
-	// @ts-nocheck
 	import { fly } from 'svelte/transition';
 	import Navbar from '$lib/components/Navbar.svelte';
 
 	import '../app.css';
-	let isShowing = false;
+	let isShowing;
 	const changeVisibility = () => {
 		isShowing = !isShowing;
-		console.log("porco");
-		
 	};
 </script>
 
 {#if isShowing}
-	<Navbar {changeVisibility} bind:isShowing />
+	<Navbar {changeVisibility} />
 {:else}
 	<button
 		in:fly={{ x: -100, delay: 500 }}

@@ -37,6 +37,7 @@
 	import { postFilterStore } from '$lib/stores/filters';
 	import PostFilterTag from '$lib/components/PostFilterTag.svelte';
 	import RemoveFilter from '$lib/components/RemoveFilter.svelte';
+	import Seo from '$lib/components/SEO.svelte';
 	export let posts;
 
 	let postsFiltrati = [];
@@ -65,16 +66,18 @@
 
 	$: postFiltrati = filtraPost(tagScelto);
 </script>
-<svelte:head>
-	<title>Posts</title>
-</svelte:head>
+
+<Seo
+	title={'Post del sito'}
+	metadescription={'Javascript, Svelte, HTML, CSS. Tutti i post riguardo i linguaggi di programmazione e gli strumenti utilizzati'}
+/>
 <div class="container">
 	<h1 in:fly={{ y: -100, duration: 500 }}>Posts</h1>
 	<div class="tag-list">
 		{#each filtri as tag}
 			<PostFilterTag {tag} bind:tagScelto />
 		{/each}
-		<RemoveFilter theme={"posts"} />
+		<RemoveFilter theme={'posts'} />
 	</div>
 	<div class="post">
 		{#if postFiltrati.length == 0}
