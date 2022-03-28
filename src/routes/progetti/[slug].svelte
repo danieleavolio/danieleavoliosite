@@ -40,11 +40,17 @@
 	import NormalTag from '$lib/components/NormalTag.svelte';
 	import Seo from '$lib/components/SEO.svelte';
 	import { darkModeStore } from '$lib/stores/filters';
+	import { goto } from '$app/navigation';
+	import BackTo from '$lib/components/fundamentals/BackTo.svelte';
 
 	export let project;
+
+	const backToProjects = () => {
+		goto('/progetti');
+	};
 </script>
 
-<Seo title={project.name} metadescription={project.description} />
+<Seo title={project.title} metadescription={project.description} />
 <svelte:head>
 	<meta property="og:type" content="article" />
 </svelte:head>
@@ -54,8 +60,9 @@
 >
 	{#if project}
 		<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} container">
-			<img class="cover" src={project.image[0].url} alt={project.image[0].fileName} />
+			<BackTo actionToDo={backToProjects} text="PROGETTI" />
 			<h1>{project.title}</h1>
+			<img class="cover" src={project.image[0].url} alt={project.image[0].fileName} />
 			<p class="description">{project.description}</p>
 			<div class="tags">
 				{#each project.tags as tag}

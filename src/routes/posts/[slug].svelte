@@ -45,10 +45,14 @@
 	import { fly } from 'svelte/transition';
 	export let post;
 
-	import Footer from '$lib/components/Footer.svelte';
 	import Seo from '$lib/components/SEO.svelte';
 	import NormalTag from '$lib/components/NormalTag.svelte';
 	import { darkModeStore } from '$lib/stores/filters';
+	import { goto } from '$app/navigation';
+	import BackTo from '$lib/components/fundamentals/BackTo.svelte';
+	const backToPost = () => {
+		goto('/posts');
+	};
 </script>
 
 <Seo title={post.title} metadescription={post.introduction} />
@@ -61,6 +65,7 @@
 >
 	{#if post}
 		<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} container">
+			<BackTo actionToDo={backToPost} text="POSTS" />
 			<h1>{post.title}</h1>
 			<h3>{post.introduction}</h3>
 			<img class="cover" src={post.coverImage.url} alt={post.coverImage.fileName} />
@@ -85,7 +90,6 @@
 			{/if}
 		</div>
 	{/if}
-	<Footer />
 </div>
 
 <style>

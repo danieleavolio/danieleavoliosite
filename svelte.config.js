@@ -7,7 +7,8 @@ const config = {
     kit: {
         adapter: vercel(),
         prerender: {
-            default: true
+            default: true,
+            enabled: true
         }
     }
 

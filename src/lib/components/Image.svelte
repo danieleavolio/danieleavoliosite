@@ -8,7 +8,7 @@
 		<img
 			class={isLoaded ? 'show' : ''}
 			on:load={() => (isLoaded = true)}
-			src="pictures/avatar.jpg"
+			src="pictures/me.jpg"
 			alt=""
 		/>
 	</div>
@@ -47,7 +47,6 @@
 		max-width: 80%;
 		min-height: 70%;
 		display: none;
-        filter: grayscale(1) sepia(0.1)
 	}
 	.show {
 		display: inline-block !important;

@@ -9,7 +9,7 @@ body {
     padding: 0;
     overflow-x: hidden;
     position: relative;
-    background-color: transparent
+    transition: all 0.3s ease;
 }
 
 :root {

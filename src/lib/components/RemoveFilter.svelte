@@ -10,7 +10,6 @@ import { darkModeStore, postFilterStore, projectFilterStore } from "$lib/stores/
 	const removeFilter = () => {
         postFilterStore.set('');
         projectFilterStore.set('');
-        console.log(theme);
         
         if (theme == 'posts')
             goto("/posts")

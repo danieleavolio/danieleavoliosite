@@ -5,6 +5,7 @@
 	import '../app.css';
 	import { darkModeStore } from '$lib/stores/filters';
 	import { onMount } from 'svelte';
+import Footer from '$lib/components/Footer.svelte';
 	let isShowing;
 	const changeVisibility = () => {
 		isShowing = !isShowing;
@@ -12,6 +13,15 @@
 
 	$: if ($darkModeStore) {
 		localStorage.setItem('dark-mode', $darkModeStore);
+
+		const htmlElement = document.firstElementChild;
+		if ($darkModeStore == 'enabled') {
+			htmlElement.classList.add('dark');
+			htmlElement.classList.remove('light');
+		} else {
+			htmlElement.classList.add('light');
+			htmlElement.classList.remove('dark');
+		}
 	}
 
 	onMount(() => {
@@ -33,6 +43,7 @@
 		on:click={changeVisibility}>menu</button
 	>
 	<slot />
+	<Footer />
 {/if}
 
 <style>
