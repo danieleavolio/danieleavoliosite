@@ -3,7 +3,7 @@
 	export let project;
 	export let index;
 	import { fade } from 'svelte/transition';
-	import ProjectTag from './ProjectTag.svelte';
+	import ProjectTag from './NormalTag.svelte';
 </script>
 
 <div in:fade={{ duration: 500, delay: 100 + index * 100 }} class="progetto">
@@ -39,7 +39,7 @@
 	
 	.title {
 		background-color: var(--light);
-		color: var(--dark);
+		color: var(--dark-bg);
 		padding: 0 1em;
 		cursor: pointer;
 	}
