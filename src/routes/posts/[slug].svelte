@@ -60,14 +60,10 @@
 	class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} project"
 >
 	{#if post}
-		<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} intro">
+		<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} container">
 			<h1>{post.title}</h1>
 			<h3>{post.introduction}</h3>
-			<div class="tags">
-				{#each post.tags as tag}
-					<NormalTag {tag} />
-				{/each}
-			</div>
+			<img class="cover" src={post.coverImage.url} alt={post.coverImage.fileName} />
 			<div class="author">
 				<img class="avatar" src={post.authors[0].picture.url} alt="" />
 				<div class="name-date">
@@ -75,21 +71,31 @@
 					<p>{post.date}</p>
 				</div>
 			</div>
-			<img class="cover" src={post.coverImage.url} alt={post.coverImage.fileName} />
-		</div>
-		{#if post.content}
-			<div class="content">
-				<p>{@html post.content.html}</p>
+			<div class="tags">
+				{#each post.tags as tag}
+					<NormalTag {tag} />
+				{/each}
 			</div>
-		{/if}
+		</div>
+		<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} container">
+			{#if post.content}
+				<div class="content">
+					<p>{@html post.content.html}</p>
+				</div>
+			{/if}
+		</div>
 	{/if}
 	<Footer />
 </div>
 
 <style>
-
-	.intro{
+	.container {
 		padding: 1em;
+		border-radius: 0.2em;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
 	}
 	h1 {
 		font-size: clamp(1.2em, 10vw, 4em);
