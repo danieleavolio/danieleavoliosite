@@ -1,17 +1,18 @@
 <script>
+	import { darkModeStore } from '$lib/stores/filters';
+
 	export let icon;
 	export let date;
 	export let start = false;
 </script>
 
-<div class="container">
-	
+<div class=" {$darkModeStore == 'enabled' ? 'dark' : 'light'} container">
 	<div class="icon">
 		<span class="material-icons">{icon}</span>
 	</div>
-	<div class="connect-line" />
+	<div class=" {$darkModeStore == 'enabled' ? 'dark-line' : 'light-line'} connect-line" />
 	<p class="data">{date}</p>
-	<div class="connect-line" />
+	<div class="{$darkModeStore == 'enabled' ? 'dark-line' : 'light-line'} connect-line" />
 
 	{#if start}
 		<p class="start">START</p>
@@ -28,14 +29,15 @@
 		padding: 0;
 	}
 	.icon {
-		background-color: var(--dark-bg);
-		color: var(--light);
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		border-radius: 0.5em;
 		padding: 0.5em;
+		background-color: var(--dark-primary-variant);
+		color: var(--light-onPrimary);
 	}
+
 	span {
 		font-size: 3em;
 	}
@@ -50,13 +52,17 @@
 		margin: 0;
 		padding: 0.5em;
 		border-radius: 1em;
-		background-color: var(--dark-bg);
-		color: var(--light);
 	}
 
 	.connect-line {
 		width: 3px;
 		height: 100%;
-		background-color: var(--dark-bg);
+	}
+
+	.dark-line {
+		background-color: var(--dark-text);
+	}
+	.light-line {
+		background-color: var(--light-text);
 	}
 </style>

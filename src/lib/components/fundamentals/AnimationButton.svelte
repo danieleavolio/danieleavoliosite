@@ -13,7 +13,6 @@
 <style>
 	.button-link {
 		text-decoration: none;
-		height: 100%;
 		padding: 0.2em 0.5em;
 		font-size: clamp(1em, 1.2em, 1.2em);
 		position: relative;

@@ -5,7 +5,10 @@ import preprocess from 'svelte-preprocess';
 const config = {
     preprocess: preprocess(),
     kit: {
-        adapter: vercel()
+        adapter: vercel(),
+        prerender: {
+            default: true
+        }
     }
 
 };

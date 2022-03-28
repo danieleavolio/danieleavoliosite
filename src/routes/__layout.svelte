@@ -4,7 +4,6 @@
 
 	import '../app.css';
 	import { darkModeStore } from '$lib/stores/filters';
-	import { beforeNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	let isShowing;
 	const changeVisibility = () => {
@@ -18,6 +17,10 @@
 	onMount(() => {
 		if (localStorage.getItem('dark-mode') == null) darkModeStore.set('enabled');
 		else darkModeStore.set(localStorage.getItem('dark-mode'));
+
+		const htmlElement = document.firstElementChild;
+		if ($darkModeStore == 'enabled') htmlElement.classList.add('dark');
+		else htmlElement.classList.add('light');
 	});
 </script>
 

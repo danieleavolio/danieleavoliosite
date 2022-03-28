@@ -1,17 +1,17 @@
 <script>
+import { darkModeStore } from "$lib/stores/filters";
+
 
 </script>
 
 
-<footer>
+<footer class="{$darkModeStore == 'enabled' ? 'dark' : 'light'}">
     © 2021 All rights reserved. Design & Code by Daniele Avolio.
-</footer>>
+</footer>
 <style>
 
 footer{
-    background-color: var(--dark-bg);
     font-weight: 500;
     text-align: center;
-    color: var(--light);
 }
 </style>

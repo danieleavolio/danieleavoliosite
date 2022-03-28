@@ -8,7 +8,7 @@ import { darkModeStore } from "$lib/stores/filters";
 	export let handleClick;
 </script>
 
-<a on:click={handleClick} {href} class="{$darkModeStore == 'enabled' ? 'dark-text' : 'light-text'} link">{text}</a>
+<a sveltekit:noscroll on:click={handleClick} {href} class="{$darkModeStore == 'enabled' ? 'dark-text' : 'light-text'} link">{text}</a>
 
 <style>
 	.link {

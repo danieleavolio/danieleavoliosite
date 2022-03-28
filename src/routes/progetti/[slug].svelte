@@ -27,7 +27,7 @@
 		}
 		`;
 
-		const {project}  = await graphcms.request(query);
+		const { project } = await graphcms.request(query);
 
 		return {
 			props: { project }
@@ -39,7 +39,7 @@
 	import { fly } from 'svelte/transition';
 	import NormalTag from '$lib/components/NormalTag.svelte';
 	import Seo from '$lib/components/SEO.svelte';
-import { darkModeStore } from '$lib/stores/filters';
+	import { darkModeStore } from '$lib/stores/filters';
 
 	export let project;
 </script>
@@ -48,30 +48,44 @@ import { darkModeStore } from '$lib/stores/filters';
 <svelte:head>
 	<meta property="og:type" content="article" />
 </svelte:head>
-<div in:fly={{ y: -100, duration: 1000, delay: 500 }} class="{$darkModeStore=='enabled'?'dark':'light'} project">
+<div
+	in:fly={{ y: -100, duration: 1000, delay: 500 }}
+	class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} project"
+>
 	{#if project}
-		<h1>{project.title}</h1>
-		<p class="description">{project.description}</p>
-		<img class="cover" src={project.image[0].url} alt="{project.image[0].fileName}" />
-		<div class="tags">
-			{#each project.tags as tag}
-				<NormalTag {tag} />
-			{/each}
-		</div>
-		<div class="date">
-			<p>Pubblicato il {new Date(project.createdAt).toLocaleDateString(	)}</p>
+		<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} container">
+			<img class="cover" src={project.image[0].url} alt={project.image[0].fileName} />
+			<h1>{project.title}</h1>
+			<p class="description">{project.description}</p>
+			<div class="tags">
+				{#each project.tags as tag}
+					<NormalTag {tag} />
+				{/each}
+			</div>
+			<div class="date">
+				<p>Pubblicato il {new Date(project.createdAt).toLocaleDateString()}</p>
+			</div>
 		</div>
 
-		{#if project.content}
-			<div class="content">
-				<p>{@html project.content.html}</p>
-			</div>
-		{/if}
-		
+		<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} container">
+			{#if project.content}
+				<div class="content">
+					<p>{@html project.content.html}</p>
+				</div>
+			{/if}
+		</div>
 	{/if}
 </div>
 
 <style>
+	.container {
+		padding: 1em;
+		border-radius: 0.2em;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
 	h1 {
 		font-size: clamp(1.2em, 10vw, 4em);
 		text-align: center;
@@ -112,5 +126,4 @@ import { darkModeStore } from '$lib/stores/filters';
 	.content {
 		width: 90%;
 	}
-
 </style>

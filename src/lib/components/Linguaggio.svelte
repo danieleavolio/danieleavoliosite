@@ -1,17 +1,19 @@
 <script>
+import { darkModeStore } from "$lib/stores/filters";
+
+
 	export let icon;
 	export let name;
 </script>
 
-<div class="linguaggio">
-	<svg class="pog">{@html icon}</svg>
+<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} linguaggio">
+	<svg class="pog urlone">{@html icon}</svg>
 	<p class="nome">{name}</p>
 </div>
 
 <style>
 	.linguaggio {
 		width: 100%;
-		background-color: var(--dark-bg);
 		padding: 0.5em;
 		border-radius: 1em;
 		transition: all 0.5s ease;
@@ -29,16 +31,19 @@
 		transition: all 0.5s ease;
 	}
 
+	
+	
+
 	.nome {
 		opacity: 0;
 		transition: all 500ms ease;
 		text-transform: uppercase;
 		font-size: 1.3em;
-		color: var(--light);
 		text-align: center;
 		position: relative;
 		width: 100%;
 		transform: translateX(100%);
+		font-weight: 600;
 	}
 
 	.linguaggio:hover .nome::after {
