@@ -37,7 +37,7 @@
 
 <script>
 	import { fly } from 'svelte/transition';
-	import ProjectTag from '$lib/components/NormalTag.svelte';
+	import NormalTag from '$lib/components/NormalTag.svelte';
 	import Seo from '$lib/components/SEO.svelte';
 import { darkModeStore } from '$lib/stores/filters';
 
@@ -55,7 +55,7 @@ import { darkModeStore } from '$lib/stores/filters';
 		<img class="cover" src={project.image[0].url} alt="{project.image[0].fileName}" />
 		<div class="tags">
 			{#each project.tags as tag}
-				<ProjectTag {tag} />
+				<NormalTag {tag} />
 			{/each}
 		</div>
 		<div class="date">

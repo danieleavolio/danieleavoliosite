@@ -45,34 +45,38 @@
 	import { fly } from 'svelte/transition';
 	export let post;
 
-	import PostTag from '$lib/components/PostTag.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import Seo from '$lib/components/SEO.svelte';
+	import NormalTag from '$lib/components/NormalTag.svelte';
+	import { darkModeStore } from '$lib/stores/filters';
 </script>
 
 <Seo title={post.title} metadescription={post.introduction} />
 <svelte:head>
 	<meta property="og:type" content="article" />
 </svelte:head>
-<div in:fly={{ y: -100, duration: 1000, delay: 500 }} class="project">
+<div
+	in:fly={{ y: -100, duration: 1000, delay: 500 }}
+	class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} project"
+>
 	{#if post}
-		<h1>{post.title}</h1>
-		<h3>{post.introduction}</h3>
-		<div class="tags">
-			{#each post.tags as tag}
-				<PostTag {tag} />
-			{/each}
-		</div>
-		<div class="author">
-			<img class="avatar" src={post.authors[0].picture.url} alt="" />
-
-			<div class="name-date">
-				<p>{post.authors[0].name}</p>
-				<p>{post.date}</p>
+		<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} intro">
+			<h1>{post.title}</h1>
+			<h3>{post.introduction}</h3>
+			<div class="tags">
+				{#each post.tags as tag}
+					<NormalTag {tag} />
+				{/each}
 			</div>
+			<div class="author">
+				<img class="avatar" src={post.authors[0].picture.url} alt="" />
+				<div class="name-date">
+					<p>{post.authors[0].name}</p>
+					<p>{post.date}</p>
+				</div>
+			</div>
+			<img class="cover" src={post.coverImage.url} alt={post.coverImage.fileName} />
 		</div>
-		<img class="cover" src={post.coverImage.url} alt="{post.coverImage.fileName}" />
-
 		{#if post.content}
 			<div class="content">
 				<p>{@html post.content.html}</p>
@@ -83,15 +87,17 @@
 </div>
 
 <style>
+
+	.intro{
+		padding: 1em;
+	}
 	h1 {
 		font-size: clamp(1.2em, 10vw, 4em);
 		text-align: center;
-		color: var(--light);
 	}
 	h3 {
 		font-size: clamp(1em, 2vw, 1.5em);
 		text-align: center;
-		color: var(--light);
 		font-style: italic;
 		font-weight: 500;
 	}
@@ -104,7 +110,6 @@
 	}
 
 	.project {
-		background-color: var(--dark-bg);
 		padding: 1em;
 		display: flex;
 		flex-direction: column;
@@ -116,7 +121,6 @@
 	}
 
 	.author {
-		color: var(--light);
 		display: flex;
 		gap: 0.5em;
 		justify-content: center;
@@ -124,7 +128,6 @@
 	}
 
 	.name-date {
-		color: var(--light);
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -149,7 +152,6 @@
 	}
 
 	.content {
-		color: var(--light);
 		width: 90%;
 	}
 </style>
