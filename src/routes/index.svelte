@@ -13,7 +13,7 @@
 					description
 					id
 					tags
-					name
+					title
 					image {
 						url
 					}
@@ -53,41 +53,36 @@
 	import ProfileCard from '$lib/components/ProfileCard.svelte';
 	import ProjectList from '$lib/components/ProjectList.svelte';
 	import Seo from '$lib/components/SEO.svelte';
+	import { darkModeStore } from '$lib/stores/filters';
 
 	export let projects;
 	export let posts;
 
-	let showEverything = false;
 </script>
 
 <Seo
-	title={'Daniele Avolio - Web Developer'}
+	title={'Web Developer'}
 	metadescription={'Sono Daniele Avolio, sviluppatore specializzato nella programmazione lato Front-End, utilizzando le più aggiornate tecnologie e creando web application performanti.'}
 />
 
-<section class="dark index">
+<section class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} index">
 	<ProfileCard />
-	<a on:click={() => (showEverything = true)} href="#posts" class="material-icons expand">
-		expand_more
-	</a>
 </section>
 
-{#if showEverything}
-	<section id="posts" class="light">
-		<h1 class="dark-text">Posts</h1>
-		<PostsList {posts} />
-	</section>
+<section id="posts" class={$darkModeStore == 'enabled' ? 'dark' : 'light'}>
+	<h1>Posts</h1>
+	<PostsList {posts} />
+</section>
 
-	<section class="dark">
-		<h1 class="light-text">Progetti</h1>
-		<ProjectList {projects} />
-	</section>
+<section class={$darkModeStore == 'enabled' ? 'dark' : 'light'}>
+	<h1>Progetti</h1>
+	<ProjectList {projects} />
+</section>
 
-	<section id="languages" class="light">
-		<h1 class="dark-text">Linguaggi e Strumenti</h1>
-		<LanguagesList />
-	</section>
-{/if}
+<section id="languages" class={$darkModeStore == 'enabled' ? 'dark' : 'light'}>
+	<h1>Linguaggi e Strumenti</h1>
+	<LanguagesList />
+</section>
 
 <style>
 	h1 {
@@ -108,28 +103,6 @@
 		display: grid;
 		place-items: center;
 		grid-template-rows: 1fr;
-	}
-	.expand {
-		color: var(--light);
-		font-size: 2.5em;
-		animation: down-indicator 1s ease-in-out alternate infinite;
-		text-decoration: none;
-	}
-
-	.light {
-		background-color: var(--light);
-	}
-
-	.dark {
-		background-color: var(--dark);
-	}
-
-	.dark-text {
-		color: var(--dark);
-	}
-
-	.light-text {
-		color: var(--light);
 	}
 
 	@keyframes down-indicator {

@@ -3,10 +3,22 @@
 	import Navbar from '$lib/components/Navbar.svelte';
 
 	import '../app.css';
+	import { darkModeStore } from '$lib/stores/filters';
+	import { beforeNavigate } from '$app/navigation';
+	import { onMount } from 'svelte';
 	let isShowing;
 	const changeVisibility = () => {
 		isShowing = !isShowing;
 	};
+
+	$: if ($darkModeStore) {
+		localStorage.setItem('dark-mode', $darkModeStore);
+	}
+
+	onMount(() => {
+		if (localStorage.getItem('dark-mode') == null) darkModeStore.set('enabled');
+		else darkModeStore.set(localStorage.getItem('dark-mode'));
+	});
 </script>
 
 {#if isShowing}
@@ -14,7 +26,7 @@
 {:else}
 	<button
 		in:fly={{ x: -100, delay: 500 }}
-		class="bottone material-icons"
+		class="{$darkModeStore == 'enabled' ? 'dark-text' : 'light-text'} bottone material-icons"
 		on:click={changeVisibility}>menu</button
 	>
 	<slot />
@@ -30,8 +42,6 @@
 		border: none;
 		outline: none;
 		background-color: transparent;
-		color: white;
-		mix-blend-mode: difference;
 		border-radius: 100%;
 		font-size: 2em;
 		cursor: pointer;

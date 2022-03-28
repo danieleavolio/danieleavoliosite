@@ -13,7 +13,7 @@
 <style>
 	.tag {
 		border: black solid 1px;
-        color: var(--dark);
+        color: var(--dark-bg);
 		border-radius: 0.2em;
 		padding: 0.1em 0.3em;
 		cursor: pointer;
@@ -22,7 +22,7 @@
 	}
 
 	.tag:hover {
-		background-color: var(--dark);
+		background-color: var(--dark-bg);
 		color: var(--light);
 	}
 </style>

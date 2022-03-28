@@ -1,12 +1,11 @@
 <script>
-	import Progetto from './Progetto.svelte';
-
+	import Content from './Content.svelte';
 	export let projects;
 </script>
 
 <div class="lista-progetti">
 	{#each projects as project,i}
-		<Progetto {project} index={i}/>
+		<Content content={project} index={i}  type="progetto"/>
 	{/each}
 </div>
 {#if projects.length == 3}

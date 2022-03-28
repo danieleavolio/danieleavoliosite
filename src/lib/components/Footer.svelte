@@ -9,7 +9,7 @@
 <style>
 
 footer{
-    background-color: var(--dark);
+    background-color: var(--dark-bg);
     font-weight: 500;
     text-align: center;
     color: var(--light);

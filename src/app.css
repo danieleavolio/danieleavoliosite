@@ -13,14 +13,20 @@ body {
 }
 
 :root {
-    --dark: #111010;
-    --light: #fffcf2;
+    --dark-bg: #222222;
+    --dark-surface: #333333;
+    --dark-text: #FFFFFF;
+    --dark-primary: #b375ff;
+    --dark-primary-variant: #3700b3;
+    --dark-onPrimaryVariant: #f7f7f7;
+    --light-bg: #edf2f5;
+    --light-surface: #f9f9f9;
+    --light-text: #000000;
+    --light-primary: #6200ee;
+    --light-primary-variant: #3700b3;
+    --light-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    --light-onPrimary: #f7f7f7;
     scroll-behavior: smooth;
-}
-
-a {
-    color: white;
-    mix-blend-mode: difference;
 }
 
 code {
@@ -30,6 +36,11 @@ code {
 
 path {
     fill: var(--light);
+}
+
+a {
+    background-color: var(--dark-primary-variant);
+    color: var(--light-onPrimary);
 }
 
 .dark-button {
@@ -58,7 +69,7 @@ path {
     top: 0;
     left: 0;
     background-color: var(--light);
-    mix-blend-mode: difference;
+    ;
     transform-origin: bottom;
     transform: scaleY(0%);
     transition: all 0.2s cubic-bezier(0.075, 0.82, 0.165, 1);
@@ -77,7 +88,7 @@ path {
     padding: 0.2em 0.5em;
     font-size: 1.3em;
     outline: black solid 1px;
-    color: var(--dark);
+    color: var(--dark-bg);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -94,7 +105,7 @@ path {
     top: 0;
     left: 0;
     background-color: var(--light);
-    mix-blend-mode: difference;
+    ;
     transform-origin: bottom;
     transform: scaleY(0%);
     transition: all 0.2s cubic-bezier(0.075, 0.82, 0.165, 1);
@@ -113,11 +124,44 @@ path {
     height: fit-content;
 }
 
+.dark-text {
+    color: var(--dark-text);
+}
+
+.light-text {
+    color: var(--light-text);
+}
+
+.dark {
+    background-color: var(--dark-bg);
+    color: var(--dark-text);
+}
+
+.light {
+    background-color: var(--light-bg);
+    color: var(--light-text);
+}
+
+.dark-container {
+    background-color: var(--dark-surface);
+    color: var(--dark-text);
+}
+
+.light-container {
+    background-color: var(--light-surface);
+    color: var(--light-text);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
 ::-webkit-scrollbar {
-    background-color: var(--dark);
+    background-color: var(--dark-bg);
     width: 8px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: var(--light);
+    background-color: var(--light-bg);
+}
+
+:-webkit-scrollbar-thumb {
+    background-color: var(--light-bg);
 }

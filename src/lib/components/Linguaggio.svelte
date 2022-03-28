@@ -11,7 +11,7 @@
 <style>
 	.linguaggio {
 		width: 100%;
-		background-color: var(--dark);
+		background-color: var(--dark-bg);
 		padding: 0.5em;
 		border-radius: 1em;
 		transition: all 0.5s ease;

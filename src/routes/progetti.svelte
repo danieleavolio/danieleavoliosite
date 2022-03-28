@@ -14,7 +14,7 @@
 					description
 					id
 					tags
-					name
+					title
 					image {
 						url
 					}
@@ -33,11 +33,11 @@
 <script>
 	import ProjectList from '$lib/components/ProjectList.svelte';
 	import { fly } from 'svelte/transition';
-	import ProjectFilterTag from '$lib/components/ProjectFilterTag.svelte';
 	import { afterNavigate } from '$app/navigation';
-	import { projectFilterStore } from '$lib/stores/filters';
-import RemoveFilter from '$lib/components/RemoveFilter.svelte';
-import Seo from '$lib/components/SEO.svelte';
+	import { darkModeStore, projectFilterStore } from '$lib/stores/filters';
+	import RemoveFilter from '$lib/components/RemoveFilter.svelte';
+	import Seo from '$lib/components/SEO.svelte';
+	import FilterTag from '$lib/components/FilterTag.svelte';
 	export let projects;
 	let progettiFiltrati = [];
 
@@ -66,14 +66,16 @@ import Seo from '$lib/components/SEO.svelte';
 	$: progettiFiltrati = filtaProgetti(tagScelto);
 </script>
 
+<Seo
+	title={'Progetti del sito'}
+	metadescription={'Tutti i progetti realizzati tramite i linguaggi di programmazione presenti nella lista tag come Java, Javascript, React, Svelte, ecc.'}
+/>
 
-<Seo title={"Progetti del sito"} metadescription={"Tutti i progetti realizzati tramite i linguaggi di programmazione presenti nella lista tag come Java, Javascript, React, Svelte, ecc."}></Seo>
-
-<div class="container">
+<div class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} container">
 	<h1 in:fly={{ y: -100, duration: 500 }}>Progetti</h1>
 	<div class="tag-list">
 		{#each filtri as tag}
-			<ProjectFilterTag {tag} bind:tagScelto />
+			<FilterTag {tag} bind:tagScelto />
 		{/each}
 		<RemoveFilter />
 	</div>
@@ -88,13 +90,11 @@ import Seo from '$lib/components/SEO.svelte';
 
 <style>
 	.container {
-		background-color: var(--dark);
 		display: grid;
 		grid-template-columns: 1fr;
 		place-items: center;
 	}
 	.progetti {
-		background-color: var(--dark);
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -113,6 +113,5 @@ import Seo from '$lib/components/SEO.svelte';
 
 	h1 {
 		font-size: 3em;
-		color: var(--light);
 	}
 </style>

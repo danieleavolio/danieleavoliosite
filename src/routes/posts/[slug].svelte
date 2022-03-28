@@ -104,7 +104,7 @@
 	}
 
 	.project {
-		background-color: var(--dark);
+		background-color: var(--dark-bg);
 		padding: 1em;
 		display: flex;
 		flex-direction: column;

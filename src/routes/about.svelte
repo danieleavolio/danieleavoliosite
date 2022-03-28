@@ -16,7 +16,7 @@
 
 <style>
 	h1 {
-		color: var(--dark);
+		color: var(--dark-bg);
 		font-size: 3em;
 	}
 	.about {

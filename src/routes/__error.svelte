@@ -34,7 +34,7 @@ import Seo from "$lib/components/SEO.svelte";
 	}
 
 	.error {
-		background-color: var(--dark);
+		background-color: var(--dark-bg);
 		width: fit-content;
 		color: var(--light);
 		padding: 1em;

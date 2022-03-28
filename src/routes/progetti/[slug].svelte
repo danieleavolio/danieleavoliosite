@@ -17,7 +17,7 @@
 				description
 				slug
 				tags
-				name
+				title
 				image{
 					url
 					fileName
@@ -37,8 +37,9 @@
 
 <script>
 	import { fly } from 'svelte/transition';
-	import ProjectTag from '$lib/components/ProjectTag.svelte';
+	import ProjectTag from '$lib/components/NormalTag.svelte';
 	import Seo from '$lib/components/SEO.svelte';
+import { darkModeStore } from '$lib/stores/filters';
 
 	export let project;
 </script>
@@ -47,9 +48,9 @@
 <svelte:head>
 	<meta property="og:type" content="article" />
 </svelte:head>
-<div in:fly={{ y: -100, duration: 1000, delay: 500 }} class="project">
+<div in:fly={{ y: -100, duration: 1000, delay: 500 }} class="{$darkModeStore=='enabled'?'dark':'light'} project">
 	{#if project}
-		<h1>{project.name}</h1>
+		<h1>{project.title}</h1>
 		<p class="description">{project.description}</p>
 		<img class="cover" src={project.image[0].url} alt="{project.image[0].fileName}" />
 		<div class="tags">
@@ -74,11 +75,9 @@
 	h1 {
 		font-size: clamp(1.2em, 10vw, 4em);
 		text-align: center;
-		color: var(--dark);
 	}
 
 	.project {
-		background-color: var(--light);
 		padding: 1em;
 		display: flex;
 		flex-direction: column;
@@ -113,4 +112,5 @@
 	.content {
 		width: 90%;
 	}
+
 </style>

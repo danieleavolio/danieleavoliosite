@@ -1,11 +1,11 @@
 <script>
-	import Post from './Post.svelte';
+	import Content from './Content.svelte';
 	export let posts;
 </script>
 
 <div class="lista-progetti">
 	{#each posts as post, i}
-		<Post {post} index={i} />
+		<Content content={post} index={i} type="post" />
 	{/each}
 </div>
 {#if posts.length == 3}

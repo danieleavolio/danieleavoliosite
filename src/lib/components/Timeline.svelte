@@ -49,7 +49,7 @@
 <style>
 	h1 {
 		font-size: clamp(1em, 2vw + 1em, 3em);
-		color: var(--dark);
+		color: var(--dark-bg);
 	}
 	.timeline {
 		width: 100vw;
@@ -75,10 +75,11 @@
 		gap: 1em;
 	}
 
+
+
 	.project-link {
 		text-decoration: none;
 		border: black solid 1px;
-		mix-blend-mode: normal;
 		color: black;
 		font-size: 1.1em;
 	}

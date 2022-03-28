@@ -34,10 +34,10 @@
 	import { fly } from 'svelte/transition';
 	import { afterNavigate } from '$app/navigation';
 	import PostsList from '$lib/components/PostsList.svelte';
-	import { postFilterStore } from '$lib/stores/filters';
-	import PostFilterTag from '$lib/components/PostFilterTag.svelte';
+	import { darkModeStore, postFilterStore } from '$lib/stores/filters';
 	import RemoveFilter from '$lib/components/RemoveFilter.svelte';
 	import Seo from '$lib/components/SEO.svelte';
+	import FilterTag from '$lib/components/FilterTag.svelte';
 	export let posts;
 
 	let postsFiltrati = [];
@@ -61,42 +61,40 @@
 	};
 
 	afterNavigate(() => {
-		postFiltrati = filtraPost($postFilterStore);
+		postsFiltrati = filtraPost($postFilterStore);
 	});
 
-	$: postFiltrati = filtraPost(tagScelto);
+	$: postsFiltrati = filtraPost(tagScelto);
 </script>
 
 <Seo
 	title={'Post del sito'}
 	metadescription={'Javascript, Svelte, HTML, CSS. Tutti i post riguardo i linguaggi di programmazione e gli strumenti utilizzati'}
 />
-<div class="container">
+<div class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} container">
 	<h1 in:fly={{ y: -100, duration: 500 }}>Posts</h1>
 	<div class="tag-list">
 		{#each filtri as tag}
-			<PostFilterTag {tag} bind:tagScelto />
+			<FilterTag {tag} bind:tagScelto />
 		{/each}
 		<RemoveFilter theme={'posts'} />
 	</div>
 	<div class="post">
-		{#if postFiltrati.length == 0}
+		{#if postsFiltrati.length == 0}
 			<PostsList {posts} />
 		{:else}
-			<PostsList posts={postFiltrati} />
+			<PostsList posts={postsFiltrati} />
 		{/if}
 	</div>
 </div>
 
 <style>
 	.container {
-		background-color: var(--light);
 		display: grid;
 		grid-template-columns: 1fr;
 		place-items: center;
 	}
 	.post {
-		background-color: var(--light);
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -115,6 +113,5 @@
 
 	h1 {
 		font-size: 3em;
-		color: var(--dark);
 	}
 </style>

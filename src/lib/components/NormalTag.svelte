@@ -1,25 +1,24 @@
 <script>
-import { goto } from "$app/navigation";
+	import { goto } from '$app/navigation';
+	import { darkModeStore, postFilterStore, projectFilterStore } from '$lib/stores/filters';
 
-import { darkModeStore, postFilterStore, projectFilterStore } from "$lib/stores/filters";
+	export let tag;
+	export let type = '';
 
-
-
-
-	export let theme="";
-	const removeFilter = () => {
-        postFilterStore.set('');
-        projectFilterStore.set('');
-        console.log(theme);
-        
-        if (theme == 'posts')
-            goto("/posts")
-        else
-            goto("/progetti")
+	const gotoFiltering = () => {
+		if (type == 'post') {
+			postFilterStore.set(tag);
+			goto(`/posts`);
+		} else if (type == 'progetto') {
+			projectFilterStore.set(tag);
+			goto(`/progetti`);
+		}
 	};
 </script>
 
-<p on:click={removeFilter} class="{$darkModeStore == 'enabled' ? 'dark-tag' : 'light-tag'} tag">Tutti</p>
+<p on:click={gotoFiltering} class="{$darkModeStore == "enabled"?'dark-tag':'light-tag'} tag">
+	{tag}
+</p>
 
 <style>
 	.tag {

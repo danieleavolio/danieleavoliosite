@@ -28,7 +28,7 @@
 		padding: 0;
 	}
 	.icon {
-		background-color: var(--dark);
+		background-color: var(--dark-bg);
 		color: var(--light);
 		display: flex;
 		justify-content: center;
@@ -50,13 +50,13 @@
 		margin: 0;
 		padding: 0.5em;
 		border-radius: 1em;
-		background-color: var(--dark);
+		background-color: var(--dark-bg);
 		color: var(--light);
 	}
 
 	.connect-line {
 		width: 3px;
 		height: 100%;
-		background-color: var(--dark);
+		background-color: var(--dark-bg);
 	}
 </style>
