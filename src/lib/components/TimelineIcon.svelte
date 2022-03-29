@@ -52,6 +52,8 @@
 		margin: 0;
 		padding: 0.5em;
 		border-radius: 1em;
+		background-color: var(--dark-primary-variant);
+		color: var(--light-onPrimary);
 	}
 
 	.connect-line {

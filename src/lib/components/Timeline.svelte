@@ -81,4 +81,12 @@
 		border-radius: 0.3em;
 		padding: 1em;
 	}
+
+	@media (max-width: 600px){
+		.icon-text{
+			display: flex;
+			flex-direction: column-reverse;
+			
+		}
+	}
 </style>

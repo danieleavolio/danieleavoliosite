@@ -1,21 +1,32 @@
 <script>
 	import { cardOpened, darkModeStore } from '$lib/stores/filters';
+	import { onMount } from 'svelte';
 
-	import { fade } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import AnimationButton from './fundamentals/AnimationButton.svelte';
 	import Link from './fundamentals/Link.svelte';
 	import Image from './Image.svelte';
+
+	let isBuilt = false;
+
+	onMount(() => {
+		isBuilt = true;
+	});
 </script>
 
-<div
- class="profile-card">
+<div class="profile-card">
 	{#if !$cardOpened}
-		<button
-			in:fade={{ delay: 500, duration: 500 }}
-			class="{$darkModeStore == 'enabled' ? 'light-click' : 'dark-click'} to-click"
-			on:click={() => cardOpened.set(true)}
-			>&lt Hi /&gt
-		</button>
+		{#if isBuilt}
+			<button
+				in:fade={{ delay: 500, duration: 500 }}
+				class="{$darkModeStore == 'enabled' ? 'light-click' : 'dark-click'} to-click"
+				on:click={() => cardOpened.set(true)}
+				>&lt Hi /&gt
+			</button>
+			<p class="expand" in:fly={{ duration: 2000, delay: 500, y: 500 }}>
+				Espandi <span class="material-icons">north</span>
+			</p>
+		{/if}
 	{:else}
 		<div
 			in:fade={{ duration: 500, delay: 500 }}
@@ -64,6 +75,12 @@
 		margin: 0.2em;
 	}
 
+
+	.expand{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
 	.evidenzia-light {
 		padding: 0.1em;
 		margin: 0.2em;
@@ -108,10 +125,8 @@
 		height: fit-content;
 		padding: 1em;
 		border-radius: 0.1em;
-		width: 80%;
 		position: relative;
 		overflow: hidden;
-
 	}
 
 	.card {

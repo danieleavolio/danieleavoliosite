@@ -113,6 +113,6 @@
 		flex-wrap: wrap;
 		justify-content: center;
 		align-items: center;
-		padding: 0 1em;
+		padding: 0em 0em 1.5em 1em;
 	}
 </style>
