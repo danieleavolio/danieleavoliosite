@@ -2,12 +2,10 @@
 	import { gql, GraphQLClient } from 'graphql-request';
 	export async function load(page) {
 		const slug = page.params.slug;
-
 		// @ts-ignore
 		const graphcms = new GraphQLClient(import.meta.env.VITE_GRAPHCMS_URL, {
 			headers: {}
 		});
-
 		const query = gql`
 		query MyProject {
 			project(where: {slug: "${slug}"}) {
@@ -23,6 +21,7 @@
 					fileName
 				}
 				createdAt
+				github
 			}
 		}
 		`;
@@ -42,6 +41,7 @@
 	import { darkModeStore } from '$lib/stores/filters';
 	import { goto } from '$app/navigation';
 	import BackTo from '$lib/components/fundamentals/BackTo.svelte';
+import AnimationButton from '$lib/components/fundamentals/AnimationButton.svelte';
 
 	export let project;
 
@@ -79,6 +79,10 @@
 				<div class="content">
 					<p>{@html project.content.html}</p>
 				</div>
+			{/if}
+
+			{#if project.github }
+				<AnimationButton href={project.github} text="Repository" icon="code"></AnimationButton>
 			{/if}
 		</div>
 	{/if}
