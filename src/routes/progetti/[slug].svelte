@@ -66,7 +66,7 @@ import AnimationButton from '$lib/components/fundamentals/AnimationButton.svelte
 			<p class="description">{project.description}</p>
 			<div class="tags">
 				{#each project.tags as tag}
-					<NormalTag {tag} />
+					<NormalTag {tag} type="progetto" />
 				{/each}
 			</div>
 			<div class="date">

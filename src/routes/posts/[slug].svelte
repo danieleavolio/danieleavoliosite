@@ -78,7 +78,7 @@
 			</div>
 			<div class="tags">
 				{#each post.tags as tag}
-					<NormalTag {tag} />
+					<NormalTag {tag} type="post" />
 				{/each}
 			</div>
 		</div>
