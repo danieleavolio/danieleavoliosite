@@ -5,7 +5,7 @@
 	import '../app.css';
 	import { darkModeStore } from '$lib/stores/filters';
 	import { onMount } from 'svelte';
-import Footer from '$lib/components/Footer.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 	let isShowing;
 	const changeVisibility = () => {
 		isShowing = !isShowing;

@@ -6,10 +6,7 @@ const config = {
     preprocess: preprocess(),
     kit: {
         adapter: vercel(),
-        prerender: {
-            default: true,
-            enabled: true
-        }
+
     }
 
 };
