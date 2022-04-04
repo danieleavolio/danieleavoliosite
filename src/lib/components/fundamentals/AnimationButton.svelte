@@ -4,9 +4,10 @@
 	export let text;
 	export let icon;
 	export let href;
+	export let target = "_blank";
 </script>
 
-<a class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} button-link" target="_blank" {href}>
+<a class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} button-link" target={target} {href}>
 	{text}<span class="material-icons cv">{icon}</span></a
 >
 

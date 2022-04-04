@@ -60,7 +60,7 @@
 						text="Visualizza CV"
 						icon="file_present"
 					/>
-					<AnimationButton href="/about" text="Su di me" icon="person" />
+					<AnimationButton href="/about" text="Su di me" icon="person" target="" />
 				</div>
 			</div>
 		</div>

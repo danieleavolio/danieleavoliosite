@@ -53,7 +53,6 @@
 		font-size: clamp(1em, 2vw + 1em, 3em);
 	}
 	.timeline {
-		width: 100vw;
 		border-radius: 0.1em;
 		display: flex;
 		flex-direction: column;

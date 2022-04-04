@@ -1,9 +1,42 @@
+<script context="module">
+	import { gql, GraphQLClient } from 'graphql-request';
+
+	export async function load() {
+		// @ts-ignore
+		const graphcms = new GraphQLClient(import.meta.env.VITE_GRAPHCMS_URL, {
+			headers: {}
+		});
+
+		const query = gql`
+			query ToolsIndex {
+				tools {
+					id
+					name
+					icon {
+						url
+					}
+					usage
+				}
+			}
+		`;
+
+		const { tools } = await graphcms.request(query);
+
+		return {
+			props: { tools }
+		};
+	}
+</script>
+
 <script>
 	import Seo from '$lib/components/SEO.svelte';
 
 	import Timeline from '$lib/components/Timeline.svelte';
-import { darkModeStore } from '$lib/stores/filters';
+	import ToolsGallery from '$lib/components/ToolsGallery.svelte';
+	import { darkModeStore } from '$lib/stores/filters';
 	import { fade } from 'svelte/transition';
+
+	export let tools;
 </script>
 
 <Seo
@@ -13,6 +46,7 @@ import { darkModeStore } from '$lib/stores/filters';
 <div class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} about">
 	<h1 in:fade={{ duration: 500, delay: 500 }}>Su di me</h1>
 	<Timeline />
+	<ToolsGallery {tools} />
 </div>
 
 <style>
@@ -20,6 +54,7 @@ import { darkModeStore } from '$lib/stores/filters';
 		font-size: 3em;
 	}
 	.about {
+		width: 100vw;
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
