@@ -54,6 +54,7 @@
 		color: var(--dark-text);
 		padding: 0 0.1em;
 		text-align: center;
+		margin: 1em;
 	}
 	.augment {
 		font-size: 3em;

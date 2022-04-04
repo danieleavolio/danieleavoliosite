@@ -11,6 +11,7 @@
 		color: var(--dark-text);
 		padding: 0 0.1em;
 		text-align: center;
+		margin: 1em;
 	}
 	.skills-container {
 		display: flex;
