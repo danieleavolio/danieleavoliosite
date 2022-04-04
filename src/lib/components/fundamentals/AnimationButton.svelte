@@ -15,7 +15,7 @@
 	.button-link {
 		text-decoration: none;
 		padding: 0.2em 0.5em;
-		font-size: clamp(1em, 1.2em, 1.2em);
+		font-size: clamp(1em, 1.1em, 1.1em);
 		position: relative;
 		overflow: hidden;
 		display: flex;

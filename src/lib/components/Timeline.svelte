@@ -6,7 +6,7 @@
 </script>
 
 <div in:fly={{ y: -100, duration: 500, delay: 500 }} class=" timeline">
-	<h1>Resumé</h1>
+	<h1 class="{$darkModeStore == 'enabled' ? 'dark-primary-highlited' : 'light-primary-highlited'}" >Resumé</h1>
 	<div class="timeline-section">
 		<div class="icon-text">
 			<TimelineIcon icon="question_mark" date={'2022-Futuro'} />
@@ -51,8 +51,6 @@
 <style>
 
 	h1{
-		background-color: var(--dark-primary-variant);
-		color: var(--dark-text);
 		padding: 0 0.1em;
 	}
 	h2 {

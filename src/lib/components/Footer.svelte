@@ -13,6 +13,6 @@ import { darkModeStore } from "$lib/stores/filters";
 footer{
     font-weight: 500;
     text-align: center;
-    margin-bottom: 2em;
+    margin: 2em;
 }
 </style>

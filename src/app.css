@@ -149,6 +149,15 @@ a {
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
 }
 
+.dark-primary-highlited {
+    background-color: var(--dark-primary);
+}
+
+.light-primary-highlited {
+    background-color: var(--light-primary);
+    color: var(--dark-text);
+}
+
 ::-webkit-scrollbar {
     background-color: var(--dark-bg);
     width: 8px;

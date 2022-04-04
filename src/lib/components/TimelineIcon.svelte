@@ -7,7 +7,7 @@
 </script>
 
 <div class=" {$darkModeStore == 'enabled' ? 'dark' : 'light'} container">
-	<div class="icon">
+	<div class=" {$darkModeStore == 'enabled' ? 'dark-primary-highlited' : 'light-primary-highlited'} icon">
 		<span class="material-icons">{icon}</span>
 	</div>
 	<div class=" {$darkModeStore == 'enabled' ? 'dark-line' : 'light-line'} connect-line" />
@@ -15,7 +15,7 @@
 	<div class="{$darkModeStore == 'enabled' ? 'dark-line' : 'light-line'} connect-line" />
 
 	{#if start}
-		<p class="start">START</p>
+		<p class="{$darkModeStore == 'enabled' ? 'dark-primary-highlited' : 'light-primary-highlited'} start">START</p>
 	{/if}
 </div>
 
@@ -34,8 +34,6 @@
 		align-items: center;
 		border-radius: 0.5em;
 		padding: 0.5em;
-		background-color: var(--dark-primary-variant);
-		color: var(--light-onPrimary);
 	}
 
 	span {
@@ -52,8 +50,6 @@
 		margin: 0;
 		padding: 0.5em;
 		border-radius: 1em;
-		background-color: var(--dark-primary-variant);
-		color: var(--light-onPrimary);
 	}
 
 	.connect-line {
