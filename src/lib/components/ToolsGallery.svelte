@@ -24,42 +24,62 @@
 <h1>Linguaggi e strumenti maggiormente utilizzati</h1>
 
 <div class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} tools-gallery">
-	<p
-		on:click={precTool}
-		class=" {$darkModeStore == 'enabled'
-			? 'dark-container'
-			: 'light-container'} augment left material-icons"
-	>
-		navigate_before
-	</p>
 	{#each tools as tool, i}
 		<ToolCard {tool} index={i} bind:toolIndex />
 	{/each}
-	<p
-		on:click={nextTool}
-		class=" {$darkModeStore == 'enabled'
-			? 'dark-container'
-			: 'light-container'} augment right material-icons"
-	>
-		navigate_next
-	</p>
+
+	<div class="navigate-div">
+		<p
+			on:click={precTool}
+			class=" {$darkModeStore == 'enabled'
+				? 'dark-container'
+				: 'light-container'} augment left material-icons"
+		>
+			navigate_before
+		</p>
+		<p
+			on:click={nextTool}
+			class=" {$darkModeStore == 'enabled'
+				? 'dark-container'
+				: 'light-container'} augment right material-icons"
+		>
+			navigate_next
+		</p>
+	</div>
 </div>
 
 <style>
-	h1 {
+	h1{
+		background-color: var(--dark-primary-variant);
+		color: var(--dark-text);
+		padding: 0 0.1em;
 		text-align: center;
 	}
 	.augment {
 		font-size: 3em;
 		cursor: pointer;
 		border-radius: 0.1em;
+		transition: all 0.2s ease
 	}
 	.tools-gallery {
-		width: 70vw;
-		min-height: 80vh;
+		width: 90vw;
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		margin: 1em;
+	}
+
+	.navigate-div{
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		gap: 1em;
+		gap: 2em;
+	}
+
+	.augment:hover{
+		background-color: var(--dark-primary-variant);
+		color: var(--dark-onPrimaryVariant);
 	}
 </style>

@@ -30,6 +30,7 @@
 
 <script>
 	import Seo from '$lib/components/SEO.svelte';
+	import SkillsContainer from '$lib/components/SkillsContainer.svelte';
 
 	import Timeline from '$lib/components/Timeline.svelte';
 	import ToolsGallery from '$lib/components/ToolsGallery.svelte';
@@ -47,6 +48,7 @@
 	<h1 in:fade={{ duration: 500, delay: 500 }}>Su di me</h1>
 	<Timeline />
 	<ToolsGallery {tools} />
+	<SkillsContainer />
 </div>
 
 <style>

@@ -11,7 +11,7 @@
 		<div class="icon-text">
 			<TimelineIcon icon="question_mark" date={'2022-Futuro'} />
 			<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} text">
-				<h1>Il futuro</h1>
+				<h2>Il futuro</h2>
 				<h4>Un'incognita</h4>
 				<p>Lavoro? Continuazione degli studi? Chi lo sa.</p>
 			</div>
@@ -21,7 +21,7 @@
 		<div class="icon-text">
 			<TimelineIcon icon="school" date={'2018-2022'} />
 			<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} text">
-				<h1>Laurea Triennale in Informatica</h1>
+				<h2>Laurea Triennale in Informatica</h2>
 				<h4>Università della Calabria, Unical, DeMaCS,</h4>
 				<p>
 					Dal 2017 al 2022 ho svolto il mio percorso Universitario ottenendo la Laurea Triennale in
@@ -37,7 +37,7 @@
 		<div class="icon-text">
 			<TimelineIcon icon="history_edu" date={'1999-2017'} start={true} />
 			<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} text">
-				<h1>Diploma Liceo Scientifico</h1>
+				<h2>Diploma Liceo Scientifico</h2>
 				<h4>Liceo Scientifico Vittorio Bachelet, Spezzano Albanese</h4>
 				<p>
 					Ho ottenuto il diploma scientifico frequentando il corso di Scienze Applicate del Liceo
@@ -49,7 +49,13 @@
 </div>
 
 <style>
-	h1 {
+
+	h1{
+		background-color: var(--dark-primary-variant);
+		color: var(--dark-text);
+		padding: 0 0.1em;
+	}
+	h2 {
 		font-size: clamp(1em, 2vw + 1em, 3em);
 	}
 	.timeline {
