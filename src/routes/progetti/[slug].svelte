@@ -50,7 +50,7 @@ import AnimationButton from '$lib/components/fundamentals/AnimationButton.svelte
 	};
 </script>
 
-<Seo title={project.title} metadescription={project.description} />
+<Seo title={project.title} metadescription={project.description} imageUrl={project.image[0].url} />
 <svelte:head>
 	<meta property="og:type" content="article" />
 </svelte:head>

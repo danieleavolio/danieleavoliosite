@@ -69,6 +69,7 @@
 <Seo
 	title={'Progetti del sito'}
 	metadescription={'Tutti i progetti realizzati tramite i linguaggi di programmazione presenti nella lista tag come Java, Javascript, React, Svelte, ecc.'}
+	imageUrl="https://www.danieleavolio.it/pictures/me.jpg"
 />
 
 <div class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} container">

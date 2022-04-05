@@ -63,7 +63,8 @@
 <Seo
 	title={'Web Developer'}
 	metadescription={'Sono Daniele Avolio, sviluppatore specializzato nella programmazione lato Front-End, utilizzando le più aggiornate tecnologie e creando web application performanti.'}
-/>
+	imageUrl="https://www.danieleavolio.it/pictures/me.jpg"
+	/>
 
 <section class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} index">
 	<ProfileCard />

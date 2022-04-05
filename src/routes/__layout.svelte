@@ -33,6 +33,9 @@
 		else htmlElement.classList.add('light');
 	});
 </script>
+<svelte:head>
+	<link rel="icon" type="image" href="/favicon.png">
+</svelte:head>
 
 {#if isShowing}
 	<Navbar {changeVisibility} />

@@ -57,5 +57,9 @@
         .title{
             text-align: center;
         }
+
+		img{
+			max-width: 50%;
+		}
     }
 </style>

@@ -70,7 +70,8 @@
 <Seo
 	title={'Post del sito'}
 	metadescription={'Javascript, Svelte, HTML, CSS. Tutti i post riguardo i linguaggi di programmazione e gli strumenti utilizzati'}
-/>
+	imageUrl="https://www.danieleavolio.it/pictures/me.jpg"
+	/>
 <div class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} container">
 	<h1 in:fly={{ y: -100, duration: 500 }}>Posts</h1>
 	<div class="tag-list">

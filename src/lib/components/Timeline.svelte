@@ -89,7 +89,10 @@
 		.icon-text{
 			display: flex;
 			flex-direction: column-reverse;
-			
+		}
+
+		.icon-text h2,h4{
+			text-align: center;
 		}
 	}
 </style>

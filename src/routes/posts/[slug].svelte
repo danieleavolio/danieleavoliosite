@@ -55,7 +55,7 @@
 	};
 </script>
 
-<Seo title={post.title} metadescription={post.introduction} />
+<Seo title={post.title} metadescription={post.introduction} imageUrl={post.coverImage.url} />
 <svelte:head>
 	<meta property="og:type" content="article" />
 </svelte:head>
