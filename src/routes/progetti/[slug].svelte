@@ -135,6 +135,6 @@ import AnimationButton from '$lib/components/fundamentals/AnimationButton.svelte
 	}
 
 	.content {
-		width: 90%;
+		max-width: 100%;
 	}
 </style>
