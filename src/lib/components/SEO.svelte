@@ -1,5 +1,5 @@
 <script>
-	export let siteTitle = 'Daniele Avolio';
+	let siteTitle = 'Daniele Avolio';
 	export let metadescription;
 	export let title;
 	export let imageUrl = "";
