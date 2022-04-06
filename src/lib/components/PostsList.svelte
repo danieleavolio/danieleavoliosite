@@ -8,7 +8,7 @@
 		<Content content={post} index={i} type="post" />
 	{/each}
 </div>
-{#if posts.length == 3}
+{#if posts.length > 3}
 	<a class="dark-button" href="/posts">Altri post</a>
 {/if}
 

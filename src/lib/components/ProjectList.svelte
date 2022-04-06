@@ -8,7 +8,7 @@
 		<Content content={project} index={i}  type="progetto"/>
 	{/each}
 </div>
-{#if projects.length == 3}
+{#if projects.length > 3}
 	<a class="dark-button" href="/progetti">Altri progetti</a>
 {/if}
 
