@@ -6,7 +6,9 @@
 </script>
 
 <div in:fly={{ y: -100, duration: 500, delay: 500 }} class=" timeline">
-	<h1 class="{$darkModeStore == 'enabled' ? 'dark-primary-highlited' : 'light-primary-highlited'}" >Resumé</h1>
+	<h1 class={$darkModeStore == 'enabled' ? 'dark-primary-highlited' : 'light-primary-highlited'}>
+		Resumé
+	</h1>
 	<div class="timeline-section">
 		<div class="icon-text">
 			<TimelineIcon icon="question_mark" date={'2022-Futuro'} />
@@ -28,7 +30,10 @@
 					Informatica, sviluppando come Tesi un sito per collegare gli studenti di tutto l'Ateneo.
 					E' possibile visionare la pagina del progetto.
 				</p>
-				<AnimationButton href="/progetti/link4students" text="Link4Students" icon="build" />
+				<div class="buttons-div">
+					<AnimationButton href="/progetti/link4students" text="Link4Students" icon="build" />
+					<AnimationButton href="resource/bachelor-thesis.pdf" text="Tesi" icon="article" />
+				</div>
 			</div>
 		</div>
 	</div>
@@ -49,8 +54,7 @@
 </div>
 
 <style>
-
-	h1{
+	h1 {
 		padding: 0 0.1em;
 	}
 	h2 {
@@ -85,14 +89,27 @@
 		padding: 1em;
 	}
 
-	@media (max-width: 600px){
-		.icon-text{
+	.buttons-div {
+		display: flex;
+		gap: 1em;
+		justify-content: left;
+		align-items: center;
+	}
+
+	@media (max-width: 600px) {
+		.icon-text {
 			display: flex;
 			flex-direction: column-reverse;
 		}
 
-		.icon-text h2,h4{
+		.icon-text h2,
+		h4 {
 			text-align: center;
+		}
+
+		.buttons-div {
+			flex-direction: column;
+			justify-content: center;
 		}
 	}
 </style>

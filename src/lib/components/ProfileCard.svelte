@@ -56,11 +56,12 @@
 				</div>
 				<div class="buttons">
 					<AnimationButton
-						href="https://drive.google.com/file/d/1g0BVkOf7vdwjki8_98OVv6eFKiNzaTK6/view?usp=sharing"
+						href="resource/Daniele-Avolio-Resume.pdf"
 						text="Visualizza CV"
 						icon="file_present"
 					/>
 					<AnimationButton href="/about" text="Su di me" icon="person" target="" />
+					<AnimationButton href="resource/bachelor-thesis.pdf" text="Tesi Triennale" icon="article" />
 				</div>
 			</div>
 		</div>
