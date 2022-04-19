@@ -16,41 +16,39 @@ export async function get() {
         <!-- <url> elements go here -->
         <url>
             <loc>https://www.danieleavolio.it/about</loc>
-            <lastmod>2022-19-04</lastmod>
+            <lastmod>2022-04-19</lastmod>
         </url>
         <url>
             <loc>https://www.danieleavolio.it</loc>
-            <lastmod>2022-19-04</lastmod>
+            <lastmod>2022-04-19</lastmod>
         </url>
         <url>
             <loc>https://www.danieleavolio.it/posts</loc>
-            <lastmod>2022-19-04</lastmod>
+            <lastmod>2022-04-19</lastmod>
         </url>
         <url>
             <loc>https://www.danieleavolio.it/progetti</loc>
-            <lastmod>2022-19-04</lastmod>
+            <lastmod>2022-04-19</lastmod>
         </url>
-        
         <url>
             <loc>https://www.danieleavolio.it/posts/sveltekit-seo-component</loc>
-            <lastmod>2022-19-04</lastmod>
+            <lastmod>2022-04-19</lastmod>
         </url>
-
         <url>
             <loc>https://www.danieleavolio.it/posts/lavori-in-corso</loc>
-            <lastmod>2022-19-04</lastmod>
+            <lastmod>2022-04-19</lastmod>
         </url>
         <url>
             <loc>https://www.danieleavolio.it/posts/da-cosi-a-cosi</loc>
-            <lastmod>2022-19-04</lastmod>
+            <lastmod>2022-04-19</lastmod>
         </url>
         <url>
             <loc>https://www.danieleavolio.it/progetti/personal-portfolio</loc>
-            <lastmod>2022-19-04</lastmod>
+            <lastmod>2022-04-19</lastmod>
         </url>
         <url>
             <loc>https://www.danieleavolio.it/progetti/link4students</loc>
-            <lastmod>2022-19-04</lastmod>
+            <lastmod>2022-04-19</lastmod>
         </url>
         </urlset>
       `.trim()
