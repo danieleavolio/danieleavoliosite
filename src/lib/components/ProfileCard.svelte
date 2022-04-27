@@ -39,7 +39,7 @@
 						Daniele Avolio
 					</p>
 					<p class="descrizione">
-						Studente di Informatica presso l'Università della Calabria. Sviluppatore <span
+						Laureato in Informatica presso l'Università della Calabria. Sviluppatore <span
 							class={$darkModeStore == 'enabled' ? 'evidenzia-dark' : 'evidenzia-light'}
 							>FrontEnd</span
 						>
