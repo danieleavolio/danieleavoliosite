@@ -9,7 +9,7 @@
 	{/each}
 </div>
 {#if posts.length > 3}
-	<a class="dark-button" href="/posts">Altri post</a>
+	<a class="dark-button" href="/postslist">Altri post</a>
 {/if}
 
 <style>

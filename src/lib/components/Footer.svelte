@@ -6,7 +6,7 @@ import { darkModeStore } from "$lib/stores/filters";
 
 
 <footer class="{$darkModeStore == 'enabled' ? 'dark' : 'light'}">
-    © 2021 All rights reserved. Design & Code by Daniele Avolio.
+    © 2022 All rights reserved. Design & Code by Daniele Avolio.
 </footer>
 <style>
 

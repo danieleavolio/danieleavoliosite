@@ -16,13 +16,13 @@
 	>
 		<div class="img-div">
 			<img
-				on:click={() => goto(`posts/${content.slug}`)}
+				on:click={() => goto(`postslist/${content.slug}`)}
 				class="cover"
 				src={content.coverImage.url}
 				alt=""
 			/>
 		</div>
-		<div on:click={() => goto(`posts/${content.slug}`)} class="title">
+		<div on:click={() => goto(`postslist/${content.slug}`)} class="title">
 			<h3>{content.title}</h3>
 		</div>
 		<div class="tags">

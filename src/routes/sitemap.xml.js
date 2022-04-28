@@ -23,7 +23,7 @@ export async function get() {
             <lastmod>2022-04-19</lastmod>
         </url>
         <url>
-            <loc>https://www.danieleavolio.it/posts</loc>
+            <loc>https://www.danieleavolio.it/postslist</loc>
             <lastmod>2022-04-19</lastmod>
         </url>
         <url>
@@ -31,15 +31,15 @@ export async function get() {
             <lastmod>2022-04-19</lastmod>
         </url>
         <url>
-            <loc>https://www.danieleavolio.it/posts/sveltekit-seo-component</loc>
+            <loc>https://www.danieleavolio.it/postslist/sveltekit-seo-component</loc>
             <lastmod>2022-04-19</lastmod>
         </url>
         <url>
-            <loc>https://www.danieleavolio.it/posts/lavori-in-corso</loc>
+            <loc>https://www.danieleavolio.it/postslist/lavori-in-corso</loc>
             <lastmod>2022-04-19</lastmod>
         </url>
         <url>
-            <loc>https://www.danieleavolio.it/posts/da-cosi-a-cosi</loc>
+            <loc>https://www.danieleavolio.it/postslist/da-cosi-a-cosi</loc>
             <lastmod>2022-04-19</lastmod>
         </url>
         <url>

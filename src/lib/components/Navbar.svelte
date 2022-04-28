@@ -22,7 +22,7 @@
 			<NavLink href="/" text="Home" handleClick={changeVisibility} />
 			<NavLink href="/about" text="Su di me" handleClick={changeVisibility} />
 			<NavLink href="/progetti" text="Progetti" handleClick={changeVisibility} />
-			<NavLink href="/posts" text="Posts" handleClick={changeVisibility} />
+			<NavLink href="/postslist" text="Posts" handleClick={changeVisibility} />
 			<UtilButton actionToDo={changeVisibility} text="close" isMaterial={true} />
 			<DarkModeSwitcher actionToDo={changeDarkMode} text={$darkModeStore} />
 		</div>

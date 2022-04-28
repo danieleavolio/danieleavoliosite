@@ -8,7 +8,7 @@
 	const gotoFiltering = () => {
 		if (type == 'post') {
 			postFilterStore.set(tag);
-			goto(`/posts`);
+			goto(`/postslist`);
 		} else if (type == 'progetto') {
 			projectFilterStore.set(tag);
 			goto(`/progetti`);

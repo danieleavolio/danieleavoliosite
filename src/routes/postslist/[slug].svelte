@@ -51,7 +51,7 @@
 	import { goto } from '$app/navigation';
 	import BackTo from '$lib/components/fundamentals/BackTo.svelte';
 	const backToPost = () => {
-		goto('/posts');
+		goto('/postslist');
 	};
 </script>
 

@@ -12,7 +12,7 @@ import { darkModeStore, postFilterStore, projectFilterStore } from "$lib/stores/
         projectFilterStore.set('');
         
         if (theme == 'posts')
-            goto("/posts")
+            goto("/postslist")
         else
             goto("/progetti")
 	};
