@@ -1,13 +1,15 @@
 <script>
-	import { scale} from 'svelte/transition';
+	import { scale } from 'svelte/transition';
 	let isLoaded = false;
 </script>
 
 <div class="image">
-	<div transition:scale|local={{ duration: 1000, delay:500 }} class="picture">
+	<div transition:scale|local={{ duration: 1000, delay: 500 }} class="picture">
 		<img
 			class={isLoaded ? 'show' : ''}
 			on:load={() => (isLoaded = true)}
+			width="350"
+			height="350"
 			src="pictures/me.jpg"
 			alt=""
 		/>
@@ -34,7 +36,7 @@
 		padding: 1em;
 	}
 
-	.picture{
+	.picture {
 		display: flex;
 		justify-content: center;
 		align-items: center;

@@ -17,6 +17,9 @@
 		<div class="img-div">
 			<img
 				on:click={() => goto(`postslist/${content.slug}`)}
+				width="400"
+				height="225"
+				loading="lazy"
 				class="cover"
 				src={content.coverImage.url}
 				alt=""
@@ -39,6 +42,9 @@
 		<div class="img-div">
 			<img
 				on:click={() => goto(`progetti/${content.slug}`)}
+				width="400"
+				height="225"
+				loading="lazy"
 				class="cover"
 				src={content.image[0].url}
 				alt=""

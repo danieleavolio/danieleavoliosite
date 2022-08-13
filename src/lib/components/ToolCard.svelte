@@ -17,7 +17,7 @@
 		class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} tool"
 	>
 		<div class="icon">
-			<img src={tool.icon.url} alt="" />
+			<img loading="lazy" src={tool.icon.url} alt="" />
 		</div>
 		<div class="text">
 			<p class="title">{tool.name}</p>

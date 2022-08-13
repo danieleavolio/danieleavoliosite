@@ -68,9 +68,23 @@
 			<BackTo actionToDo={backToPost} text="POSTS" />
 			<h1>{post.title}</h1>
 			<h3>{post.introduction}</h3>
-			<img class="cover" src={post.coverImage.url} alt={post.coverImage.fileName} />
+			<img
+				width="700"
+				height="400"
+				loading="lazy"
+				class="cover"
+				src={post.coverImage.url}
+				alt={post.coverImage.fileName}
+			/>
 			<div class="author">
-				<img class="avatar" src={post.authors[0].picture.url} alt="" />
+				<img
+					width="80"
+					height="80"
+					loading="lazy"
+					class="avatar"
+					src={post.authors[0].picture.url}
+					alt=""
+				/>
 				<div class="name-date">
 					<p>{post.authors[0].name}</p>
 					<p>{post.date}</p>
@@ -100,7 +114,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		width: 60%
+		width: 60%;
 	}
 	h1 {
 		font-size: clamp(1.2em, 10vw, 4em);
@@ -166,10 +180,9 @@
 		max-width: 100%;
 	}
 
-	@media screen and (max-width: 800px) {  
-		.container{
+	@media screen and (max-width: 800px) {
+		.container {
 			width: 90%;
 		}
 	}
-
 </style>

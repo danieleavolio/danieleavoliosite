@@ -62,7 +62,14 @@
 		<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} container">
 			<BackTo actionToDo={backToProjects} text="PROGETTI" />
 			<h1>{project.title}</h1>
-			<img class="cover" src={project.image[0].url} alt={project.image[0].fileName} />
+			<img
+				width="700"
+				height="400"
+				loading="lazy"
+				class="cover"
+				src={project.image[0].url}
+				alt={project.image[0].fileName}
+			/>
 			<p class="description">{project.description}</p>
 			<div class="tags">
 				{#each project.tags as tag}
