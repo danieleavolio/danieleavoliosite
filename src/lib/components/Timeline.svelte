@@ -11,11 +11,18 @@
 	</h1>
 	<div class="timeline-section">
 		<div class="icon-text">
-			<TimelineIcon icon="question_mark" date={'2022-Futuro'} />
+			<TimelineIcon icon="computer" date={'Maggio 2022 - Agosto 2022'} />
 			<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} text">
-				<h2>Il futuro</h2>
-				<h4>Un'incognita</h4>
-				<p>Lavoro? Continuazione degli studi? Chi lo sa.</p>
+				<h2>Frontend Developer</h2>
+				<h4>IET - INFOEDGE TECHNOLOGY SRL</h4>
+				<p>
+					Ho svolto un periodo di lavoro nell'azienda IET da Frontend developer. Ho utilizzato 
+					<b>Angular</b> come Framework principale di sviluppo. Le task principali riguardavano lo sviluppo di un
+					applicativo interno per l'azienda <b>Poste Italiane</b>.
+				</p>
+				<div class="buttons-div">
+					<AnimationButton href="https://iet.it/home" text="IET Website" icon="language" />
+				</div>
 			</div>
 		</div>
 	</div>

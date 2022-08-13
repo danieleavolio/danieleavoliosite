@@ -100,6 +100,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		width: 60%
 	}
 	h1 {
 		font-size: clamp(1.2em, 10vw, 4em);
@@ -164,4 +165,11 @@
 	.content {
 		max-width: 100%;
 	}
+
+	@media screen and (max-width: 800px) {  
+		.container{
+			width: 90%;
+		}
+	}
+
 </style>

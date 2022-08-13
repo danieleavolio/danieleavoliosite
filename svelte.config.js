@@ -3,11 +3,10 @@ import preprocess from 'svelte-preprocess';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-    preprocess: preprocess(),
-    kit: {
-        adapter: vercel(),
-    }
-
+	preprocess: preprocess({ postcss: true }),
+	kit: {
+		adapter: vercel()
+	}
 };
 
 export default config;

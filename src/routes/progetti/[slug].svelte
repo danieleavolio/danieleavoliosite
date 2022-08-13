@@ -41,7 +41,7 @@
 	import { darkModeStore } from '$lib/stores/filters';
 	import { goto } from '$app/navigation';
 	import BackTo from '$lib/components/fundamentals/BackTo.svelte';
-import AnimationButton from '$lib/components/fundamentals/AnimationButton.svelte';
+	import AnimationButton from '$lib/components/fundamentals/AnimationButton.svelte';
 
 	export let project;
 
@@ -81,8 +81,8 @@ import AnimationButton from '$lib/components/fundamentals/AnimationButton.svelte
 				</div>
 			{/if}
 
-			{#if project.github }
-				<AnimationButton href={project.github} text="Repository" icon="code"></AnimationButton>
+			{#if project.github}
+				<AnimationButton href={project.github} text="Repository" icon="code" />
 			{/if}
 		</div>
 	{/if}
@@ -96,6 +96,7 @@ import AnimationButton from '$lib/components/fundamentals/AnimationButton.svelte
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		width: 60%;
 	}
 	h1 {
 		font-size: clamp(1.2em, 10vw, 4em);
@@ -136,5 +137,11 @@ import AnimationButton from '$lib/components/fundamentals/AnimationButton.svelte
 
 	.content {
 		max-width: 100%;
+	}
+
+	@media screen and (max-width: 800px) {
+		.container {
+			width: 90%;
+		}
 	}
 </style>
