@@ -1,5 +1,6 @@
 <script>
 	import Content from './Content.svelte';
+import AnimationButton from './fundamentals/AnimationButton.svelte';
 	export let posts;
 </script>
 
@@ -8,14 +9,10 @@
 		<Content content={post} index={i} type="post" />
 	{/each}
 </div>
-{#if posts.length > 3}
-	<a class="dark-button" href="/postslist">Altri post</a>
-{/if}
+<AnimationButton target='' icon='' href='/postslist' text='Tutti i Post' ></AnimationButton>
+
 
 <style>
-	a {
-		margin: 1em;
-	}
 	.lista-progetti {
 		display: flex;
 		justify-content: center;

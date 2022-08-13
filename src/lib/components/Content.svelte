@@ -99,6 +99,7 @@
 	.cover {
 		width: 100%;
 		height: 100%;
+		max-height: 225px;
 		object-fit: cover;
 		transition: all 0.2s ease;	
 		cursor: pointer;
