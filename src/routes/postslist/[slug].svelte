@@ -99,7 +99,7 @@
 		<div class="{$darkModeStore == 'enabled' ? 'dark-container' : 'light-container'} container">
 			{#if post.content}
 				<div class="content">
-					<p>{@html post.content.html}</p>
+					<p loading="lazy">{@html post.content.html}</p>
 				</div>
 			{/if}
 		</div>
