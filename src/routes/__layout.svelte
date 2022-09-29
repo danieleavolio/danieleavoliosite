@@ -44,7 +44,6 @@
 			dataLayer.push(arguments);
 		}
 		gtag('js', new Date());
-
 		gtag('config', 'G-7621H56BTW');
 	</script>
 </svelte:head>
