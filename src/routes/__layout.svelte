@@ -33,8 +33,20 @@
 		else htmlElement.classList.add('light');
 	});
 </script>
+
 <svelte:head>
-	<link rel="icon" type="image" href="/favicon.png">
+	<link rel="icon" type="image" href="/favicon.png" />
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-7621H56BTW"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() {
+			dataLayer.push(arguments);
+		}
+		gtag('js', new Date());
+
+		gtag('config', 'G-7621H56BTW');
+	</script>
 </svelte:head>
 
 {#if isShowing}
