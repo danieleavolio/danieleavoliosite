@@ -107,7 +107,7 @@
 			<div
 				class="{$darkModeStore == 'enabled'
 					? 'dark-container'
-					: 'light-container'} grid grid-cols-3 gap-3 text-center items-center px-10 py-6 m-6 rounded-lg justify-evenly relative"
+					: 'light-container'} grid grid-cols-3 gap-3 w-max text-center items-center px-10 py-6 m-6 rounded-lg justify-evenly relative"
 			>
 				<div
 					on:click={() => {
@@ -165,7 +165,9 @@
 					'enabled'
 						? 'dark-primary-highlited'
 						: 'light-primary-highlited'}"
-						on:click={()=>{scrollTop = false}}
+					on:click={() => {
+						scrollTop = false;
+					}}
 				>
 					<span class="material-icons">visibility_off</span>
 				</div>
@@ -218,6 +220,12 @@
 		grid-template-rows: 1fr;
 	}
 
+	@media screen and (max-width: 600px) {
+		.barrona {
+		left: 50%;
+		transform: translate(-50%, -160%);
+	}
+	}
 	@keyframes down-indicator {
 		0% {
 			transform: translateY(-20%);
