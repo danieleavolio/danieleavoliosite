@@ -42,6 +42,14 @@ export async function get() {
             <loc>https://www.danieleavolio.it/postslist/da-cosi-a-cosi</loc>
             <lastmod>2022-04-19</lastmod>
         </url>
+         <url>
+            <loc>https://www.danieleavolio.it/postslist/life-update-10</loc>
+            <lastmod>2022-09-16</lastmod>
+        </url>
+        <url>
+            <loc>https://www.danieleavolio.it/postslist/how-to-write-a-cv-eng</loc>
+            <lastmod>2022-09-16</lastmod>
+        </url>
         <url>
             <loc>https://www.danieleavolio.it/progetti/personal-portfolio</loc>
             <lastmod>2022-04-19</lastmod>
