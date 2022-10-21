@@ -8,6 +8,7 @@
 
 <script>
 import Seo from "$lib/components/SEO.svelte";
+	import { darkModeStore } from "$lib/stores/filters";
 
 
 	export let error, status;
@@ -18,9 +19,12 @@ import Seo from "$lib/components/SEO.svelte";
 </svelte:head>
 
 <Seo title={"Ops.. Errore"} metadescription="Qualcosa è andato storto.." />
-<div class="error-page">
-	<div class="error">
-		<h1>Qualcosa è andato storto..</h1>
+<div class="error-page ">
+	<div class="{$darkModeStore ==
+		'enabled'
+			? 'dark-container'
+			: 'light-container'} error w-screen h-screen flex flex-col justify-center items-center">
+		<h1 class="text-5xl">Qualcosa è andato storto..</h1>
 		<h2>Errore {status}: {error.message}</h2>
 		<a href="/">Torna alla home</a>
 	</div>
@@ -34,8 +38,6 @@ import Seo from "$lib/components/SEO.svelte";
 	}
 
 	.error {
-		background-color: var(--dark-bg);
-		width: fit-content;
 		color: var(--light);
 		padding: 1em;
 		text-align: center;

@@ -12,6 +12,11 @@
 	onMount(() => {
 		isBuilt = true;
 	});
+
+	const openWindow = (link) =>{
+		window.open(link, '_blank')
+	}
+
 </script>
 
 <div class="profile-card">
@@ -39,14 +44,18 @@
 						Daniele Avolio
 					</p>
 					<p class="descrizione">
-						Laureato in Informatica presso l'Università della Calabria. Sviluppatore <span
+						Dottore in Informatica presso l'Università della Calabria. Ho esperienza come
+						sviluppatore 
+						<span
 							class={$darkModeStore == 'enabled' ? 'evidenzia-dark' : 'evidenzia-light'}
-							>FrontEnd</span
-						>
+							>FrontEnd</span>
 						specializzato nell'utilizzo del framework
-						<span class={$darkModeStore == 'enabled' ? 'evidenzia-dark' : 'evidenzia-light'}>
-							Svelte | SvelteKit</span
-						>.
+						<span on:click={() => openWindow('http://kit.svelte.dev')} class="{$darkModeStore == 'enabled' ? 'evidenzia-dark' : 'evidenzia-light'} cursor-pointer" >
+							Svelte | SvelteKit</span>
+						in autonomia e del Framework
+						<span on:click={() => openWindow('https://angular.io/')} class="{$darkModeStore == 'enabled' ? 'evidenzia-dark' : 'evidenzia-light'} cursor-pointer" >
+							Angular</span
+						> in ambito aziendale.
 					</p>
 				</div>
 				<div class="socials">
@@ -61,7 +70,11 @@
 						icon="file_present"
 					/>
 					<AnimationButton href="/about" text="Su di me" icon="person" target="" />
-					<AnimationButton href="resource/bachelor-thesis.pdf" text="Tesi Triennale" icon="article" />
+					<AnimationButton
+						href="resource/bachelor-thesis.pdf"
+						text="Tesi Triennale"
+						icon="article"
+					/>
 				</div>
 			</div>
 		</div>
@@ -76,11 +89,20 @@
 		margin: 0.2em;
 	}
 
-
-	.expand{
+	.expand {
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		animation: moving 1s ease infinite alternate;
+	}
+
+	@keyframes moving {
+		0% {
+			transform: translateY(10px);
+		}
+		100% {
+			transform: translateY(0px);
+		}
 	}
 	.evidenzia-light {
 		padding: 0.1em;

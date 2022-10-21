@@ -17,7 +17,7 @@
 		<div class="img-div">
 			<img
 				on:click={() => goto(`postslist/${content.slug}`)}
-				width="400"
+				width="350"
 				height="225"
 				loading="lazy"
 				class="cover"
@@ -105,7 +105,8 @@
 	.cover {
 		width: 100%;
 		height: 100%;
-		max-height: 225px;
+		max-width: 300px;
+		max-height: 180px;
 		object-fit: cover;
 		transition: all 0.2s ease;	
 		cursor: pointer;

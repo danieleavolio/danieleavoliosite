@@ -54,6 +54,8 @@
 	import Seo from '$lib/components/SEO.svelte';
 	import { darkModeStore } from '$lib/stores/filters';
 	import { fade } from 'svelte/transition';
+	import Appunti from './appunti.svelte';
+	import { goto } from '$app/navigation';
 	export let projects;
 	export let posts;
 
@@ -66,7 +68,8 @@
 	enum ENUMERATE_THINGS {
 		POST,
 		PROJECTS,
-		LANGUAGES
+		LANGUAGES,
+		APPUNTI
 	}
 
 	$: actualScroll, checkScroll();
@@ -107,7 +110,7 @@
 			<div
 				class="{$darkModeStore == 'enabled'
 					? 'dark-container'
-					: 'light-container'} grid grid-cols-3 gap-3 w-max text-center items-center px-10 py-6 m-6 rounded-lg justify-evenly relative"
+					: 'light-container'} grid grid-cols-4 gap-3 w-max text-center items-center px-10 py-6 m-6 rounded-lg justify-evenly relative"
 			>
 				<div
 					on:click={() => {
@@ -145,20 +148,29 @@
 					on:click={() => {
 						changeShowing(ENUMERATE_THINGS.LANGUAGES);
 					}}
-					class="square flex flex-col justify-center items-center text-center"
-				>
+					class="square flex flex-col justify-center items-center text-center">
 					<div
 						class="flex cursor-pointer p-2 md:p-5 rounded-lg material-icons textl-xl md:text-4xl {$darkModeStore ==
 						'enabled'
 							? 'dark-primary-highlited'
-							: 'light-primary-highlited'}"
-					>
-						terminal
-					</div>
+							: 'light-primary-highlited'}">terminal</div>
+				</div>
+				
+				<div
+					on:click={() => {
+						goto('appunti');
+					}}
+					class="square flex flex-col justify-center items-center text-center">
+					<div
+						class="flex cursor-pointer p-2 md:p-5 rounded-lg material-icons textl-xl md:text-4xl {$darkModeStore ==
+						'enabled'
+							? 'dark-primary-highlited'
+							: 'light-primary-highlited'}">document_scanner</div>
 				</div>
 				<p class="md:text-xl hidden md:block">Posts</p>
 				<p class="md:text-xl hidden md:block">Progetti</p>
 				<p class="md:text-xl hidden md:block">Linguaggi</p>
+				<p class="md:text-xl hidden md:block">Appunti</p>
 
 				<div
 					class="md:w-10 md:h-10 rounded-full flex justify-center items-center self-start cursor-pointer absolute top-0 right-0 {$darkModeStore ==
@@ -186,6 +198,11 @@
 			<ProjectList {projects} />
 		</section>
 	{:else if showing == ENUMERATE_THINGS.LANGUAGES}
+		<section id={ENUMERATE_THINGS.APPUNTI} class={$darkModeStore == 'enabled' ? 'dark' : 'light'}>
+			<h1>Appunti</h1>
+			<Appunti />
+		</section>
+		{:else if showing == ENUMERATE_THINGS.LANGUAGES}
 		<section id={ENUMERATE_THINGS.LANGUAGES} class={$darkModeStore == 'enabled' ? 'dark' : 'light'}>
 			<h1>Linguaggi e Strumenti</h1>
 			<LanguagesList />

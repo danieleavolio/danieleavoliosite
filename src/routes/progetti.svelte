@@ -72,7 +72,7 @@
 	imageUrl="https://www.danieleavolio.it/pictures/me.jpg"
 />
 
-<div class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} container">
+<div class="{$darkModeStore == 'enabled' ? 'dark' : 'light'} container m-auto">
 	<h1 in:fly={{ y: -100, duration: 500 }}>Progetti</h1>
 	<div class="tag-list">
 		{#each filtri as tag}
