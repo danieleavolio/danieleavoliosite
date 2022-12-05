@@ -197,7 +197,7 @@
 			<h1>Progetti</h1>
 			<ProjectList {projects} />
 		</section>
-	{:else if showing == ENUMERATE_THINGS.LANGUAGES}
+	{:else if showing == ENUMERATE_THINGS.APPUNTI}
 		<section id={ENUMERATE_THINGS.APPUNTI} class={$darkModeStore == 'enabled' ? 'dark' : 'light'}>
 			<h1>Appunti</h1>
 			<Appunti />
